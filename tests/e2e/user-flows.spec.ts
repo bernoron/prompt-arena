@@ -8,7 +8,7 @@ test.describe('User Flows', () => {
 
   test('dashboard loads with rank and points', async ({ page }) => {
     await page.goto('/dashboard');
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded');
     await expect(page.locator('text=Dashboard').first()).toBeVisible({ timeout: 15000 });
     await expect(page.locator('text=Dein Rang').first()).toBeVisible();
     await expect(page.locator('text=Punkte').first()).toBeVisible();
@@ -16,20 +16,20 @@ test.describe('User Flows', () => {
 
   test('library loads and shows prompts', async ({ page }) => {
     await page.goto('/library');
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded');
     // Search field visible
     await expect(page.locator('input[placeholder*="durchsuchen"]').first()).toBeVisible({ timeout: 10000 });
   });
 
   test('leaderboard loads rankings', async ({ page }) => {
     await page.goto('/leaderboard');
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded');
     await expect(page.locator('text=Pts').first()).toBeVisible({ timeout: 10000 });
   });
 
   test('navigation between pages works', async ({ page }) => {
     await page.goto('/dashboard');
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded');
 
     await page.click('text=Bibliothek');
     await expect(page).toHaveURL(/\/library/, { timeout: 10000 });
