@@ -1,0 +1,61 @@
+#!/bin/sh
+#
+# Pre-Push Hook – E2E-Tests
+#
+# Läuft vor jedem git push:
+#   - Startet den Dev-Server falls er nicht läuft
+#   - Führt alle Playwright E2E-Tests aus
+#   - Stoppt den temporär gestarteten Server wieder
+#
+# Einrichten (einmalig nach git clone):
+#   cd prompt-arena && npm run setup:hooks
+#
+
+set -e
+
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+APP_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+cd "$APP_DIR"
+
+SERVER_STARTED=0
+SERVER_PID=""
+
+# ── Server-Status prüfen ──────────────────────────────────────────────────────
+if curl -s --max-time 3 http://localhost:3000/api/health > /dev/null 2>&1; then
+  echo "🌐 Dev-Server läuft bereits auf Port 3000."
+else
+  echo "🚀 Dev-Server wird gestartet…"
+  DATABASE_URL="file:./prisma/dev.db" npm run dev > /tmp/promptarena-dev.log 2>&1 &
+  SERVER_PID=$!
+  SERVER_STARTED=1
+
+  # Warten bis der Server antwortet (max. 45 s)
+  ATTEMPTS=0
+  until curl -s --max-time 2 http://localhost:3000/api/health > /dev/null 2>&1; do
+    ATTEMPTS=$((ATTEMPTS + 1))
+    if [ $ATTEMPTS -ge 45 ]; then
+      echo "❌ Dev-Server hat nicht geantwortet. Abbruch."
+      kill $SERVER_PID 2>/dev/null || true
+      exit 1
+    fi
+    sleep 1
+  done
+  echo "✅ Dev-Server bereit."
+fi
+
+# ── E2E-Tests ausführen ───────────────────────────────────────────────────────
+echo "🎭 E2E-Tests (Playwright) werden ausgeführt…"
+
+# Cleanup-Funktion: Server stoppen falls wir ihn gestartet haben
+cleanup() {
+  if [ $SERVER_STARTED -eq 1 ] && [ -n "$SERVER_PID" ]; then
+    echo "🛑 Dev-Server wird gestoppt (PID $SERVER_PID)…"
+    kill $SERVER_PID 2>/dev/null || true
+    # Auch alle verbleibenden next-Prozesse auf Port 3000 beenden
+    npx kill-port 3000 2>/dev/null || true
+  fi
+}
+trap cleanup EXIT
+
+npm run test:e2e
+echo "✅ Alle E2E-Tests bestanden."
