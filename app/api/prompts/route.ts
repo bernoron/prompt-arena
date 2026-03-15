@@ -69,7 +69,11 @@ export async function GET(req: NextRequest) {
       createdAt: p.createdAt.toISOString(),
     }));
 
-    return NextResponse.json(result);
+    // Only cache when response is not user-specific (no userVote personalisation)
+    const cacheHeaders: HeadersInit = parsedUserId
+      ? {}
+      : { 'Cache-Control': 'public, s-maxage=20, stale-while-revalidate=60' };
+    return NextResponse.json(result, { headers: cacheHeaders });
   } catch (err) {
     logger.error('failed to fetch prompts', serializeError(err));
     return NextResponse.json({ error: 'Failed to fetch prompts' }, { status: 500 });

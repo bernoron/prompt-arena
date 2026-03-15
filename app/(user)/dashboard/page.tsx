@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo, memo } from 'react';
 import Link from 'next/link';
 import LevelBadge from '@/components/LevelBadge';
 import type { WeeklyChallengeData, UserWithStats, LevelName, PromptWithDetails } from '@/lib/types';
@@ -73,7 +73,7 @@ function Countdown({ endDate }: { endDate: string }) {
   );
 }
 
-function Avatar({ user, size = 8 }: { user: { name: string; avatarColor: string }; size?: number }) {
+const Avatar = memo(function Avatar({ user, size = 8 }: { user: { name: string; avatarColor: string }; size?: number }) {
   const initials = user.name.split(' ').map((n) => n[0]).join('');
   return (
     <span
@@ -83,9 +83,9 @@ function Avatar({ user, size = 8 }: { user: { name: string; avatarColor: string 
       {initials}
     </span>
   );
-}
+});
 
-function StatCard({ value, label, sub, color = 'emerald' }: {
+const StatCard = memo(function StatCard({ value, label, sub, color = 'emerald' }: {
   value: string; label: string; sub?: string; color?: string;
 }) {
   const colors: Record<string, string> = {
@@ -99,7 +99,7 @@ function StatCard({ value, label, sub, color = 'emerald' }: {
       {sub && <p className="text-xs text-slate-400 mt-0.5">{sub}</p>}
     </div>
   );
-}
+});
 
 function ImpactBar({ value, max }: { value: number; max: number }) {
   const pct = max > 0 ? Math.round((value / max) * 100) : 0;
@@ -113,7 +113,7 @@ function ImpactBar({ value, max }: { value: number; max: number }) {
 
 // ─── "Seit deinem letzten Besuch" card ───────────────────────────────────────
 
-function SinceLastVisit({ diff }: { diff: RankDiff }) {
+const SinceLastVisit = memo(function SinceLastVisit({ diff }: { diff: RankDiff }) {
   const { delta, overtookMe, iOvertook } = diff;
   const hasChanges = delta !== 0 || overtookMe.length > 0 || iOvertook.length > 0;
   if (!hasChanges) return null;
@@ -177,11 +177,11 @@ function SinceLastVisit({ diff }: { diff: RankDiff }) {
       </div>
     </div>
   );
-}
+});
 
 // ─── "Was tun?" improvement card ─────────────────────────────────────────────
 
-function ImprovementCard({
+const ImprovementCard = memo(function ImprovementCard({
   currentUser, rank, allUsers, hasChallenges,
 }: {
   currentUser: UserWithStats;
@@ -233,20 +233,24 @@ function ImprovementCard({
       </div>
     </div>
   );
-}
+});
 
 // ─── Trending Prompts ────────────────────────────────────────────────────────
 
-function TrendingPrompts({ allPrompts }: { allPrompts: PromptWithDetails[] }) {
+const TrendingPrompts = memo(function TrendingPrompts({ allPrompts }: { allPrompts: PromptWithDetails[] }) {
   const [tab, setTab] = useState<'hot' | 'new'>('hot');
 
-  const hotPrompts = [...allPrompts]
-    .sort((a, b) => b.usageCount - a.usageCount)
-    .slice(0, 5);
+  const hotPrompts = useMemo(() =>
+    [...allPrompts].sort((a, b) => b.usageCount - a.usageCount).slice(0, 5),
+    [allPrompts],
+  );
 
-  const newPrompts = [...allPrompts]
-    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-    .slice(0, 5);
+  const newPrompts = useMemo(() =>
+    [...allPrompts]
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+      .slice(0, 5),
+    [allPrompts],
+  );
 
   const shown  = tab === 'hot' ? hotPrompts : newPrompts;
   const maxVal = tab === 'hot'
@@ -314,7 +318,7 @@ function TrendingPrompts({ allPrompts }: { allPrompts: PromptWithDetails[] }) {
       </div>
     </div>
   );
-}
+});
 
 // ─── Dashboard page ───────────────────────────────────────────────────────────
 
@@ -374,23 +378,37 @@ export default function DashboardPage() {
     return () => window.removeEventListener('userChanged', loadData);
   }, [loadData]);
 
-  const rank       = currentUser ? allUsers.findIndex((u) => u.id === currentUser.id) + 1 : null;
-  const progress   = currentUser ? getLevelProgress(currentUser.totalPoints) : null;
-  const levelConf  = currentUser ? LEVEL_CONFIG[currentUser.level as LevelName] : null;
+  const rank = useMemo(
+    () => currentUser ? allUsers.findIndex((u) => u.id === currentUser.id) + 1 : null,
+    [currentUser, allUsers],
+  );
+  const progress  = useMemo(
+    () => currentUser ? getLevelProgress(currentUser.totalPoints) : null,
+    [currentUser],
+  );
+  const levelConf = useMemo(
+    () => currentUser ? LEVEL_CONFIG[currentUser.level as LevelName] : null,
+    [currentUser],
+  );
 
-  const myPrompts   = currentUser ? allPrompts.filter((p) => p.author?.id === currentUser.id) : [];
-  const totalUsages = myPrompts.reduce((s, p) => s + p.usageCount, 0);
-  const topPrompts  = [...myPrompts].sort((a, b) => b.usageCount - a.usageCount).slice(0, 3);
-  const maxUsage    = topPrompts[0]?.usageCount ?? 1;
+  const myPrompts = useMemo(
+    () => currentUser ? allPrompts.filter((p) => p.author?.id === currentUser.id) : [],
+    [currentUser, allPrompts],
+  );
+  const totalUsages = useMemo(() => myPrompts.reduce((s, p) => s + p.usageCount, 0), [myPrompts]);
+  const topPrompts  = useMemo(
+    () => [...myPrompts].sort((a, b) => b.usageCount - a.usageCount).slice(0, 3),
+    [myPrompts],
+  );
+  const maxUsage = topPrompts[0]?.usageCount ?? 1;
+  const top5     = useMemo(() => allUsers.slice(0, 5), [allUsers]);
 
-  const top5 = allUsers.slice(0, 5);
-
-  const motivLine = (() => {
+  const motivLine = useMemo(() => {
     if (!rank) return 'Willkommen zurück in der PromptArena.';
     if (rank === 1) return '🏆 Du führst das Ranking an — bleib dran!';
     if (rank <= 3) return `🔥 Top 3! Nur noch ${rank - 1} Person${rank > 2 ? 'en' : ''} vor dir.`;
     return `Rang #${rank} — ein Prompt heute reicht um aufzuholen! 💪`;
-  })();
+  }, [rank]);
 
   return (
     <div className="space-y-6">

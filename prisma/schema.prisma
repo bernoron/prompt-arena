@@ -19,6 +19,8 @@ model User {
   prompts              Prompt[]
   votes                Vote[]
   challengeSubmissions ChallengeSubmission[]
+
+  @@index([totalPoints])
 }
 
 model Prompt {
@@ -36,6 +38,11 @@ model Prompt {
   author               User                  @relation(fields: [authorId], references: [id])
   votes                Vote[]
   challengeSubmissions ChallengeSubmission[]
+
+  @@index([authorId])
+  @@index([category])
+  @@index([usageCount])
+  @@index([createdAt])
 }
 
 model Vote {
@@ -49,6 +56,7 @@ model Vote {
   user   User   @relation(fields: [userId], references: [id])
 
   @@unique([promptId, userId])
+  @@index([userId])
 }
 
 model WeeklyChallenge {
@@ -72,4 +80,8 @@ model ChallengeSubmission {
   challenge WeeklyChallenge @relation(fields: [challengeId], references: [id])
   prompt    Prompt          @relation(fields: [promptId], references: [id])
   user      User            @relation(fields: [userId], references: [id])
+
+  @@index([challengeId])
+  @@index([userId])
+  @@index([promptId])
 }

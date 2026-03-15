@@ -249,29 +249,47 @@ function LibraryPageInner() {
 
   const handleVote = async (promptId: number, value: number) => {
     if (!currentUserId) return;
-    await fetch('/api/votes', {
+
+    // Optimistic update – reflect new vote instantly in the list
+    setPrompts((prev) => prev.map((p) => {
+      if (p.id !== promptId) return p;
+      const wasNew  = !p.userVote;
+      const newCount = wasNew ? p.voteCount + 1 : p.voteCount;
+      return { ...p, userVote: value, voteCount: newCount };
+    }));
+
+    triggerFloat('+3 Pts', window.innerWidth / 2 - 28, window.innerHeight / 2 + 60);
+
+    // Fire request + background-sync accurate data (avgRating requires server recalc)
+    fetch('/api/votes', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ promptId, userId: currentUserId, value }),
+    }).then(() => {
+      fetchPrompts();
+      checkLevelUp().then((newLevel) => { if (newLevel) setLevelUpName(newLevel); });
     });
-    // Floating XP label – centred on screen where modal lives
-    triggerFloat('+3 Pts', window.innerWidth / 2 - 28, window.innerHeight / 2 + 60);
-    await fetchPrompts();
-    const newLevel = await checkLevelUp();
-    if (newLevel) setLevelUpName(newLevel);
   };
 
   const handleUsed = async (promptId: number) => {
-    await fetch('/api/usage', {
+    // Optimistic update – increment usageCount immediately
+    setPrompts((prev) => prev.map((p) =>
+      p.id === promptId ? { ...p, usageCount: p.usageCount + 1 } : p,
+    ));
+    setSelectedPrompt((prev) =>
+      prev && prev.id === promptId ? { ...prev, usageCount: prev.usageCount + 1 } : prev,
+    );
+
+    triggerFloat('+5 Pts', window.innerWidth / 2 - 28, window.innerHeight / 2 + 80);
+
+    fetch('/api/usage', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ promptId }),
+    }).then(() => {
+      fetchPrompts();
+      checkLevelUp().then((newLevel) => { if (newLevel) setLevelUpName(newLevel); });
     });
-    // Floating XP label – centred on screen where modal lives
-    triggerFloat('+5 Pts', window.innerWidth / 2 - 28, window.innerHeight / 2 + 80);
-    await fetchPrompts();
-    const newLevel = await checkLevelUp();
-    if (newLevel) setLevelUpName(newLevel);
   };
 
   return (

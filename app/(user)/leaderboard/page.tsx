@@ -1,11 +1,11 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo, memo } from 'react';
 import LevelBadge from '@/components/LevelBadge';
 import type { UserWithStats, LevelName, PromptWithDetails } from '@/lib/types';
 import { useCurrentUser } from '@/hooks/useCurrentUser';
 
-function DeptBar({ dept, points, max }: { dept: string; points: number; max: number }) {
+const DeptBar = memo(function DeptBar({ dept, points, max }: { dept: string; points: number; max: number }) {
   const pct = max > 0 ? Math.round((points / max) * 100) : 0;
   const COLORS: Record<string, string> = {
     Schaden: 'from-emerald-500 to-teal-500',
@@ -25,7 +25,7 @@ function DeptBar({ dept, points, max }: { dept: string; points: number; max: num
       </div>
     </div>
   );
-}
+});
 
 export default function LeaderboardPage() {
   const [users, setUsers] = useState<UserWithStats[]>([]);
@@ -47,10 +47,13 @@ export default function LeaderboardPage() {
     });
   }, []);
 
-  const deptTotals: Record<string, number> = {};
-  users.forEach((u) => { deptTotals[u.department] = (deptTotals[u.department] ?? 0) + u.totalPoints; });
-  const maxDept = Math.max(...Object.values(deptTotals), 1);
-  const top10 = users.slice(0, 10);
+  const deptTotals = useMemo(() => {
+    const totals: Record<string, number> = {};
+    users.forEach((u) => { totals[u.department] = (totals[u.department] ?? 0) + u.totalPoints; });
+    return totals;
+  }, [users]);
+  const maxDept = useMemo(() => Math.max(...Object.values(deptTotals), 1), [deptTotals]);
+  const top10   = useMemo(() => users.slice(0, 10), [users]);
   const [top1, top2, top3, ...rest] = top10;
 
   return (

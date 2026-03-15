@@ -22,7 +22,9 @@ export async function GET(req: NextRequest) {
     const users = await prisma.user.findMany({
       orderBy: { totalPoints: 'desc' },
     });
-    return NextResponse.json(users);
+    return NextResponse.json(users, {
+      headers: { 'Cache-Control': 'public, s-maxage=20, stale-while-revalidate=60' },
+    });
   } catch {
     return NextResponse.json({ error: 'Failed to fetch users' }, { status: 500 });
   }
