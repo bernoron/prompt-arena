@@ -1,9 +1,10 @@
 #!/bin/sh
 #
-# Pre-Commit Hook – Dokumentation automatisch aktualisieren
+# Pre-Commit Hook – Unit-Tests + Dokumentation
 #
-# Regeneriert docs/ vor jedem Commit und staged die Änderungen,
-# damit die Doku immer mit dem Stand des Codes übereinstimmt.
+# Läuft bei jedem Commit:
+#   1. Unit-Tests (Vitest, ~1 s) – bricht ab bei Fehler
+#   2. Docs regenerieren – staged Änderungen automatisch
 #
 # Einrichten (einmalig nach git clone):
 #   cd prompt-arena && npm run setup:hooks
@@ -11,16 +12,18 @@
 
 set -e
 
-# Absoluter Pfad zum prompt-arena/-Verzeichnis
-# (Hook wird vom Git-Root aus aufgerufen, nicht aus dem Verzeichnis heraus)
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 APP_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+cd "$APP_DIR"
 
+# ── 1. Unit-Tests ─────────────────────────────────────────────────────────────
+echo "🧪 Unit-Tests werden ausgeführt…"
+npm run test:unit
+
+echo "✅ Alle Unit-Tests bestanden."
+
+# ── 2. Dokumentation aktualisieren ────────────────────────────────────────────
 echo "📄 Dokumentation wird aktualisiert…"
-
-cd "$APP_DIR" && npm run docs
-
-# Generierte Docs in den Commit aufnehmen
+npm run docs
 git add docs/
-
 echo "✅ Dokumentation aktualisiert und gestaged."
