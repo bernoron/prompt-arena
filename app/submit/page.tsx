@@ -3,7 +3,8 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import CategoryBadge from '@/components/CategoryBadge';
-import type { Category, Difficulty, WeeklyChallengeData } from '@/lib/types';
+import DifficultyBadge from '@/components/DifficultyBadge';
+import type { Category, Difficulty, WeeklyChallengeData, UserWithStats } from '@/lib/types';
 
 const CATEGORIES: { value: Category; icon: string }[] = [
   { value: 'Writing',  icon: '✍️' },
@@ -26,9 +27,7 @@ function LivePreviewCard({ title, titleEn, content, category, difficulty, author
       <div className="flex items-start justify-between gap-2 mb-3">
         <div className="flex flex-wrap gap-1.5">
           {category && <CategoryBadge category={category} size="sm" />}
-          <span className={`text-xs px-2 py-0.5 rounded-full font-semibold border ${
-            difficulty === 'Fortgeschritten' ? 'bg-violet-50 text-violet-700 border-violet-200' : 'bg-slate-50 text-slate-600 border-slate-200'
-          }`}>{difficulty}</span>
+          <DifficultyBadge difficulty={difficulty} />
         </div>
         <span className="text-xs text-slate-400">0× genutzt</span>
       </div>
@@ -50,12 +49,10 @@ function LivePreviewCard({ title, titleEn, content, category, difficulty, author
   );
 }
 
-interface SimpleUser { id: number; name: string; avatarColor: string; }
-
 export default function SubmitPage() {
   const router = useRouter();
   const [challenge, setChallenge] = useState<WeeklyChallengeData | null>(null);
-  const [currentUser, setCurrentUser] = useState<SimpleUser | null>(null);
+  const [currentUser, setCurrentUser] = useState<UserWithStats | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [linkChallenge, setLinkChallenge] = useState(false);
   const [form, setForm] = useState({
@@ -67,11 +64,10 @@ export default function SubmitPage() {
   const loadUser = useCallback(() => {
     const uid = localStorage.getItem('promptarena_user_id');
     if (!uid) return;
-    fetch('/api/users')
+    fetch(`/api/users/${uid}`)
       .then((r) => r.json())
-      .then((users: SimpleUser[]) => {
-        const u = users.find((x) => x.id === parseInt(uid));
-        if (u) setCurrentUser(u);
+      .then((user: UserWithStats) => {
+        if (user && user.id) setCurrentUser(user);
       });
   }, []);
 

@@ -25,23 +25,28 @@ import { logger } from '@/lib/logger';
  * @param points - Number of points to award (use constants from lib/points.ts)
  */
 export async function awardPoints(userId: number, points: number): Promise<void> {
-  const user = await prisma.user.update({
-    where: { id: userId },
-    data:  { totalPoints: { increment: points } },
+  const updatedUser = await prisma.$transaction(async (tx) => {
+    const user = await tx.user.update({
+      where: { id: userId },
+      data:  { totalPoints: { increment: points } },
+    });
+    const newLevel = getLevel(user.totalPoints);
+    await tx.user.update({
+      where: { id: userId },
+      data:  { level: newLevel },
+    });
+    return { ...user, level: newLevel };
   });
 
-  const newLevel = getLevel(user.totalPoints);
-  const prevLevel = user.level; // level before increment
+  logger.info('points awarded', { userId, points, total: updatedUser.totalPoints });
 
-  await prisma.user.update({
-    where: { id: userId },
-    data:  { level: newLevel },
-  });
-
-  logger.info('points awarded', { userId, points, total: user.totalPoints });
-
-  if (prevLevel !== newLevel) {
-    logger.info('level up', { userId, from: prevLevel, to: newLevel, total: user.totalPoints });
+  if (updatedUser.level !== getLevel(updatedUser.totalPoints - points)) {
+    logger.info('level up', {
+      userId,
+      from: getLevel(updatedUser.totalPoints - points),
+      to:   updatedUser.level,
+      total: updatedUser.totalPoints,
+    });
   }
 }
 

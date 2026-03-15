@@ -3,6 +3,7 @@
 import type { PromptWithDetails, Category } from '@/lib/types';
 import { CATEGORY_CONFIG, getRarity, RARITY_CONFIG } from '@/lib/constants';
 import CategoryBadge from './CategoryBadge';
+import DifficultyBadge from './DifficultyBadge';
 
 interface Props {
   prompt: PromptWithDetails;
@@ -41,13 +42,7 @@ export default function PromptCard({ prompt, onClick }: Props) {
       <div className="flex items-start justify-between gap-2 mb-3">
         <div className="flex flex-wrap gap-1.5">
           <CategoryBadge category={prompt.category as Category} size="sm" />
-          <span className={`text-xs px-2 py-0.5 rounded-full font-semibold border ${
-            prompt.difficulty === 'Fortgeschritten'
-              ? 'bg-violet-50 text-violet-700 border-violet-200'
-              : 'bg-slate-50 text-slate-600 border-slate-200'
-          }`}>
-            {prompt.difficulty}
-          </span>
+          <DifficultyBadge difficulty={prompt.difficulty} />
         </div>
         <span className={`text-xs whitespace-nowrap font-bold ${
           rarity === 'legendary' ? 'text-amber-500'

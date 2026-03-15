@@ -95,6 +95,17 @@ export default function Navigation() {
         >
           + Einreichen
         </Link>
+        <Link
+          href="/admin"
+          className={`flex-shrink-0 px-4 py-3 text-xs font-medium border-b-2 transition-colors ${
+            pathname.startsWith('/admin')
+              ? 'border-amber-400 text-amber-400'
+              : 'border-transparent text-slate-500'
+          }`}
+          title="Admin"
+        >
+          ⚙️
+        </Link>
       </nav>
     </header>
   );

@@ -1,13 +1,16 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import PromptCard from '@/components/PromptCard';
 import CategoryBadge from '@/components/CategoryBadge';
+import DifficultyBadge from '@/components/DifficultyBadge';
 import FloatingPoints, { triggerFloat } from '@/components/FloatingPoints';
 import LevelUpModal from '@/components/LevelUpModal';
 import type { PromptWithDetails, Category } from '@/lib/types';
 import { useCurrentUser } from '@/hooks/useCurrentUser';
 import { useLevelUp } from '@/hooks/useLevelUp';
+import { apiFetch } from '@/lib/api-client';
 
 const CATEGORIES: { value: 'all' | Category; label: string; icon: string }[] = [
   { value: 'all',      label: 'Alle',     icon: '✨' },
@@ -57,6 +60,11 @@ function PromptModal({
   };
 
   useEffect(() => {
+    document.body.style.overflow = 'hidden';
+    return () => { document.body.style.overflow = ''; };
+  }, []);
+
+  useEffect(() => {
     const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
     document.addEventListener('keydown', handler);
     return () => document.removeEventListener('keydown', handler);
@@ -74,13 +82,7 @@ function PromptModal({
           <div className="flex-1 pr-4">
             <div className="flex flex-wrap gap-2 mb-2">
               <CategoryBadge category={prompt.category as Category} />
-              <span className={`text-xs px-2.5 py-1 rounded-full font-semibold border ${
-                prompt.difficulty === 'Fortgeschritten'
-                  ? 'bg-violet-50 text-violet-700 border-violet-200'
-                  : 'bg-slate-50 text-slate-600 border-slate-200'
-              }`}>
-                {prompt.difficulty}
-              </span>
+              <DifficultyBadge difficulty={prompt.difficulty} />
             </div>
             <h2 className="text-xl font-extrabold text-slate-900 leading-tight">{prompt.title}</h2>
             {hasSeparateEn && <p className="text-sm text-slate-400 mt-0.5">{prompt.titleEn}</p>}
@@ -178,16 +180,28 @@ function PromptModal({
   );
 }
 
-export default function LibraryPage() {
+function LibraryPageInner() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const [prompts, setPrompts] = useState<PromptWithDetails[]>([]);
   const [loading, setLoading] = useState(true);
   const [category, setCategory] = useState<'all' | Category>('all');
   const [search, setSearch] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
+  const [sortBy, setSortBy] = useState<'newest' | 'most-used' | 'top-rated'>('newest');
   const [selectedPrompt, setSelectedPrompt] = useState<PromptWithDetails | null>(null);
   const [levelUpName, setLevelUpName] = useState<string | null>(null);
+  const [successToast, setSuccessToast] = useState(false);
   const currentUserId = useCurrentUser();
   const { checkLevelUp } = useLevelUp(currentUserId);
+
+  useEffect(() => {
+    if (searchParams.get('success') === '1') {
+      setSuccessToast(true);
+      router.replace('/library');
+      setTimeout(() => setSuccessToast(false), 4000);
+    }
+  }, [searchParams, router]);
 
   useEffect(() => {
     const t = setTimeout(() => setDebouncedSearch(search), 300);
@@ -200,15 +214,23 @@ export default function LibraryPage() {
     if (category !== 'all') params.set('category', category);
     if (debouncedSearch) params.set('search', debouncedSearch);
     if (currentUserId) params.set('userId', String(currentUserId));
+    if (sortBy !== 'top-rated') params.set('sortBy', sortBy);
     try {
       const res = await fetch(`/api/prompts?${params}`);
-      const data = await res.json();
-      setPrompts(Array.isArray(data) ? data : []);
+      const data: PromptWithDetails[] = await res.json();
+      if (Array.isArray(data)) {
+        if (sortBy === 'top-rated') {
+          data.sort((a, b) => b.avgRating - a.avgRating || b.voteCount - a.voteCount);
+        }
+        setPrompts(data);
+      } else {
+        setPrompts([]);
+      }
     } catch {
       setPrompts([]);
     }
     setLoading(false);
-  }, [category, debouncedSearch, currentUserId]);
+  }, [category, debouncedSearch, currentUserId, sortBy]);
 
   useEffect(() => { fetchPrompts(); }, [fetchPrompts]);
 
@@ -244,6 +266,14 @@ export default function LibraryPage() {
 
   return (
     <div>
+      {successToast && (
+        <div className="fixed top-20 left-1/2 -translate-x-1/2 z-50 bg-emerald-600 text-white px-6 py-3 rounded-2xl shadow-xl flex items-center gap-3 animate-pop-in">
+          <span className="text-lg">🎉</span>
+          <span className="font-semibold">Prompt eingereicht! <span className="font-bold">+20 Punkte</span></span>
+          <button onClick={() => setSuccessToast(false)} className="ml-2 opacity-70 hover:opacity-100">✕</button>
+        </div>
+      )}
+
       {/* Global overlays */}
       <FloatingPoints />
       {levelUpName && (
@@ -276,6 +306,20 @@ export default function LibraryPage() {
             </button>
           ))}
         </div>
+      </div>
+
+      {/* Sort controls */}
+      <div className="flex gap-2 mt-3 mb-4">
+        {(['newest', 'most-used', 'top-rated'] as const).map((s) => (
+          <button key={s} onClick={() => setSortBy(s)}
+            className={`text-xs font-semibold px-3 py-1.5 rounded-xl border transition-colors ${
+              sortBy === s
+                ? 'bg-emerald-600 text-white border-emerald-600'
+                : 'bg-white text-slate-600 border-slate-200 hover:border-emerald-300'
+            }`}>
+            {s === 'newest' ? '✨ Neueste' : s === 'most-used' ? '🔥 Meistgenutzt' : '⭐ Bestbewertet'}
+          </button>
+        ))}
       </div>
 
       {!loading && (
@@ -314,5 +358,13 @@ export default function LibraryPage() {
         />
       )}
     </div>
+  );
+}
+
+export default function LibraryPage() {
+  return (
+    <Suspense>
+      <LibraryPageInner />
+    </Suspense>
   );
 }

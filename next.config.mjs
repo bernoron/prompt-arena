@@ -14,7 +14,10 @@ const isDev = process.env.NODE_ENV !== 'production';
  */
 const cspDirectives = [
   "default-src 'self'",
-  // 'unsafe-eval' only in dev (HMR / webpack); removed in production builds
+  // 'unsafe-eval' only in dev (HMR / webpack); removed in production builds.
+  // 'unsafe-inline' is required for Next.js inline script hydration chunks
+  // (the __NEXT_DATA__ bootstrap). Nonce-based CSP would remove this need
+  // but requires a custom middleware layer not yet implemented here.
   isDev
     ? "script-src 'self' 'unsafe-inline' 'unsafe-eval'"
     : "script-src 'self' 'unsafe-inline'",

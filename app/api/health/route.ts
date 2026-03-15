@@ -4,8 +4,8 @@
  * Lightweight liveness / readiness probe.
  *
  * Returns:
- *   200  { status: "ok",   env, dbMs, ts }
- *   503  { status: "error", env, error, ts }
+ *   200  { status: "ok",   dbMs, ts }
+ *   503  { status: "error", error, ts }
  *
  * `dbMs` is the round-trip time (in ms) for a simple Prisma ping query.
  * Use this endpoint from uptime monitors, Docker HEALTHCHECK, or k8s probes.
@@ -25,7 +25,6 @@ export async function GET() {
 
     const body = {
       status: 'ok',
-      env:    process.env.NODE_ENV ?? 'unknown',
       dbMs,
       ts:     new Date().toISOString(),
     };
@@ -41,7 +40,6 @@ export async function GET() {
     return NextResponse.json(
       {
         status: 'error',
-        env:    process.env.NODE_ENV ?? 'unknown',
         error:  message,
         ts:     new Date().toISOString(),
       },

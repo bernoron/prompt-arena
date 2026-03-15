@@ -74,12 +74,3 @@ export function getLevelProgress(points: number): LevelProgress {
   return   { level: 'Prompt-Lehrling',   current: points,       max: 100, percentage: Math.round((points / 100) * 100),         nextLevel: 'Prompt-Handwerker' };
 }
 
-// ─── Legacy export ────────────────────────────────────────────────────────────
-// Kept for backward compat with components that still import LEVEL_COLORS.
-// New code should use LEVEL_CONFIG from lib/constants.ts instead.
-export const LEVEL_COLORS: Record<LevelName, string> = {
-  'Prompt-Lehrling':   'bg-slate-100  text-slate-600',
-  'Prompt-Handwerker': 'bg-blue-50    text-blue-700',
-  'Prompt-Schmied':    'bg-amber-50   text-amber-700',
-  'KI-Botschafter':    'bg-emerald-50 text-emerald-700',
-};

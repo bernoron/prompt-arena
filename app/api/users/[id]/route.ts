@@ -40,12 +40,10 @@ export async function GET(
 
     if (!user) return NextResponse.json({ error: 'Not found' }, { status: 404 });
 
-    // Compute global rank (position in the leaderboard)
-    const allUsers = await prisma.user.findMany({
-      orderBy: { totalPoints: 'desc' },
-      select:  { id: true },
-    });
-    const rank = allUsers.findIndex((u) => u.id === id) + 1;
+    // Compute global rank (position in the leaderboard) via COUNT query
+    const rank = await prisma.user.count({
+      where: { totalPoints: { gt: user.totalPoints } },
+    }) + 1;
 
     const prompts = user.prompts.map((p) => ({
       ...p,

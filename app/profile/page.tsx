@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import LevelBadge from '@/components/LevelBadge';
 import CategoryBadge from '@/components/CategoryBadge';
+import DifficultyBadge from '@/components/DifficultyBadge';
 import type { LevelName, Category } from '@/lib/types';
 import { getLevelProgress } from '@/lib/points';
 
@@ -32,9 +33,7 @@ export default function ProfilePage() {
   const loadProfile = useCallback(() => {
     const uid = localStorage.getItem('promptarena_user_id');
     if (!uid) {
-      fetch('/api/users').then(r => r.json()).then((users: { id: number }[]) => {
-        if (users[0]) loadById(users[0].id);
-      });
+      setLoading(false);
       return;
     }
     loadById(parseInt(uid));
@@ -57,6 +56,19 @@ export default function ProfilePage() {
     window.addEventListener('userChanged', handler);
     return () => window.removeEventListener('userChanged', handler);
   }, [loadProfile]);
+
+  if (!loading && !profile) {
+    const uid = typeof window !== 'undefined' ? localStorage.getItem('promptarena_user_id') : null;
+    if (!uid) {
+      return (
+        <div className="text-center py-20">
+          <p className="text-4xl mb-4">👤</p>
+          <p className="font-bold text-slate-700 text-lg">Kein Nutzer ausgewählt</p>
+          <p className="text-slate-400 mt-2">Wähle deinen Namen oben rechts aus, um dein Profil zu sehen.</p>
+        </div>
+      );
+    }
+  }
 
   if (loading || !profile) {
     return (
@@ -148,11 +160,7 @@ export default function ProfilePage() {
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 flex-wrap mb-1.5">
                           <CategoryBadge category={p.category as Category} size="sm" />
-                          <span className={`text-xs px-2 py-0.5 rounded-full font-semibold border ${
-                            p.difficulty === 'Fortgeschritten'
-                              ? 'bg-violet-50 text-violet-700 border-violet-200'
-                              : 'bg-slate-50 text-slate-600 border-slate-200'
-                          }`}>{p.difficulty}</span>
+                          <DifficultyBadge difficulty={p.difficulty as import('@/lib/types').Difficulty} />
                         </div>
                         <h3 className="font-bold text-slate-900 text-sm">{p.title}</h3>
                         {p.titleEn !== p.title && <p className="text-xs text-slate-400 mt-0.5">{p.titleEn}</p>}

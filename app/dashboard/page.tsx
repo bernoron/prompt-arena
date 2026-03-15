@@ -324,6 +324,7 @@ export default function DashboardPage() {
   const [allUsers,     setAllUsers]     = useState<UserWithStats[]>([]);
   const [allPrompts,   setAllPrompts]   = useState<PromptWithDetails[]>([]);
   const [rankDiff,     setRankDiff]     = useState<RankDiff | null>(null);
+  const [loading,      setLoading]      = useState(true);
 
   const loadData = useCallback(() => {
     const uid    = localStorage.getItem('promptarena_user_id');
@@ -363,6 +364,7 @@ export default function DashboardPage() {
         };
         localStorage.setItem(snapshotKey, JSON.stringify(newSnapshot));
       }
+      setLoading(false);
     });
   }, []);
 
@@ -450,8 +452,14 @@ export default function DashboardPage() {
           {rankDiff && <SinceLastVisit diff={rankDiff} />}
 
           {/* Challenges */}
-          {challenges.length === 0 ? (
+          {loading ? (
             <div className="bg-slate-200 rounded-2xl h-44 animate-pulse" />
+          ) : challenges.length === 0 ? (
+            <div className="bg-white rounded-2xl border border-slate-200 p-8 text-center">
+              <p className="text-3xl mb-2">🏆</p>
+              <p className="font-bold text-slate-700">Aktuell keine aktive Challenge</p>
+              <p className="text-sm text-slate-400 mt-1">Schau bald wieder vorbei — die nächste Challenge startet demnächst.</p>
+            </div>
           ) : (
             <div className="space-y-4">
               {challenges.map((challenge) => (

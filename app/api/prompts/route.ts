@@ -29,6 +29,7 @@ export async function GET(req: NextRequest) {
   const category = searchParams.get('category');
   const search   = searchParams.get('search')?.slice(0, 100); // Cap search term length
   const userId   = searchParams.get('userId');
+  const sortBy   = searchParams.get('sortBy') ?? 'newest';
 
   // Validate optional userId query param
   let parsedUserId: number | null = null;
@@ -56,7 +57,7 @@ export async function GET(req: NextRequest) {
         author: { select: { id: true, name: true, avatarColor: true, department: true } },
         votes: true,
       },
-      orderBy: { createdAt: 'desc' },
+      orderBy: sortBy === 'most-used' ? { usageCount: 'desc' } : { createdAt: 'desc' },
     });
 
     const result = prompts.map((p) => ({
