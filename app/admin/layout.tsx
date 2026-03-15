@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 
 const adminLinks = [
   { href: '/admin',            label: 'Übersicht',   icon: '📊' },
@@ -12,6 +12,13 @@ const adminLinks = [
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const router   = useRouter();
+
+  async function handleLogout() {
+    await fetch('/api/admin/logout', { method: 'POST' });
+    router.push('/admin/login');
+    router.refresh();
+  }
   return (
     <div className="flex gap-6 min-h-[calc(100vh-8rem)]">
       {/* Sidebar */}
@@ -37,11 +44,15 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               );
             })}
           </nav>
-          <div className="p-3 border-t border-slate-100">
+          <div className="p-3 border-t border-slate-100 space-y-1">
             <Link href="/dashboard"
               className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs text-slate-400 hover:text-slate-600 hover:bg-slate-50 transition-all">
               ← Zurück zur App
             </Link>
+            <button onClick={handleLogout}
+              className="flex w-full items-center gap-2 px-3 py-2 rounded-xl text-xs text-red-400 hover:text-red-600 hover:bg-red-50 transition-all">
+              🔓 Abmelden
+            </button>
           </div>
         </div>
       </aside>

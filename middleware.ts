@@ -4,12 +4,17 @@
  * Runs on every non-static request before it reaches a route handler.
  *
  * Responsibilities:
- *   1. Assign a unique `x-request-id` to every request.
+ *   1. Guard /admin/* and /api/admin/* behind an admin-session cookie.
+ *      → /admin/login and /api/admin/login are exempt (the login flow itself).
+ *      → Unauthorised page requests → redirect to /admin/login.
+ *      → Unauthorised API requests  → 401 JSON.
+ *
+ *   2. Assign a unique `x-request-id` to every request.
  *      → Visible in browser DevTools (Response Headers tab).
  *      → API routes can read it with req.headers.get('x-request-id')
  *        to correlate their own log lines with the middleware entry.
  *
- *   2. Emit a single "→ METHOD /path" log line per request.
+ *   3. Emit a single "→ METHOD /path" log line per request.
  *      → Skipped for static assets to keep the terminal clean.
  *      → Suppressed completely when LOG_LEVEL=error (production quiet mode).
  *
@@ -19,22 +24,44 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
+import { isAdminAuthorised, ADMIN_COOKIE } from '@/lib/admin-auth';
 
 
 /** Static-asset path prefixes that are too noisy to log. */
 const SILENT: string[] = ['/_next/', '/favicon'];
 
-export function middleware(req: NextRequest): NextResponse {
+export async function middleware(req: NextRequest): Promise<NextResponse> {
   const { pathname } = req.nextUrl;
 
-  // ── 1. Request ID ──────────────────────────────────────────────────────────
+  // ── 1. Admin guard ─────────────────────────────────────────────────────────
+  //  All /admin/* and /api/admin/* paths require a valid admin_session cookie,
+  //  except the login endpoints themselves.
+  const isAdminPath =
+    pathname.startsWith('/admin') || pathname.startsWith('/api/admin');
+  const isLoginPath =
+    pathname === '/admin/login' || pathname.startsWith('/api/admin/login');
+
+  if (isAdminPath && !isLoginPath) {
+    const cookieValue = req.cookies.get(ADMIN_COOKIE)?.value;
+    const authorised  = await isAdminAuthorised(cookieValue);
+
+    if (!authorised) {
+      if (pathname.startsWith('/api/')) {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      }
+      const loginUrl = new URL('/admin/login', req.url);
+      return NextResponse.redirect(loginUrl);
+    }
+  }
+
+  // ── 2. Request ID ──────────────────────────────────────────────────────────
   //  Attach a unique trace identifier to the response so developers can
   //  correlate browser requests with server log entries.
   const reqId = crypto.randomUUID();
   const res   = NextResponse.next();
   res.headers.set('x-request-id', reqId);
 
-  // ── 2. Request log ─────────────────────────────────────────────────────────
+  // ── 3. Request log ─────────────────────────────────────────────────────────
   const logLevel = (process.env.LOG_LEVEL ?? 'info').toLowerCase();
   const isQuiet  = logLevel === 'error';
   const isStatic = SILENT.some((p) => pathname.startsWith(p));
