@@ -10,7 +10,6 @@ import LevelUpModal from '@/components/LevelUpModal';
 import type { PromptWithDetails, Category } from '@/lib/types';
 import { useCurrentUser } from '@/hooks/useCurrentUser';
 import { useLevelUp } from '@/hooks/useLevelUp';
-import { apiFetch } from '@/lib/api-client';
 
 const CATEGORIES: { value: 'all' | Category; label: string; icon: string }[] = [
   { value: 'all',      label: 'Alle',     icon: '✨' },
