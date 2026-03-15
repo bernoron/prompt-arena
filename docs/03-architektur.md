@@ -41,12 +41,7 @@ integrierten API-Layer. Frontend und Backend laufen als einziger Prozess.
 | Route | Datei |
 |---|---|
 | `/` | app/page.tsx (Redirect → /dashboard) |
-| `/admin` | app/admin/page.tsx |
-| `/dashboard` | app/dashboard/page.tsx |
-| `/leaderboard` | app/leaderboard/page.tsx |
-| `/library` | app/library/page.tsx |
-| `/profile` | app/profile/page.tsx |
-| `/submit` | app/submit/page.tsx |
+| `/(user)` | app/(user)/page.tsx |
 
 ---
 
@@ -142,4 +137,4 @@ Der `useCurrentUser`-Hook abstrahiert dieses Pattern in allen Client-Komponenten
 
 
 ---
-*Automatisch generiert am 15.03.2026, 12:10 · [Quellcode](https://github.com/your-org/prompt-arena)*
+*Automatisch generiert am 15.03.2026, 21:04 · [Quellcode](https://github.com/your-org/prompt-arena)*

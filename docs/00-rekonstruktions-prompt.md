@@ -56,6 +56,8 @@ model User {
   prompts              Prompt[]
   votes                Vote[]
   challengeSubmissions ChallengeSubmission[]
+
+  @@index([totalPoints])
 }
 
 model Prompt {
@@ -73,6 +75,11 @@ model Prompt {
   author               User                  @relation(fields: [authorId], references: [id])
   votes                Vote[]
   challengeSubmissions ChallengeSubmission[]
+
+  @@index([authorId])
+  @@index([category])
+  @@index([usageCount])
+  @@index([createdAt])
 }
 
 model Vote {
@@ -86,6 +93,7 @@ model Vote {
   user   User   @relation(fields: [userId], references: [id])
 
   @@unique([promptId, userId])
+  @@index([userId])
 }
 
 model WeeklyChallenge {
@@ -109,6 +117,10 @@ model ChallengeSubmission {
   challenge WeeklyChallenge @relation(fields: [challengeId], references: [id])
   prompt    Prompt          @relation(fields: [promptId], references: [id])
   user      User            @relation(fields: [userId], references: [id])
+
+  @@index([challengeId])
+  @@index([userId])
+  @@index([promptId])
 }
 
 
@@ -135,12 +147,7 @@ Für einen neuen Vote: erst prüfen ob Vote existiert, Punkte nur beim ERSTEN Vo
 SEITEN (app/ mit App Router)
 ════════════════════════════════════════════════════════════
 - / → app/page.tsx (Redirect → /dashboard)
-- /admin → app/admin/page.tsx
-- /dashboard → app/dashboard/page.tsx
-- /leaderboard → app/leaderboard/page.tsx
-- /library → app/library/page.tsx
-- /profile → app/profile/page.tsx
-- /submit → app/submit/page.tsx
+- /(user) → app/(user)/page.tsx
 
 Dashboard (/dashboard):
   - Dark hero mit Nutzer-Avatar, Punkten, Level, XP-Fortschrittsbalken
@@ -374,4 +381,4 @@ SETUP-REIHENFOLGE
 
 
 ---
-*Automatisch generiert am 15.03.2026, 12:10 · [Quellcode](https://github.com/your-org/prompt-arena)*
+*Automatisch generiert am 15.03.2026, 21:04 · [Quellcode](https://github.com/your-org/prompt-arena)*

@@ -93,8 +93,14 @@ Der `useCurrentUser`-Hook in `hooks/useCurrentUser.ts` abonniert dieses Event.
 | `npm run db:reset:dev` | `prisma migrate reset --force && tsx prisma/seed.ts` |
 | `npm run docs` | `tsx scripts/generate-docs.ts` |
 | `npm run docs:watch` | `tsx scripts/watch-docs.ts` |
-| `npm run setup:hooks` | `git -C .. config core.hooksPath prompt-arena/.githooks` |
-| `npm run prepare` | `npm run setup:hooks` |
+| `npm run setup:hooks` | `git config core.hooksPath .githooks` |
+| `npm run prepare` | `[ "$CI" = "true" ] && echo 'Skipping git hooks in CI' || npm run setup:hooks` |
+| `npm run test:unit` | `vitest run` |
+| `npm run test:unit:watch` | `vitest` |
+| `npm run test:unit:coverage` | `vitest run --coverage` |
+| `npm run test:e2e` | `playwright test` |
+| `npm run test:e2e:headed` | `playwright test --headed` |
+| `npm run test` | `npm run test:unit && npm run test:e2e` |
 
 ---
 
@@ -110,4 +116,4 @@ Der `useCurrentUser`-Hook in `hooks/useCurrentUser.ts` abonniert dieses Event.
 
 
 ---
-*Automatisch generiert am 15.03.2026, 12:10 · [Quellcode](https://github.com/your-org/prompt-arena)*
+*Automatisch generiert am 15.03.2026, 21:04 · [Quellcode](https://github.com/your-org/prompt-arena)*

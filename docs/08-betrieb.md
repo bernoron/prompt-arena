@@ -147,6 +147,7 @@ npm run db:reset
 Vorhandene Migrationen:
 
 - `20260314210555_init`
+- `20260315194108_add_performance_indexes`
 
 ### Backup (SQLite)
 
@@ -192,4 +193,4 @@ Empfohlene externe Uptime-Monitore (alle mit Gratis-Tier verfügbar): **UptimeRo
 
 
 ---
-*Automatisch generiert am 15.03.2026, 12:10 · [Quellcode](https://github.com/your-org/prompt-arena)*
+*Automatisch generiert am 15.03.2026, 21:04 · [Quellcode](https://github.com/your-org/prompt-arena)*
