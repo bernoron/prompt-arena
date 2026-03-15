@@ -1,0 +1,26 @@
+#!/bin/sh
+#
+# Pre-Commit Hook – Dokumentation automatisch aktualisieren
+#
+# Regeneriert docs/ vor jedem Commit und staged die Änderungen,
+# damit die Doku immer mit dem Stand des Codes übereinstimmt.
+#
+# Einrichten (einmalig nach git clone):
+#   cd prompt-arena && npm run setup:hooks
+#
+
+set -e
+
+# Absoluter Pfad zum prompt-arena/-Verzeichnis
+# (Hook wird vom Git-Root aus aufgerufen, nicht aus dem Verzeichnis heraus)
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+APP_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+
+echo "📄 Dokumentation wird aktualisiert…"
+
+cd "$APP_DIR" && npm run docs
+
+# Generierte Docs in den Commit aufnehmen
+git add docs/
+
+echo "✅ Dokumentation aktualisiert und gestaged."

@@ -1,0 +1,75 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           Int      @id @default(autoincrement())
+  name         String
+  department   String
+  avatarColor  String
+  totalPoints  Int      @default(0)
+  level        String   @default("Prompt-Lehrling")
+  createdAt    DateTime @default(now())
+
+  prompts              Prompt[]
+  votes                Vote[]
+  challengeSubmissions ChallengeSubmission[]
+}
+
+model Prompt {
+  id         Int      @id @default(autoincrement())
+  title      String
+  titleEn    String
+  content    String
+  contentEn  String
+  category   String
+  difficulty String
+  authorId   Int
+  usageCount Int      @default(0)
+  createdAt  DateTime @default(now())
+
+  author               User                  @relation(fields: [authorId], references: [id])
+  votes                Vote[]
+  challengeSubmissions ChallengeSubmission[]
+}
+
+model Vote {
+  id        Int      @id @default(autoincrement())
+  promptId  Int
+  userId    Int
+  value     Int
+  createdAt DateTime @default(now())
+
+  prompt Prompt @relation(fields: [promptId], references: [id])
+  user   User   @relation(fields: [userId], references: [id])
+
+  @@unique([promptId, userId])
+}
+
+model WeeklyChallenge {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String
+  startDate   DateTime
+  endDate     DateTime
+  isActive    Boolean  @default(false)
+
+  submissions ChallengeSubmission[]
+}
+
+model ChallengeSubmission {
+  id          Int      @id @default(autoincrement())
+  challengeId Int
+  promptId    Int
+  userId      Int
+  createdAt   DateTime @default(now())
+
+  challenge WeeklyChallenge @relation(fields: [challengeId], references: [id])
+  prompt    Prompt          @relation(fields: [promptId], references: [id])
+  user      User            @relation(fields: [userId], references: [id])
+}
