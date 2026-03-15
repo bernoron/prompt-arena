@@ -89,7 +89,8 @@ Der `useCurrentUser`-Hook in `hooks/useCurrentUser.ts` abonniert dieses Event.
 | `npm run db:generate` | `prisma generate` |
 | `npm run db:migrate` | `prisma migrate dev --name init` |
 | `npm run db:seed` | `tsx prisma/seed.ts` |
-| `npm run db:reset` | `prisma migrate reset --force && tsx prisma/seed.ts` |
+| `npm run db:reset` | `node -e "if(process.env.NODE_ENV==='production'){console.error('ERROR: db:reset is disabled in production!');process.exit(1)}" && npm run db:reset:dev` |
+| `npm run db:reset:dev` | `prisma migrate reset --force && tsx prisma/seed.ts` |
 | `npm run docs` | `tsx scripts/generate-docs.ts` |
 | `npm run docs:watch` | `tsx scripts/watch-docs.ts` |
 | `npm run setup:hooks` | `git -C .. config core.hooksPath prompt-arena/.githooks` |
@@ -109,4 +110,4 @@ Der `useCurrentUser`-Hook in `hooks/useCurrentUser.ts` abonniert dieses Event.
 
 
 ---
-*Automatisch generiert am 15.03.2026, 11:31 · [Quellcode](https://github.com/your-org/prompt-arena)*
+*Automatisch generiert am 15.03.2026, 12:05 · [Quellcode](https://github.com/your-org/prompt-arena)*

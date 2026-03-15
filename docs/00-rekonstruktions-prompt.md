@@ -180,6 +180,7 @@ Profil (/profile):
 KOMPONENTEN (components/)
 ════════════════════════════════════════════════════════════
 - CategoryBadge.tsx
+- DifficultyBadge.tsx
 - FloatingPoints.tsx
 - LevelBadge.tsx
 - LevelUpModal.tsx
@@ -229,6 +230,8 @@ API-ROUTEN (app/api/)
 - POST /api/admin/challenges
 - PATCH /api/admin/challenges/[id]
 - DELETE /api/admin/challenges/[id]
+- POST /api/admin/login
+- POST /api/admin/logout
 - DELETE /api/admin/prompts/[id]
 - GET /api/admin/stats
 - PATCH /api/admin/users/[id]
@@ -371,4 +374,4 @@ SETUP-REIHENFOLGE
 
 
 ---
-*Automatisch generiert am 15.03.2026, 11:31 · [Quellcode](https://github.com/your-org/prompt-arena)*
+*Automatisch generiert am 15.03.2026, 12:05 · [Quellcode](https://github.com/your-org/prompt-arena)*
