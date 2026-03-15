@@ -299,7 +299,7 @@ function TrendingPrompts({ allPrompts }: { allPrompts: PromptWithDetails[] }) {
                 <ImpactBar value={p.usageCount} max={maxVal as number} />
               )}
             </div>
-            <Link href="/library"
+            <Link href={`/library?prompt=${p.id}`}
               className="text-xs text-slate-400 hover:text-emerald-600 transition-colors flex-shrink-0 font-medium">
               Ansehen →
             </Link>

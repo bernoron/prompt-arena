@@ -202,6 +202,17 @@ function LibraryPageInner() {
     }
   }, [searchParams, router]);
 
+  // Auto-open prompt modal when ?prompt=<id> is in the URL
+  useEffect(() => {
+    const promptId = searchParams.get('prompt');
+    if (!promptId || prompts.length === 0) return;
+    const found = prompts.find((p) => p.id === Number(promptId));
+    if (found) {
+      setSelectedPrompt(found);
+      router.replace('/library', { scroll: false });
+    }
+  }, [searchParams, prompts, router]);
+
   useEffect(() => {
     const t = setTimeout(() => setDebouncedSearch(search), 300);
     return () => clearTimeout(t);
