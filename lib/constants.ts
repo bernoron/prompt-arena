@@ -126,9 +126,10 @@ export const LEVEL_CONFIG = {
  * Mirrors the numeric values in lib/points.ts – keep in sync when changing point rewards.
  */
 export const POINTS_GUIDE = [
-  { icon: '📝', action: 'Prompt einreichen',   pts: '+20'  },
-  { icon: '🚀', action: 'Prompt genutzt',       pts: '+5'   },
-  { icon: '⭐', action: 'Bewertung abgeben',    pts: '+3'   },
-  { icon: '🏆', action: 'Challenge einreichen', pts: '+30'  },
-  { icon: '🥇', action: 'Challenge gewinnen',   pts: '+100' },
+  { icon: '📝', action: 'Prompt einreichen',      pts: '+20'  },
+  { icon: '🚀', action: 'Prompt genutzt',          pts: '+5'   },
+  { icon: '⭐', action: 'Bewertung abgeben',       pts: '+3'   },
+  { icon: '🔖', action: 'Prompt favorisiert',      pts: '+10'  },
+  { icon: '🏆', action: 'Challenge einreichen',    pts: '+30'  },
+  { icon: '🥇', action: 'Challenge gewinnen',      pts: '+100' },
 ] as const;

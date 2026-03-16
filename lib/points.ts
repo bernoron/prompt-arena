@@ -19,6 +19,7 @@ export const POINTS = {
   SUBMIT_PROMPT:    20,
   PROMPT_USED:       5,
   VOTE_ON_PROMPT:    3,
+  FAVORITE_PROMPT:  10,
   CHALLENGE_SUBMIT: 30,
   CHALLENGE_WIN:   100,
 } as const;

@@ -148,6 +148,7 @@ Vorhandene Migrationen:
 
 - `20260314210555_init`
 - `20260315194108_add_performance_indexes`
+- `20260316111241_add_favorites`
 
 ### Backup (SQLite)
 
@@ -193,4 +194,4 @@ Empfohlene externe Uptime-Monitore (alle mit Gratis-Tier verfügbar): **UptimeRo
 
 
 ---
-*Automatisch generiert am 15.03.2026, 21:08 · [Quellcode](https://github.com/your-org/prompt-arena)*
+*Automatisch generiert am 16.03.2026, 12:21 · [Quellcode](https://github.com/your-org/prompt-arena)*

@@ -38,6 +38,11 @@ export default function PromptCard({ prompt, onClick }: Props) {
         </span>
       )}
 
+      {/* Favorite badge (pinned top-left) */}
+      {prompt.userFavorite && (
+        <span className="absolute top-2 left-2 text-amber-400 text-base leading-none" title="In deinen Favoriten">★</span>
+      )}
+
       {/* Header */}
       <div className="flex items-start justify-between gap-2 mb-3">
         <div className="flex flex-wrap gap-1.5">

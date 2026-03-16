@@ -5,10 +5,11 @@ import { usePathname } from 'next/navigation';
 import UserPicker from './UserPicker';
 
 const navLinks = [
-  { href: '/dashboard', label: 'Dashboard', icon: '⚡' },
-  { href: '/library', label: 'Bibliothek', icon: '📚' },
-  { href: '/leaderboard', label: 'Rangliste', icon: '🏆' },
-  { href: '/profile', label: 'Profil', icon: '👤' },
+  { href: '/dashboard',  label: 'Dashboard',  icon: '⚡'  },
+  { href: '/library',    label: 'Bibliothek', icon: '📚'  },
+  { href: '/favorites',  label: 'Favoriten',  icon: '⭐'  },
+  { href: '/leaderboard',label: 'Rangliste',  icon: '🏆'  },
+  { href: '/profile',    label: 'Profil',     icon: '👤'  },
 ];
 
 export default function Navigation() {

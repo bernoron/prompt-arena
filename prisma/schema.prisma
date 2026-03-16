@@ -19,6 +19,7 @@ model User {
   prompts              Prompt[]
   votes                Vote[]
   challengeSubmissions ChallengeSubmission[]
+  favorites            Favorite[]
 
   @@index([totalPoints])
 }
@@ -38,6 +39,7 @@ model Prompt {
   author               User                  @relation(fields: [authorId], references: [id])
   votes                Vote[]
   challengeSubmissions ChallengeSubmission[]
+  favorites            Favorite[]
 
   @@index([authorId])
   @@index([category])
@@ -50,6 +52,19 @@ model Vote {
   promptId  Int
   userId    Int
   value     Int
+  createdAt DateTime @default(now())
+
+  prompt Prompt @relation(fields: [promptId], references: [id])
+  user   User   @relation(fields: [userId], references: [id])
+
+  @@unique([promptId, userId])
+  @@index([userId])
+}
+
+model Favorite {
+  id        Int      @id @default(autoincrement())
+  promptId  Int
+  userId    Int
   createdAt DateTime @default(now())
 
   prompt Prompt @relation(fields: [promptId], references: [id])

@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useEffect, useCallback, Suspense } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useState, useEffect, useCallback } from 'react';
+import Link from 'next/link';
 import PromptCard from '@/components/PromptCard';
 import CategoryBadge from '@/components/CategoryBadge';
 import DifficultyBadge from '@/components/DifficultyBadge';
@@ -11,13 +11,7 @@ import type { PromptWithDetails, Category } from '@/lib/types';
 import { useCurrentUser } from '@/hooks/useCurrentUser';
 import { useLevelUp } from '@/hooks/useLevelUp';
 
-const CATEGORIES: { value: 'all' | Category; label: string; icon: string }[] = [
-  { value: 'all',      label: 'Alle',     icon: '✨' },
-  { value: 'Writing',  label: 'Writing',  icon: '✍️' },
-  { value: 'Email',    label: 'Email',    icon: '📧' },
-  { value: 'Analysis', label: 'Analysis', icon: '📊' },
-  { value: 'Excel',    label: 'Excel',    icon: '📈' },
-];
+// ─── Prompt Modal (same as library, reused inline) ────────────────────────────
 
 function PromptModal({
   prompt, currentUserId, onClose, onVote, onUsed, onFavorite,
@@ -35,7 +29,7 @@ function PromptModal({
   const [hoveredStar, setHoveredStar] = useState(0);
   const [userVote, setUserVote] = useState(prompt.userVote ?? 0);
   const [isVoting, setIsVoting] = useState(false);
-  const [isFav, setIsFav] = useState(prompt.userFavorite ?? false);
+  const [isFav, setIsFav] = useState(prompt.userFavorite ?? true); // always true on favorites page
 
   const hasSeparateEn = prompt.titleEn !== prompt.title || prompt.contentEn !== prompt.content;
   const text = activeTab === 'de' ? prompt.content : prompt.contentEn;
@@ -52,18 +46,18 @@ function PromptModal({
     setUsedDone(true);
   };
 
-  const handleFavorite = async () => {
-    if (!currentUserId) return;
-    setIsFav((prev) => !prev);
-    await onFavorite(prompt.id);
-  };
-
   const handleVote = async (value: number) => {
     if (!currentUserId || isVoting) return;
     setIsVoting(true);
     setUserVote(value);
     await onVote(prompt.id, value);
     setIsVoting(false);
+  };
+
+  const handleFavorite = async () => {
+    if (!currentUserId) return;
+    setIsFav((prev) => !prev);
+    await onFavorite(prompt.id);
   };
 
   useEffect(() => {
@@ -164,7 +158,7 @@ function PromptModal({
 
           <div className="flex gap-3">
             <button onClick={handleFavorite} disabled={!currentUserId}
-              title={currentUserId ? (isFav ? 'Aus Favoriten entfernen' : 'Zu Favoriten hinzufügen') : 'Bitte Benutzer auswählen'}
+              title={isFav ? 'Aus Favoriten entfernen' : 'Zu Favoriten hinzufügen'}
               className={`flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all border ${
                 isFav
                   ? 'bg-amber-50 text-amber-600 border-amber-300 hover:bg-amber-100'
@@ -196,221 +190,177 @@ function PromptModal({
   );
 }
 
-function LibraryPageInner() {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const [prompts, setPrompts] = useState<PromptWithDetails[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [category, setCategory] = useState<'all' | Category>('all');
-  const [search, setSearch] = useState('');
-  const [debouncedSearch, setDebouncedSearch] = useState('');
-  const [sortBy, setSortBy] = useState<'newest' | 'most-used' | 'top-rated'>('newest');
-  const [selectedPrompt, setSelectedPrompt] = useState<PromptWithDetails | null>(null);
-  const [levelUpName, setLevelUpName] = useState<string | null>(null);
-  const [successToast, setSuccessToast] = useState(false);
+// ─── Favorites Page ───────────────────────────────────────────────────────────
+
+export default function FavoritesPage() {
   const currentUserId = useCurrentUser();
   const { checkLevelUp } = useLevelUp(currentUserId);
 
-  useEffect(() => {
-    if (searchParams.get('success') === '1') {
-      setSuccessToast(true);
-      router.replace('/library');
-      setTimeout(() => setSuccessToast(false), 4000);
-    }
-  }, [searchParams, router]);
+  const [prompts, setPrompts] = useState<PromptWithDetails[]>([]);
+  const [filtered, setFiltered] = useState<PromptWithDetails[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState('');
+  const [selectedPrompt, setSelectedPrompt] = useState<PromptWithDetails | null>(null);
+  const [levelUpName, setLevelUpName] = useState<string | null>(null);
 
-  // Auto-open prompt modal when ?prompt=<id> is in the URL
-  useEffect(() => {
-    const promptId = searchParams.get('prompt');
-    if (!promptId || prompts.length === 0) return;
-    const found = prompts.find((p) => p.id === Number(promptId));
-    if (found) {
-      setSelectedPrompt(found);
-      router.replace('/library', { scroll: false });
-    }
-  }, [searchParams, prompts, router]);
-
-  useEffect(() => {
-    const t = setTimeout(() => setDebouncedSearch(search), 300);
-    return () => clearTimeout(t);
-  }, [search]);
-
-  const fetchPrompts = useCallback(async () => {
+  const fetchFavorites = useCallback(async () => {
+    if (!currentUserId) { setLoading(false); return; }
     setLoading(true);
-    const params = new URLSearchParams();
-    if (category !== 'all') params.set('category', category);
-    if (debouncedSearch) params.set('search', debouncedSearch);
-    if (currentUserId) params.set('userId', String(currentUserId));
-    if (sortBy !== 'top-rated') params.set('sortBy', sortBy);
     try {
-      const res = await fetch(`/api/prompts?${params}`);
+      const res = await fetch(`/api/favorites?userId=${currentUserId}`);
       const data: PromptWithDetails[] = await res.json();
-      if (Array.isArray(data)) {
-        if (sortBy === 'top-rated') {
-          data.sort((a, b) => b.avgRating - a.avgRating || b.voteCount - a.voteCount);
-        }
-        setPrompts(data);
-      } else {
-        setPrompts([]);
-      }
+      setPrompts(Array.isArray(data) ? data : []);
     } catch {
       setPrompts([]);
     }
     setLoading(false);
-  }, [category, debouncedSearch, currentUserId, sortBy]);
+  }, [currentUserId]);
 
-  useEffect(() => { fetchPrompts(); }, [fetchPrompts]);
+  useEffect(() => { fetchFavorites(); }, [fetchFavorites]);
 
-  // Prime the level baseline so first real action doesn't false-fire level-up
+  // Prime level baseline
   useEffect(() => { if (currentUserId) checkLevelUp(); }, [currentUserId, checkLevelUp]);
+
+  // Client-side search filter
+  useEffect(() => {
+    if (!search.trim()) { setFiltered(prompts); return; }
+    const q = search.toLowerCase();
+    setFiltered(prompts.filter((p) =>
+      p.title.toLowerCase().includes(q) ||
+      p.content.toLowerCase().includes(q) ||
+      p.author.name.toLowerCase().includes(q),
+    ));
+  }, [search, prompts]);
 
   const handleVote = async (promptId: number, value: number) => {
     if (!currentUserId) return;
-
-    // Optimistic update – reflect new vote instantly in the list
-    setPrompts((prev) => prev.map((p) => {
-      if (p.id !== promptId) return p;
-      const wasNew  = !p.userVote;
-      const newCount = wasNew ? p.voteCount + 1 : p.voteCount;
-      return { ...p, userVote: value, voteCount: newCount };
-    }));
-
     triggerFloat('+3 Pts', window.innerWidth / 2 - 28, window.innerHeight / 2 + 60);
-
-    // Fire request + background-sync accurate data (avgRating requires server recalc)
     fetch('/api/votes', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ promptId, userId: currentUserId, value }),
     }).then(() => {
-      fetchPrompts();
+      fetchFavorites();
+      checkLevelUp().then((newLevel) => { if (newLevel) setLevelUpName(newLevel); });
+    });
+  };
+
+  const handleUsed = async (promptId: number) => {
+    setPrompts((prev) => prev.map((p) =>
+      p.id === promptId ? { ...p, usageCount: p.usageCount + 1 } : p,
+    ));
+    triggerFloat('+5 Pts', window.innerWidth / 2 - 28, window.innerHeight / 2 + 80);
+    fetch('/api/usage', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ promptId }),
+    }).then(() => {
+      fetchFavorites();
       checkLevelUp().then((newLevel) => { if (newLevel) setLevelUpName(newLevel); });
     });
   };
 
   const handleFavorite = async (promptId: number) => {
     if (!currentUserId) return;
-
-    // Optimistic toggle in the local list
-    setPrompts((prev) => prev.map((p) =>
-      p.id === promptId ? { ...p, userFavorite: !p.userFavorite } : p,
-    ));
-
     const res = await fetch('/api/favorites', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ promptId, userId: currentUserId }),
     });
     const data = await res.json() as { favorited: boolean };
-
-    if (data.favorited) {
-      triggerFloat('⭐ +10 Pts', window.innerWidth / 2 - 40, window.innerHeight / 2 + 60);
-      checkLevelUp().then((newLevel) => { if (newLevel) setLevelUpName(newLevel); });
+    if (!data.favorited) {
+      // Removed → take out of list
+      setPrompts((prev) => prev.filter((p) => p.id !== promptId));
+      if (selectedPrompt?.id === promptId) setSelectedPrompt(null);
     }
-    // Background sync for accuracy
-    fetchPrompts();
+    checkLevelUp().then((newLevel) => { if (newLevel) setLevelUpName(newLevel); });
   };
 
-  const handleUsed = async (promptId: number) => {
-    // Optimistic update – increment usageCount immediately
-    setPrompts((prev) => prev.map((p) =>
-      p.id === promptId ? { ...p, usageCount: p.usageCount + 1 } : p,
-    ));
-    setSelectedPrompt((prev) =>
-      prev && prev.id === promptId ? { ...prev, usageCount: prev.usageCount + 1 } : prev,
+  // ── Render ─────────────────────────────────────────────────────────────────
+
+  if (!currentUserId && !loading) {
+    return (
+      <div className="flex flex-col items-center justify-center py-32 text-center">
+        <p className="text-5xl mb-4">⭐</p>
+        <h1 className="text-2xl font-extrabold text-slate-900 mb-2">Meine Favoriten</h1>
+        <p className="text-slate-500 mb-6">Bitte wähle oben einen Benutzer aus, um deine Favoriten zu sehen.</p>
+        <Link href="/library"
+          className="px-6 py-2.5 rounded-xl text-sm font-semibold text-white"
+          style={{ background: 'linear-gradient(135deg, #059669, #0891b2)' }}>
+          Zur Bibliothek →
+        </Link>
+      </div>
     );
-
-    triggerFloat('+5 Pts', window.innerWidth / 2 - 28, window.innerHeight / 2 + 80);
-
-    fetch('/api/usage', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ promptId }),
-    }).then(() => {
-      fetchPrompts();
-      checkLevelUp().then((newLevel) => { if (newLevel) setLevelUpName(newLevel); });
-    });
-  };
+  }
 
   return (
     <div>
-      {successToast && (
-        <div className="fixed top-20 left-1/2 -translate-x-1/2 z-50 bg-emerald-600 text-white px-6 py-3 rounded-2xl shadow-xl flex items-center gap-3 animate-pop-in">
-          <span className="text-lg">🎉</span>
-          <span className="font-semibold">Prompt eingereicht! <span className="font-bold">+20 Punkte</span></span>
-          <button onClick={() => setSuccessToast(false)} className="ml-2 opacity-70 hover:opacity-100">✕</button>
-        </div>
-      )}
-
-      {/* Global overlays */}
       <FloatingPoints />
-      {levelUpName && (
-        <LevelUpModal newLevel={levelUpName} onClose={() => setLevelUpName(null)} />
+      {levelUpName && <LevelUpModal newLevel={levelUpName} onClose={() => setLevelUpName(null)} />}
+
+      {/* Header */}
+      <div className="mb-6 flex items-center justify-between flex-wrap gap-3">
+        <div>
+          <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">⭐ Meine Favoriten</h1>
+          <p className="text-slate-500 mt-1">Deine persönliche Sammlung der wichtigsten Prompts.</p>
+        </div>
+        <Link href="/library"
+          className="text-sm font-semibold text-emerald-600 hover:text-emerald-700 flex items-center gap-1">
+          Bibliothek → alle Prompts
+        </Link>
+      </div>
+
+      {/* Search */}
+      {!loading && prompts.length > 0 && (
+        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 mb-6">
+          <div className="relative max-w-sm">
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">🔍</span>
+            <input type="text" placeholder="Favoriten durchsuchen…" value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="w-full pl-9 pr-4 py-2 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent bg-slate-50" />
+          </div>
+        </div>
       )}
 
-      <div className="mb-6">
-        <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">Prompt-Bibliothek</h1>
-        <p className="text-slate-500 mt-1">Entdecke, nutze und bewerte die besten KI-Prompts deiner Kollegen.</p>
-      </div>
-
-      {/* Filters */}
-      <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 mb-6 flex flex-col sm:flex-row gap-3 items-start sm:items-center">
-        <div className="relative flex-1 max-w-sm">
-          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">🔍</span>
-          <input type="text" placeholder="Prompts durchsuchen…" value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-9 pr-4 py-2 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:border-transparent bg-slate-50" />
-        </div>
-        <div className="flex gap-2 flex-wrap">
-          {CATEGORIES.map((cat) => (
-            <button key={cat.value} onClick={() => setCategory(cat.value)}
-              className={`px-3 py-1.5 rounded-xl text-sm font-semibold transition-all ${
-                category === cat.value
-                  ? 'text-white shadow-sm'
-                  : 'bg-slate-50 border border-slate-200 text-slate-600 hover:border-emerald-300 hover:text-emerald-700'
-              }`}
-              style={category === cat.value ? { background: 'linear-gradient(135deg, #059669, #0891b2)' } : {}}>
-              {cat.icon} {cat.label}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Sort controls */}
-      <div className="flex gap-2 mt-3 mb-4">
-        {(['newest', 'most-used', 'top-rated'] as const).map((s) => (
-          <button key={s} onClick={() => setSortBy(s)}
-            className={`text-xs font-semibold px-3 py-1.5 rounded-xl border transition-colors ${
-              sortBy === s
-                ? 'bg-emerald-600 text-white border-emerald-600'
-                : 'bg-white text-slate-600 border-slate-200 hover:border-emerald-300'
-            }`}>
-            {s === 'newest' ? '✨ Neueste' : s === 'most-used' ? '🔥 Meistgenutzt' : '⭐ Bestbewertet'}
-          </button>
-        ))}
-      </div>
-
-      {!loading && (
+      {/* Count */}
+      {!loading && prompts.length > 0 && (
         <p className="text-xs text-slate-400 font-semibold mb-4 uppercase tracking-widest">
-          {prompts.length} Prompt{prompts.length !== 1 ? 's' : ''}
+          {filtered.length} Favorit{filtered.length !== 1 ? 'en' : ''}
+          {search && ` von ${prompts.length}`}
         </p>
       )}
 
+      {/* Content */}
       {loading ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-          {Array.from({ length: 6 }).map((_, i) => (
+          {Array.from({ length: 3 }).map((_, i) => (
             <div key={i} className="bg-white rounded-2xl border border-slate-200 h-52 animate-pulse" />
           ))}
         </div>
       ) : prompts.length === 0 ? (
         <div className="text-center py-24 bg-white rounded-2xl border border-slate-200">
-          <p className="text-5xl mb-4">🔍</p>
-          <p className="text-slate-600 font-bold text-lg">Keine Prompts gefunden</p>
-          <p className="text-slate-400 text-sm mt-1">Versuche einen anderen Suchbegriff oder Filter.</p>
+          <p className="text-5xl mb-4">⭐</p>
+          <p className="text-slate-600 font-bold text-lg">Noch keine Favoriten</p>
+          <p className="text-slate-400 text-sm mt-1 mb-6">
+            Öffne einen Prompt in der Bibliothek und klicke auf <strong>☆ Merken</strong>.
+          </p>
+          <Link href="/library"
+            className="px-6 py-2.5 rounded-xl text-sm font-semibold text-white"
+            style={{ background: 'linear-gradient(135deg, #059669, #0891b2)' }}>
+            Zur Bibliothek →
+          </Link>
+        </div>
+      ) : filtered.length === 0 ? (
+        <div className="text-center py-16 bg-white rounded-2xl border border-slate-200">
+          <p className="text-3xl mb-3">🔍</p>
+          <p className="text-slate-600 font-semibold">Kein Favorit gefunden</p>
+          <button onClick={() => setSearch('')} className="mt-3 text-sm text-emerald-600 underline">
+            Filter zurücksetzen
+          </button>
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-          {prompts.map((prompt) => (
+          {filtered.map((prompt) => (
             <PromptCard key={prompt.id} prompt={prompt} onClick={() => setSelectedPrompt(prompt)} />
           ))}
         </div>
@@ -427,13 +377,5 @@ function LibraryPageInner() {
         />
       )}
     </div>
-  );
-}
-
-export default function LibraryPage() {
-  return (
-    <Suspense>
-      <LibraryPageInner />
-    </Suspense>
   );
 }

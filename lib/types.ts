@@ -64,9 +64,10 @@ export interface PromptWithDetails {
     avatarColor: string;
     department: string;
   };
-  avgRating: number;        // 0–5, rounded to one decimal place
+  avgRating: number;           // 0–5, rounded to one decimal place
   voteCount: number;
-  userVote?: number | null; // Only present when a userId query param is sent
+  userVote?: number | null;    // Only present when a userId query param is sent
+  userFavorite?: boolean;      // Only present when a userId query param is sent
 }
 
 /**

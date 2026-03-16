@@ -31,6 +31,7 @@ WeeklyChallenge 1──n ChallengeSubmission
 | `prompts` | `Prompt[]` | Pflicht |  |
 | `votes` | `Vote[]` | Pflicht |  |
 | `challengeSubmissions` | `ChallengeSubmission[]` | Pflicht |  |
+| `favorites` | `Favorite[]` | Pflicht |  |
 
 ---
 
@@ -51,6 +52,7 @@ WeeklyChallenge 1──n ChallengeSubmission
 | `author` | `User` | Pflicht | @relation(fields: [authorId], references: [id]) |
 | `votes` | `Vote[]` | Pflicht |  |
 | `challengeSubmissions` | `ChallengeSubmission[]` | Pflicht |  |
+| `favorites` | `Favorite[]` | Pflicht |  |
 
 ---
 
@@ -62,6 +64,19 @@ WeeklyChallenge 1──n ChallengeSubmission
 | `promptId` | `Int` | Pflicht |  |
 | `userId` | `Int` | Pflicht |  |
 | `value` | `Int` | Pflicht |  |
+| `createdAt` | `DateTime` | Pflicht | @default(now()) |
+| `prompt` | `Prompt` | Pflicht | @relation(fields: [promptId], references: [id]) |
+| `user` | `User` | Pflicht | @relation(fields: [userId], references: [id]) |
+
+---
+
+### Favorite
+
+| Feld | Typ | Pflicht | Hinweise |
+|---|---|---|---|
+| `id` | `Int` | Pflicht | @id @default(autoincrement()) |
+| `promptId` | `Int` | Pflicht |  |
+| `userId` | `Int` | Pflicht |  |
 | `createdAt` | `DateTime` | Pflicht | @default(now()) |
 | `prompt` | `Prompt` | Pflicht | @relation(fields: [promptId], references: [id]) |
 | `user` | `User` | Pflicht | @relation(fields: [userId], references: [id]) |
@@ -106,6 +121,7 @@ WeeklyChallenge 1──n ChallengeSubmission
 | SUBMIT_PROMPT | +20 |
 | PROMPT_USED | +5 |
 | VOTE_ON_PROMPT | +3 |
+| FAVORITE_PROMPT | +10 |
 | CHALLENGE_SUBMIT | +30 |
 | CHALLENGE_WIN | +100 |
 
@@ -127,4 +143,4 @@ Für Produktivbetrieb empfiehlt sich PostgreSQL (nur `schema.prisma` anpassen).
 
 
 ---
-*Automatisch generiert am 15.03.2026, 21:08 · [Quellcode](https://github.com/your-org/prompt-arena)*
+*Automatisch generiert am 16.03.2026, 12:21 · [Quellcode](https://github.com/your-org/prompt-arena)*

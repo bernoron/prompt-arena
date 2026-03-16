@@ -64,6 +64,16 @@ Alle Endpunkte sind unter `/api` erreichbar. Jeder Endpunkt:
 
 ---
 
+### `GET /api/favorites`
+
+
+---
+
+### `POST /api/favorites`
+
+
+---
+
 ### `GET /api/health`
 
 
@@ -141,4 +151,4 @@ Alle Timestamps werden als **ISO 8601** Strings zurückgegeben, z.B. `"2024-03-1
 
 
 ---
-*Automatisch generiert am 15.03.2026, 21:08 · [Quellcode](https://github.com/your-org/prompt-arena)*
+*Automatisch generiert am 16.03.2026, 12:21 · [Quellcode](https://github.com/your-org/prompt-arena)*

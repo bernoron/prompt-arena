@@ -82,6 +82,16 @@ export const UsageSchema = z.object({
   promptId: PositiveInt,
 });
 
+// ─── Favorites ────────────────────────────────────────────────────────────────
+
+/**
+ * POST /api/favorites – Toggle a prompt as favorite for a user.
+ */
+export const FavoriteSchema = z.object({
+  promptId: PositiveInt,
+  userId:   PositiveInt,
+});
+
 // ─── Helper ───────────────────────────────────────────────────────────────────
 
 /**

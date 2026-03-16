@@ -56,6 +56,7 @@ model User {
   prompts              Prompt[]
   votes                Vote[]
   challengeSubmissions ChallengeSubmission[]
+  favorites            Favorite[]
 
   @@index([totalPoints])
 }
@@ -75,6 +76,7 @@ model Prompt {
   author               User                  @relation(fields: [authorId], references: [id])
   votes                Vote[]
   challengeSubmissions ChallengeSubmission[]
+  favorites            Favorite[]
 
   @@index([authorId])
   @@index([category])
@@ -87,6 +89,19 @@ model Vote {
   promptId  Int
   userId    Int
   value     Int
+  createdAt DateTime @default(now())
+
+  prompt Prompt @relation(fields: [promptId], references: [id])
+  user   User   @relation(fields: [userId], references: [id])
+
+  @@unique([promptId, userId])
+  @@index([userId])
+}
+
+model Favorite {
+  id        Int      @id @default(autoincrement())
+  promptId  Int
+  userId    Int
   createdAt DateTime @default(now())
 
   prompt Prompt @relation(fields: [promptId], references: [id])
@@ -131,6 +146,7 @@ Punkte pro Aktion:
   SUBMIT_PROMPT: 20
   PROMPT_USED: 5
   VOTE_ON_PROMPT: 3
+  FAVORITE_PROMPT: 10
   CHALLENGE_SUBMIT: 30
   CHALLENGE_WIN: 100
 
@@ -244,6 +260,8 @@ API-ROUTEN (app/api/)
 - PATCH /api/admin/users/[id]
 - DELETE /api/admin/users/[id]
 - GET /api/challenges
+- GET /api/favorites
+- POST /api/favorites
 - GET /api/health
 - GET /api/prompts
 - POST /api/prompts
@@ -381,4 +399,4 @@ SETUP-REIHENFOLGE
 
 
 ---
-*Automatisch generiert am 15.03.2026, 21:08 · [Quellcode](https://github.com/your-org/prompt-arena)*
+*Automatisch generiert am 16.03.2026, 12:21 · [Quellcode](https://github.com/your-org/prompt-arena)*

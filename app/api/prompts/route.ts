@@ -60,13 +60,24 @@ export async function GET(req: NextRequest) {
       orderBy: sortBy === 'most-used' ? { usageCount: 'desc' } : { createdAt: 'desc' },
     });
 
+    // Pre-fetch the user's favorites set for O(1) lookup per prompt
+    const favSet = parsedUserId
+      ? new Set(
+          (await prisma.favorite.findMany({
+            where: { userId: parsedUserId },
+            select: { promptId: true },
+          })).map((f) => f.promptId)
+        )
+      : new Set<number>();
+
     const result = prompts.map((p) => ({
       ...p,
-      votes:     undefined, // Remove raw vote rows from the response
-      avgRating: calcAvgRating(p.votes),
-      voteCount: p.votes.length,
-      userVote:  parsedUserId ? (p.votes.find((v) => v.userId === parsedUserId)?.value ?? null) : null,
-      createdAt: p.createdAt.toISOString(),
+      votes:       undefined, // Remove raw vote rows from the response
+      avgRating:   calcAvgRating(p.votes),
+      voteCount:   p.votes.length,
+      userVote:    parsedUserId ? (p.votes.find((v) => v.userId === parsedUserId)?.value ?? null) : null,
+      userFavorite: parsedUserId ? favSet.has(p.id) : undefined,
+      createdAt:   p.createdAt.toISOString(),
     }));
 
     // Only cache when response is not user-specific (no userVote personalisation)
