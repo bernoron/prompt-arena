@@ -81,8 +81,6 @@ Alle Endpunkte sind unter `/api` erreichbar. Jeder Endpunkt:
 
 ### `GET /api/prompts`
 
-GET  /api/prompts   – Fetch all prompts (with optional filters) POST /api/prompts   – Create a new prompt GET query params: category  – Filter by category name (omit or "all" = no filter) search    – Full-text search across title, titleEn, and content userId    – When provided, includes the user's own vote on each prompt
-
 **Query-Parameter:**
 - category  – Filter by category name (omit or "all" = no filter)
 - search    – Full-text search across title, titleEn, and content
@@ -92,8 +90,6 @@ GET  /api/prompts   – Fetch all prompts (with optional filters) POST /api/prom
 ---
 
 ### `POST /api/prompts`
-
-GET  /api/prompts   – Fetch all prompts (with optional filters) POST /api/prompts   – Create a new prompt GET query params: category  – Filter by category name (omit or "all" = no filter) search    – Full-text search across title, titleEn, and content userId    – When provided, includes the user's own vote on each prompt
 
 **Query-Parameter:**
 - category  – Filter by category name (omit or "all" = no filter)
@@ -151,4 +147,4 @@ Alle Timestamps werden als **ISO 8601** Strings zurückgegeben, z.B. `"2024-03-1
 
 
 ---
-*Automatisch generiert am 16.03.2026, 12:21 · [Quellcode](https://github.com/your-org/prompt-arena)*
+*Automatisch generiert am 14.04.2026, 13:37 · [Quellcode](https://github.com/your-org/prompt-arena)*

@@ -51,4 +51,7 @@ describe('POINTS constants', () => {
   it('CHALLENGE_WIN > CHALLENGE_SUBMIT (winning worth more)', () => {
     expect(POINTS.CHALLENGE_WIN).toBeGreaterThan(POINTS.CHALLENGE_SUBMIT);
   });
+  it('has FAVORITE_PROMPT key > 0', () => {
+    expect(POINTS.FAVORITE_PROMPT).toBeGreaterThan(0);
+  });
 });

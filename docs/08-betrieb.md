@@ -194,4 +194,4 @@ Empfohlene externe Uptime-Monitore (alle mit Gratis-Tier verfügbar): **UptimeRo
 
 
 ---
-*Automatisch generiert am 16.03.2026, 12:21 · [Quellcode](https://github.com/your-org/prompt-arena)*
+*Automatisch generiert am 14.04.2026, 13:37 · [Quellcode](https://github.com/your-org/prompt-arena)*
