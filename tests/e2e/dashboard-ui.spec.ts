@@ -89,7 +89,7 @@ test.describe("Dashboard – Trending Prompts", () => {
   test("Alle Prompts link navigates to library", async ({ page }) => {
     await expect(page.locator("text=Trending Prompts")).toBeVisible({ timeout: 8000 });
     await page.locator("a:has-text(\"Alle Prompts in der Bibliothek\")").click();
-    await expect(page).toHaveURL(//library/);
+    await expect(page).toHaveURL(/\/library/);
   });
 });
 
