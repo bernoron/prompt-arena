@@ -6,8 +6,9 @@ const prisma = new PrismaClient();
 async function main() {
   console.log('🌱 Seeding PromptArena...');
 
-  // Clear existing data
+  // Clear existing data (order respects FK constraints)
   await prisma.challengeSubmission.deleteMany();
+  await prisma.favorite.deleteMany();
   await prisma.vote.deleteMany();
   await prisma.prompt.deleteMany();
   await prisma.weeklyChallenge.deleteMany();
