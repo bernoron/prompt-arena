@@ -20,12 +20,16 @@ cd "$APP_DIR"
 SERVER_STARTED=0
 SERVER_PID=""
 
+# ── Prisma Client sicherstellen ──────────────────────────────────────────────
+echo "⚙️  Prisma Client wird generiert…"
+npx prisma generate --silent 2>/dev/null || npx prisma generate
+
 # ── Server-Status prüfen ──────────────────────────────────────────────────────
 if curl -s --max-time 3 http://localhost:3000/api/health > /dev/null 2>&1; then
   echo "🌐 Dev-Server läuft bereits auf Port 3000."
 else
   echo "🚀 Dev-Server wird gestartet…"
-  DATABASE_URL="file:./prisma/dev.db" npm run dev > /tmp/promptarena-dev.log 2>&1 &
+  npm run dev > /tmp/promptarena-dev.log 2>&1 &
   SERVER_PID=$!
   SERVER_STARTED=1
 

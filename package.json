@@ -15,6 +15,7 @@
     "docs": "tsx scripts/generate-docs.ts",
     "docs:watch": "tsx scripts/watch-docs.ts",
     "setup:hooks": "git config core.hooksPath .githooks",
+    "postinstall": "prisma generate",
     "prepare": "[ \"$CI\" = \"true\" ] && echo 'Skipping git hooks in CI' || npm run setup:hooks",
     "test:unit": "vitest run",
     "test:unit:watch": "vitest",

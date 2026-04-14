@@ -137,4 +137,4 @@ Der `useCurrentUser`-Hook abstrahiert dieses Pattern in allen Client-Komponenten
 
 
 ---
-*Automatisch generiert am 14.04.2026, 13:50 · [Quellcode](https://github.com/your-org/prompt-arena)*
+*Automatisch generiert am 14.04.2026, 14:14 · [Quellcode](https://github.com/your-org/prompt-arena)*
