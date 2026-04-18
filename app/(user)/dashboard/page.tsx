@@ -100,9 +100,7 @@ export default function DashboardPage() {
       fetch('/api/users').then((r) => r.json()),
       fetch('/api/challenges').then((r) => r.json()),
       fetch(`/api/prompts${uidNum ? `?userId=${uidNum}` : ''}`).then((r) => r.json()),
-      fetch(`/api/learn${uidNum ? `?userId=${uidNum}` : ''}`).then((r) => r.json()),
-    ]).then(([users, challengeData, promptData, learnData]: [UserWithStats[], WeeklyChallengeData[], PromptWithDetails[], LearningModuleWithProgress[]]) => {
-      setLearnModules(Array.isArray(learnData) ? learnData : []);
+    ]).then(([users, challengeData, promptData]: [UserWithStats[], WeeklyChallengeData[], PromptWithDetails[]]) => {
       setAllUsers(users);
       setChallenges(Array.isArray(challengeData) ? challengeData : []);
       setAllPrompts(Array.isArray(promptData) ? promptData : []);
@@ -133,6 +131,12 @@ export default function DashboardPage() {
         localStorage.setItem(snapshotKey, JSON.stringify(newSnapshot));
       }
       setLoading(false);
+
+      // Load learn data separately — non-blocking, won't cause layout shifts on main render
+      fetch(`/api/learn${uidNum ? `?userId=${uidNum}` : ''}`)
+        .then((r) => r.json())
+        .then((learnData) => setLearnModules(Array.isArray(learnData) ? learnData : []))
+        .catch(() => setLearnModules([]));
     });
   }, []);
 
