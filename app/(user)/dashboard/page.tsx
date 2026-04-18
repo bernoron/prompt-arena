@@ -1,24 +1,57 @@
 'use client';
 
-import { useState, useEffect, useCallback, useMemo, memo } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import Link from 'next/link';
 import LevelBadge from '@/components/LevelBadge';
-import type { WeeklyChallengeData, UserWithStats, LevelName, PromptWithDetails } from '@/lib/types';
-import { getLevelProgress, POINTS } from '@/lib/points';
+import StatCard from '@/components/dashboard/StatCard';
+import SinceLastVisit from '@/components/dashboard/SinceLastVisit';
+import TrendingPrompts from '@/components/dashboard/TrendingPrompts';
+import ImprovementCard from '@/components/dashboard/ImprovementCard';
+import type { WeeklyChallengeData, UserWithStats, LevelName, PromptWithDetails, RankedUser, RankDiff } from '@/lib/types';
+import { getLevelProgress } from '@/lib/points';
 import { LEVEL_CONFIG } from '@/lib/constants';
 
-// ─── Types ────────────────────────────────────────────────────────────────────
+// ─── Local types ──────────────────────────────────────────────────────────────
 
-interface RankedUser { id: number; name: string; pts: number; avatarColor: string; }
-interface Snapshot   { rank: number; pts: number; rankedUsers: RankedUser[]; }
+interface Snapshot { rank: number; pts: number; rankedUsers: RankedUser[]; }
 
-interface RankDiff {
-  delta:      number;            // negative = improved
-  overtookMe: RankedUser[];      // were below, now above
-  iOvertook:  RankedUser[];      // were above, now below
+// ─── Local helpers ────────────────────────────────────────────────────────────
+
+/** Countdown timer shown inside the active challenge card. */
+function Countdown({ endDate }: { endDate: string }) {
+  const [timeLeft, setTimeLeft] = useState('');
+  const [urgent,   setUrgent]   = useState(false);
+  useEffect(() => {
+    const calc = () => {
+      const diff = new Date(endDate).getTime() - Date.now();
+      if (diff <= 0) { setTimeLeft('Beendet'); return; }
+      const d = Math.floor(diff / 86400000);
+      const h = Math.floor((diff % 86400000) / 3600000);
+      const m = Math.floor((diff % 3600000) / 60000);
+      setUrgent(diff < 86400000);
+      setTimeLeft(d > 0 ? `${d}T ${h}h ${m}min` : `${h}h ${m}min`);
+    };
+    calc();
+    const t = setInterval(calc, 60000);
+    return () => clearInterval(t);
+  }, [endDate]);
+  return (
+    <span className={`font-mono font-bold tabular-nums ${urgent ? 'text-rose-300 animate-pulse' : ''}`}>
+      {urgent && '🔥 '}{timeLeft}
+    </span>
+  );
 }
 
-// ─── Helpers ─────────────────────────────────────────────────────────────────
+/** Horizontal usage bar used in "Meine Top-Prompts". */
+function ImpactBar({ value, max }: { value: number; max: number }) {
+  const pct = max > 0 ? Math.round((value / max) * 100) : 0;
+  return (
+    <div className="w-full bg-slate-100 rounded-full h-1.5 mt-1.5">
+      <div className="h-1.5 rounded-full transition-all duration-700"
+        style={{ width: `${pct}%`, background: 'linear-gradient(90deg, #059669, #0891b2)' }} />
+    </div>
+  );
+}
 
 function computeDiff(
   users: UserWithStats[],
@@ -46,279 +79,6 @@ function computeDiff(
 
   return { delta: currentRank - prevRank, overtookMe, iOvertook };
 }
-
-// ─── Sub-components ──────────────────────────────────────────────────────────
-
-function Countdown({ endDate }: { endDate: string }) {
-  const [timeLeft, setTimeLeft] = useState('');
-  const [urgent,   setUrgent]   = useState(false);
-  useEffect(() => {
-    const calc = () => {
-      const diff = new Date(endDate).getTime() - Date.now();
-      if (diff <= 0) { setTimeLeft('Beendet'); return; }
-      const d = Math.floor(diff / 86400000);
-      const h = Math.floor((diff % 86400000) / 3600000);
-      const m = Math.floor((diff % 3600000) / 60000);
-      setUrgent(diff < 86400000);
-      setTimeLeft(d > 0 ? `${d}T ${h}h ${m}min` : `${h}h ${m}min`);
-    };
-    calc();
-    const t = setInterval(calc, 60000);
-    return () => clearInterval(t);
-  }, [endDate]);
-  return (
-    <span className={`font-mono font-bold tabular-nums ${urgent ? 'text-rose-300 animate-pulse' : ''}`}>
-      {urgent && '🔥 '}{timeLeft}
-    </span>
-  );
-}
-
-const Avatar = memo(function Avatar({ user, size = 8 }: { user: { name: string; avatarColor: string }; size?: number }) {
-  const initials = user.name.split(' ').map((n) => n[0]).join('');
-  return (
-    <span
-      className={`w-${size} h-${size} rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0`}
-      style={{ backgroundColor: user.avatarColor }}
-    >
-      {initials}
-    </span>
-  );
-});
-
-const StatCard = memo(function StatCard({ value, label, sub, color = 'emerald' }: {
-  value: string; label: string; sub?: string; color?: string;
-}) {
-  const colors: Record<string, string> = {
-    emerald: 'text-emerald-600', blue: 'text-blue-600',
-    purple: 'text-purple-600',  amber: 'text-amber-600',
-  };
-  return (
-    <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-4 text-center">
-      <p className={`text-2xl font-extrabold ${colors[color] ?? colors.emerald}`}>{value}</p>
-      <p className="text-xs text-slate-500 mt-0.5 font-medium">{label}</p>
-      {sub && <p className="text-xs text-slate-400 mt-0.5">{sub}</p>}
-    </div>
-  );
-});
-
-function ImpactBar({ value, max }: { value: number; max: number }) {
-  const pct = max > 0 ? Math.round((value / max) * 100) : 0;
-  return (
-    <div className="w-full bg-slate-100 rounded-full h-1.5 mt-1.5">
-      <div className="h-1.5 rounded-full transition-all duration-700"
-        style={{ width: `${pct}%`, background: 'linear-gradient(90deg, #059669, #0891b2)' }} />
-    </div>
-  );
-}
-
-// ─── "Seit deinem letzten Besuch" card ───────────────────────────────────────
-
-const SinceLastVisit = memo(function SinceLastVisit({ diff }: { diff: RankDiff }) {
-  const { delta, overtookMe, iOvertook } = diff;
-  const hasChanges = delta !== 0 || overtookMe.length > 0 || iOvertook.length > 0;
-  if (!hasChanges) return null;
-
-  return (
-    <div className={`rounded-2xl border p-5 ${
-      delta < 0
-        ? 'border-emerald-200 bg-gradient-to-br from-emerald-50 to-teal-50'
-        : delta > 0
-        ? 'border-rose-200 bg-gradient-to-br from-rose-50 to-orange-50'
-        : 'border-slate-200 bg-slate-50'
-    }`}>
-      <div className="flex items-center gap-2 mb-4">
-        <span className="text-lg">{delta < 0 ? '📈' : delta > 0 ? '📉' : '📊'}</span>
-        <h3 className="font-extrabold text-slate-800">Seit deinem letzten Besuch</h3>
-        <span className={`ml-auto text-sm font-extrabold px-2.5 py-0.5 rounded-full ${
-          delta < 0 ? 'bg-emerald-100 text-emerald-700'
-          : delta > 0 ? 'bg-rose-100 text-rose-700'
-          : 'bg-slate-100 text-slate-600'
-        }`}>
-          {delta === 0 ? '= Unverändert' : delta < 0 ? `↑ ${Math.abs(delta)} Plätze gewonnen` : `↓ ${delta} Plätze verloren`}
-        </span>
-      </div>
-
-      <div className="space-y-3">
-        {/* Who overtook me */}
-        {overtookMe.length > 0 && (
-          <div>
-            <p className="text-xs font-bold text-rose-600 uppercase tracking-wide mb-2">
-              🚨 Hat dich überholt
-            </p>
-            <div className="space-y-2">
-              {overtookMe.map((u) => (
-                <div key={u.id} className="flex items-center gap-2.5 bg-white/80 rounded-xl px-3 py-2">
-                  <Avatar user={u} size={7} />
-                  <span className="text-sm font-semibold text-slate-700 flex-1">{u.name.split(' ')[0]}</span>
-                  <span className="text-xs font-bold text-slate-500">{u.pts} Pts</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Who I overtook */}
-        {iOvertook.length > 0 && (
-          <div>
-            <p className="text-xs font-bold text-emerald-600 uppercase tracking-wide mb-2">
-              ✅ Von dir überholt
-            </p>
-            <div className="space-y-2">
-              {iOvertook.map((u) => (
-                <div key={u.id} className="flex items-center gap-2.5 bg-white/80 rounded-xl px-3 py-2">
-                  <Avatar user={u} size={7} />
-                  <span className="text-sm font-semibold text-slate-700 flex-1">{u.name.split(' ')[0]}</span>
-                  <span className="text-xs font-bold text-slate-500">{u.pts} Pts</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-      </div>
-    </div>
-  );
-});
-
-// ─── "Was tun?" improvement card ─────────────────────────────────────────────
-
-const ImprovementCard = memo(function ImprovementCard({
-  currentUser, rank, allUsers, hasChallenges,
-}: {
-  currentUser: UserWithStats;
-  rank: number;
-  allUsers: UserWithStats[];
-  hasChallenges: boolean;
-}) {
-  if (rank === 1) {
-    return (
-      <div className="rounded-2xl border border-amber-200 p-4 bg-gradient-to-br from-amber-50 to-yellow-50">
-        <p className="text-sm font-extrabold text-amber-800 mb-1">🏆 Du führst das Ranking an!</p>
-        <p className="text-xs text-amber-700 leading-relaxed">
-          Bleib aktiv — der Zweite liegt nur{' '}
-          <span className="font-bold">
-            {currentUser.totalPoints - (allUsers[1]?.totalPoints ?? 0)} Pts
-          </span>{' '}
-          hinter dir.
-        </p>
-      </div>
-    );
-  }
-
-  const ahead    = allUsers[rank - 2]; // 0-indexed, one above
-  const gap      = ahead ? ahead.totalPoints - currentUser.totalPoints : 0;
-  const prompts  = Math.ceil(gap / POINTS.SUBMIT_PROMPT);
-  const ratings  = Math.ceil(gap / POINTS.VOTE_ON_PROMPT);
-
-  const tips: Array<{ icon: string; text: string; href: string; pts: number }> = [
-    { icon: '📝', text: `${prompts} Prompt${prompts > 1 ? 's' : ''} einreichen`,       href: '/submit',   pts: prompts * POINTS.SUBMIT_PROMPT },
-    { icon: '⭐', text: `${ratings} Prompts bewerten`,                                  href: '/library',  pts: ratings * POINTS.VOTE_ON_PROMPT },
-    ...(hasChallenges ? [{ icon: '🏆', text: 'Challenge mitmachen',  href: '/submit',   pts: POINTS.CHALLENGE_SUBMIT }] : []),
-  ];
-
-  return (
-    <div className="rounded-2xl border border-blue-200 p-4 bg-gradient-to-br from-blue-50 to-indigo-50">
-      <p className="text-sm font-extrabold text-blue-800 mb-1">💡 So überholst du {ahead?.name.split(' ')[0]}</p>
-      <p className="text-xs text-blue-600 mb-3">
-        Rückstand: <span className="font-extrabold text-blue-800">{gap} Pts</span>
-      </p>
-      <div className="space-y-2">
-        {tips.map((t) => (
-          <Link key={t.href + t.icon} href={t.href}
-            className="flex items-center gap-2 bg-white/80 hover:bg-white rounded-xl px-3 py-2 transition-colors group">
-            <span>{t.icon}</span>
-            <span className="text-xs text-slate-700 flex-1 group-hover:text-blue-700 transition-colors">{t.text}</span>
-            <span className="text-xs font-bold text-emerald-600">+{t.pts} Pts</span>
-          </Link>
-        ))}
-      </div>
-    </div>
-  );
-});
-
-// ─── Trending Prompts ────────────────────────────────────────────────────────
-
-const TrendingPrompts = memo(function TrendingPrompts({ allPrompts }: { allPrompts: PromptWithDetails[] }) {
-  const [tab, setTab] = useState<'hot' | 'new'>('hot');
-
-  const hotPrompts = useMemo(() =>
-    [...allPrompts].sort((a, b) => b.usageCount - a.usageCount).slice(0, 5),
-    [allPrompts],
-  );
-
-  const newPrompts = useMemo(() =>
-    [...allPrompts]
-      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-      .slice(0, 5),
-    [allPrompts],
-  );
-
-  const shown  = tab === 'hot' ? hotPrompts : newPrompts;
-  const maxVal = tab === 'hot'
-    ? (hotPrompts[0]?.usageCount ?? 1)
-    : (newPrompts[0] ? Date.now() - new Date(newPrompts[newPrompts.length - 1].createdAt).getTime() : 1);
-
-  return (
-    <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-      {/* Header */}
-      <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between flex-wrap gap-2">
-        <h3 className="font-bold text-slate-800">Trending Prompts</h3>
-        <div className="flex bg-slate-100 rounded-xl p-1 gap-1">
-          {([['hot', '🔥 Meistgenutzt'], ['new', '✨ Neueste']] as const).map(([key, label]) => (
-            <button key={key} onClick={() => setTab(key)}
-              className={`text-xs font-bold px-3 py-1.5 rounded-lg transition-all ${
-                tab === key
-                  ? 'bg-white text-slate-800 shadow-sm'
-                  : 'text-slate-500 hover:text-slate-700'
-              }`}>
-              {label}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Prompt list */}
-      <div className="divide-y divide-slate-50">
-        {shown.length === 0 ? (
-          <div className="p-8 text-center text-slate-400 text-sm">Noch keine Prompts.</div>
-        ) : shown.map((p, i) => (
-          <div key={p.id} className="flex items-center gap-3 px-6 py-3.5 hover:bg-slate-50 transition-colors">
-            <span className="text-sm font-extrabold w-5 text-slate-300 flex-shrink-0">
-              {i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `${i + 1}.`}
-            </span>
-            <Avatar user={p.author} size={7} />
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-semibold text-slate-800 truncate">{p.title}</p>
-              <div className="flex items-center gap-3 text-xs text-slate-400 mt-0.5">
-                <span>{p.author.name.split(' ')[0]}</span>
-                {tab === 'hot' ? (
-                  <>
-                    <span>🔁 {p.usageCount}× genutzt</span>
-                    {p.avgRating > 0 && <span>⭐ {p.avgRating}</span>}
-                  </>
-                ) : (
-                  <span>🕐 {new Date(p.createdAt).toLocaleDateString('de-CH', { day: 'numeric', month: 'short' })}</span>
-                )}
-              </div>
-              {tab === 'hot' && (
-                <ImpactBar value={p.usageCount} max={maxVal as number} />
-              )}
-            </div>
-            <Link href={`/library?prompt=${p.id}`}
-              className="text-xs text-slate-400 hover:text-emerald-600 transition-colors flex-shrink-0 font-medium">
-              Ansehen →
-            </Link>
-          </div>
-        ))}
-      </div>
-
-      <div className="px-6 py-3 border-t border-slate-50 text-center">
-        <Link href="/library" className="text-xs text-emerald-600 font-semibold hover:underline">
-          Alle Prompts in der Bibliothek →
-        </Link>
-      </div>
-    </div>
-  );
-});
 
 // ─── Dashboard page ───────────────────────────────────────────────────────────
 

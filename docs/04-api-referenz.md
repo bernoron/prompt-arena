@@ -101,21 +101,15 @@ Alle Endpunkte sind unter `/api` erreichbar. Jeder Endpunkt:
 
 ### `POST /api/usage`
 
-POST /api/usage Records that the current user copied and used a prompt. Increments the prompt's usageCount and awards PROMPT_USED points to the prompt's author (not the user pressing the button). Body: { promptId: number }
-
 
 ---
 
 ### `GET /api/users`
 
-GET  /api/users   – List all users ordered by points (for Leaderboard / UserPicker) POST /api/users   – Register a new user (self-registration) POST body: { name: string, department: string }
-
 
 ---
 
 ### `POST /api/users`
-
-GET  /api/users   – List all users ordered by points (for Leaderboard / UserPicker) POST /api/users   – Register a new user (self-registration) POST body: { name: string, department: string }
 
 
 ---
@@ -126,8 +120,6 @@ GET  /api/users   – List all users ordered by points (for Leaderboard / UserPi
 ---
 
 ### `POST /api/votes`
-
-POST /api/votes Records or updates a star rating (1–5) for a prompt. Uses an upsert so a user can change their vote at any time. Awards VOTE_ON_PROMPT points only for the FIRST vote (not for updates). Body: { promptId: number, userId: number, value: number }
 
 
 ---
@@ -147,4 +139,4 @@ Alle Timestamps werden als **ISO 8601** Strings zurückgegeben, z.B. `"2024-03-1
 
 
 ---
-*Automatisch generiert am 18.04.2026, 13:37 · [Quellcode](https://github.com/your-org/prompt-arena)*
+*Automatisch generiert am 18.04.2026, 13:58 · [Quellcode](https://github.com/your-org/prompt-arena)*

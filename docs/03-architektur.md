@@ -54,6 +54,7 @@ integrierten API-Layer. Frontend und Backend laufen als einziger Prozess.
 - **LevelUpModal**
 - **Navigation**
 - **PromptCard**
+- **PromptModal**
 - **UserPicker**
 - **WeeklyChallengeCard**
 
@@ -130,11 +131,10 @@ Der `useCurrentUser`-Hook abstrahiert dieses Pattern in allen Client-Komponenten
 | `prisma` | ^5.22.0 |
 | `react` | ^18 |
 | `react-dom` | ^18 |
-| `recharts` | ^3.8.0 |
 | `tsx` | ^4.21.0 |
 | `zod` | ^3.23.8 |
 
 
 
 ---
-*Automatisch generiert am 18.04.2026, 13:37 · [Quellcode](https://github.com/your-org/prompt-arena)*
+*Automatisch generiert am 18.04.2026, 13:58 · [Quellcode](https://github.com/your-org/prompt-arena)*

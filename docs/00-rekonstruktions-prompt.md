@@ -28,7 +28,6 @@ ABHÄNGIGKEITEN (package.json dependencies):
   "prisma": "^5.22.0",
   "react": "^18",
   "react-dom": "^18",
-  "recharts": "^3.8.0",
   "tsx": "^4.21.0",
   "zod": "^3.23.8"
 
@@ -209,6 +208,7 @@ KOMPONENTEN (components/)
 - LevelUpModal.tsx
 - Navigation.tsx
 - PromptCard.tsx
+- PromptModal.tsx
 - UserPicker.tsx
 - WeeklyChallengeCard.tsx
 
@@ -399,4 +399,4 @@ SETUP-REIHENFOLGE
 
 
 ---
-*Automatisch generiert am 18.04.2026, 13:37 · [Quellcode](https://github.com/your-org/prompt-arena)*
+*Automatisch generiert am 18.04.2026, 13:58 · [Quellcode](https://github.com/your-org/prompt-arena)*

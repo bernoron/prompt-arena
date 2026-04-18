@@ -70,6 +70,23 @@ export interface PromptWithDetails {
   userFavorite?: boolean;      // Only present when a userId query param is sent
 }
 
+// ─── Dashboard-specific types ────────────────────────────────────────────────
+
+/** Minimal user shape used for rank-change comparisons in the dashboard. */
+export interface RankedUser {
+  id: number;
+  name: string;
+  pts: number;
+  avatarColor: string;
+}
+
+/** Delta between the current leaderboard and the snapshot from the last visit. */
+export interface RankDiff {
+  delta:      number;       // negative = improved (moved up)
+  overtookMe: RankedUser[]; // users who were below and are now above
+  iOvertook:  RankedUser[]; // users who were above and are now below
+}
+
 /**
  * A weekly challenge as returned by GET /api/challenges.
  * The route returns an array; multiple challenges can be active at once.
