@@ -8,6 +8,8 @@
 
 # testing
 /coverage
+/test-results/
+/tests/playwright-report/
 
 # next.js
 /.next/
@@ -36,7 +38,7 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-/app/generated/prisma
+app/generated/prisma/
 
 # SQLite database
 *.db
