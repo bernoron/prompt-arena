@@ -65,10 +65,13 @@ test.describe("Submit Form – Interaction", () => {
   });
 
   test("validation badges appear when submitting empty form", async ({ page }) => {
-    const submitBtn = page.locator("button:has-text(\"Prompt einreichen\")").last();
-    await submitBtn.click();
+    // Validation badges (✗ … fehlt) only render when a user IS selected but the form is empty.
+    // The submit button stays disabled until the form is valid, so we check the badges directly.
+    await page.evaluate(() => localStorage.setItem("promptarena_user_id", "1"));
+    await page.reload();
+    await page.waitForLoadState("domcontentloaded");
     const errors = page.locator("text=/✗ .+ fehlt/");
-    await expect(errors.first()).toBeVisible({ timeout: 3000 });
+    await expect(errors.first()).toBeVisible({ timeout: 5000 });
   });
 
   test("successful submission redirects to library with toast", async ({ page }) => {

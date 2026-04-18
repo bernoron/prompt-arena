@@ -56,7 +56,8 @@ test.describe("Library â Search & Filter", () => {
 
   test("prompt count label is shown", async ({ page }) => {
     await waitForCards(page);
-    await expect(page.locator("text=/\d+ Prompt/")).toBeVisible();
+    // "\d" in a JS string is just "d" – use double-backslash to get a real digit class
+    await expect(page.locator("text=/\\d+ Prompt/")).toBeVisible();
   });
 });
 

@@ -41,13 +41,14 @@ test.describe("Dashboard – Stat Cards (logged-in user)", () => {
 
   test("shows all four stat cards", async ({ page }) => {
     await expect(page.locator("text=Dein Rang")).toBeVisible({ timeout: 8000 });
-    await expect(page.locator("text=Punkte")).toBeVisible();
+    await expect(page.locator("text=Punkte").first()).toBeVisible();
     await expect(page.locator("text=Meine Prompts genutzt")).toBeVisible();
     await expect(page.locator("text=Erhaltene Bewertungen")).toBeVisible();
   });
 
   test("XP card shows level badge and progress bar", async ({ page }) => {
-    await expect(page.locator("text=Prompt-").first()).toBeVisible({ timeout: 8000 });
+    // Level badge: a rounded pill span rendered by LevelBadge component
+    await expect(page.locator("span.rounded-full.font-semibold.border").first()).toBeVisible({ timeout: 8000 });
     await expect(page.locator("div.bg-slate-100.rounded-full").first()).toBeVisible();
   });
 
