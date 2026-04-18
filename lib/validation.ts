@@ -92,6 +92,15 @@ export const FavoriteSchema = z.object({
   userId:   PositiveInt,
 });
 
+// ─── Learning ─────────────────────────────────────────────────────────────────
+
+/**
+ * POST /api/learn/[moduleSlug]/[lessonSlug]/complete
+ */
+export const CompleteLessonSchema = z.object({
+  userId: PositiveInt,
+});
+
 // ─── Helper ───────────────────────────────────────────────────────────────────
 
 /**

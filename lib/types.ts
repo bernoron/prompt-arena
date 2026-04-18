@@ -87,6 +87,53 @@ export interface RankDiff {
   iOvertook:  RankedUser[]; // users who were above and are now below
 }
 
+// ─── Learning Path types ─────────────────────────────────────────────────────
+
+/** A single rendered block inside a lesson. */
+export type ContentBlock =
+  | { type: 'text';    content: string }
+  | { type: 'tip';     content: string }
+  | { type: 'warning'; content: string }
+  | { type: 'example'; label: string; bad: string; good: string; explanation: string }
+  | { type: 'pattern'; name: string; template: string; example: string; useCase: string };
+
+/** One lesson summary inside a module listing. */
+export interface LessonSummary {
+  id: number;
+  slug: string;
+  title: string;
+  order: number;
+  points: number;
+  completed: boolean;
+}
+
+/** Full module with lessons and progress (GET /api/learn). */
+export interface LearningModuleWithProgress {
+  id: number;
+  slug: string;
+  title: string;
+  description: string;
+  icon: string;
+  order: number;
+  totalLessons: number;
+  completedLessons: number;
+  lessons: LessonSummary[];
+}
+
+/** Full lesson detail with prev/next links (GET /api/learn/[module]/[lesson]). */
+export interface LessonDetail {
+  id: number;
+  slug: string;
+  title: string;
+  order: number;
+  points: number;
+  content: ContentBlock[];
+  completed: boolean;
+  module: { slug: string; title: string; icon: string; totalLessons: number };
+  prev: { slug: string; title: string; moduleSlug: string } | null;
+  next: { slug: string; title: string; moduleSlug: string } | null;
+}
+
 /**
  * A weekly challenge as returned by GET /api/challenges.
  * The route returns an array; multiple challenges can be active at once.

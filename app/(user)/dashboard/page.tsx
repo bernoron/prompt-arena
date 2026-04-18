@@ -7,7 +7,8 @@ import StatCard from '@/components/dashboard/StatCard';
 import SinceLastVisit from '@/components/dashboard/SinceLastVisit';
 import TrendingPrompts from '@/components/dashboard/TrendingPrompts';
 import ImprovementCard from '@/components/dashboard/ImprovementCard';
-import type { WeeklyChallengeData, UserWithStats, LevelName, PromptWithDetails, RankedUser, RankDiff } from '@/lib/types';
+import NextLessonWidget from '@/components/dashboard/NextLessonWidget';
+import type { WeeklyChallengeData, UserWithStats, LevelName, PromptWithDetails, RankedUser, RankDiff, LearningModuleWithProgress } from '@/lib/types';
 import { getLevelProgress } from '@/lib/points';
 import { LEVEL_CONFIG } from '@/lib/constants';
 
@@ -83,12 +84,13 @@ function computeDiff(
 // ─── Dashboard page ───────────────────────────────────────────────────────────
 
 export default function DashboardPage() {
-  const [challenges,   setChallenges]   = useState<WeeklyChallengeData[]>([]);
-  const [currentUser,  setCurrentUser]  = useState<UserWithStats | null>(null);
-  const [allUsers,     setAllUsers]     = useState<UserWithStats[]>([]);
-  const [allPrompts,   setAllPrompts]   = useState<PromptWithDetails[]>([]);
-  const [rankDiff,     setRankDiff]     = useState<RankDiff | null>(null);
-  const [loading,      setLoading]      = useState(true);
+  const [challenges,     setChallenges]     = useState<WeeklyChallengeData[]>([]);
+  const [currentUser,    setCurrentUser]    = useState<UserWithStats | null>(null);
+  const [allUsers,       setAllUsers]       = useState<UserWithStats[]>([]);
+  const [allPrompts,     setAllPrompts]     = useState<PromptWithDetails[]>([]);
+  const [rankDiff,       setRankDiff]       = useState<RankDiff | null>(null);
+  const [learnModules,   setLearnModules]   = useState<LearningModuleWithProgress[]>([]);
+  const [loading,        setLoading]        = useState(true);
 
   const loadData = useCallback(() => {
     const uid    = localStorage.getItem('promptarena_user_id');
@@ -98,7 +100,9 @@ export default function DashboardPage() {
       fetch('/api/users').then((r) => r.json()),
       fetch('/api/challenges').then((r) => r.json()),
       fetch(`/api/prompts${uidNum ? `?userId=${uidNum}` : ''}`).then((r) => r.json()),
-    ]).then(([users, challengeData, promptData]: [UserWithStats[], WeeklyChallengeData[], PromptWithDetails[]]) => {
+      fetch(`/api/learn${uidNum ? `?userId=${uidNum}` : ''}`).then((r) => r.json()),
+    ]).then(([users, challengeData, promptData, learnData]: [UserWithStats[], WeeklyChallengeData[], PromptWithDetails[], LearningModuleWithProgress[]]) => {
+      setLearnModules(Array.isArray(learnData) ? learnData : []);
       setAllUsers(users);
       setChallenges(Array.isArray(challengeData) ? challengeData : []);
       setAllPrompts(Array.isArray(promptData) ? promptData : []);
@@ -358,6 +362,9 @@ export default function DashboardPage() {
                 allUsers={allUsers}
                 hasChallenges={challenges.length > 0}
               />
+
+              {/* Next lesson widget */}
+              <NextLessonWidget modules={learnModules} />
 
               {/* Mini leaderboard */}
               <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">

@@ -22,6 +22,7 @@ export const POINTS = {
   FAVORITE_PROMPT:  10,
   CHALLENGE_SUBMIT: 30,
   CHALLENGE_WIN:   100,
+  COMPLETE_LESSON:  15,
 } as const;
 
 // ─── Level Thresholds ────────────────────────────────────────────────────────

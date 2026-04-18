@@ -6,6 +6,7 @@ import UserPicker from './UserPicker';
 
 const navLinks = [
   { href: '/dashboard',  label: 'Dashboard',  icon: '⚡'  },
+  { href: '/learn',      label: 'Lernen',     icon: '🧠'  },
   { href: '/library',    label: 'Bibliothek', icon: '📚'  },
   { href: '/favorites',  label: 'Favoriten',  icon: '⭐'  },
   { href: '/leaderboard',label: 'Rangliste',  icon: '🏆'  },

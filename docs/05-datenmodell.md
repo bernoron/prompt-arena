@@ -32,6 +32,50 @@ WeeklyChallenge 1──n ChallengeSubmission
 | `votes` | `Vote[]` | Pflicht |  |
 | `challengeSubmissions` | `ChallengeSubmission[]` | Pflicht |  |
 | `favorites` | `Favorite[]` | Pflicht |  |
+| `lessonProgress` | `LessonProgress[]` | Pflicht |  |
+
+---
+
+### LearningModule
+
+| Feld | Typ | Pflicht | Hinweise |
+|---|---|---|---|
+| `id` | `Int` | Pflicht | @id @default(autoincrement()) |
+| `slug` | `String` | Pflicht | @unique |
+| `title` | `String` | Pflicht |  |
+| `description` | `String` | Pflicht |  |
+| `icon` | `String` | Pflicht |  |
+| `order` | `Int` | Pflicht |  |
+| `lessons` | `Lesson[]` | Pflicht |  |
+
+---
+
+### Lesson
+
+| Feld | Typ | Pflicht | Hinweise |
+|---|---|---|---|
+| `id` | `Int` | Pflicht | @id @default(autoincrement()) |
+| `slug` | `String` | Pflicht |  |
+| `moduleId` | `Int` | Pflicht |  |
+| `title` | `String` | Pflicht |  |
+| `content` | `String` | Pflicht | JSON: ContentBlock[] |
+| `order` | `Int` | Pflicht |  |
+| `points` | `Int` | Pflicht | @default(15) |
+| `module` | `LearningModule` | Pflicht | @relation(fields: [moduleId], references: [id], onDelete: Cascade) |
+| `progress` | `LessonProgress[]` | Pflicht |  |
+
+---
+
+### LessonProgress
+
+| Feld | Typ | Pflicht | Hinweise |
+|---|---|---|---|
+| `id` | `Int` | Pflicht | @id @default(autoincrement()) |
+| `userId` | `Int` | Pflicht |  |
+| `lessonId` | `Int` | Pflicht |  |
+| `completedAt` | `DateTime` | Pflicht | @default(now()) |
+| `user` | `User` | Pflicht | @relation(fields: [userId], references: [id], onDelete: Cascade) |
+| `lesson` | `Lesson` | Pflicht | @relation(fields: [lessonId], references: [id], onDelete: Cascade) |
 
 ---
 
@@ -124,6 +168,7 @@ WeeklyChallenge 1──n ChallengeSubmission
 | FAVORITE_PROMPT | +10 |
 | CHALLENGE_SUBMIT | +30 |
 | CHALLENGE_WIN | +100 |
+| COMPLETE_LESSON | +15 |
 
 ### Level-Schwellenwerte
 
@@ -143,4 +188,4 @@ Für Produktivbetrieb empfiehlt sich PostgreSQL (nur `schema.prisma` anpassen).
 
 
 ---
-*Automatisch generiert am 18.04.2026, 21:32 · [Quellcode](https://github.com/your-org/prompt-arena)*
+*Automatisch generiert am 18.04.2026, 22:14 · [Quellcode](https://github.com/your-org/prompt-arena)*

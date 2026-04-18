@@ -132,4 +132,5 @@ export const POINTS_GUIDE = [
   { icon: '🔖', action: 'Prompt favorisiert',      pts: '+10'  },
   { icon: '🏆', action: 'Challenge einreichen',    pts: '+30'  },
   { icon: '🥇', action: 'Challenge gewinnen',      pts: '+100' },
+  { icon: '🧠', action: 'Lektion abschliessen',   pts: '+15'  },
 ] as const;

@@ -79,6 +79,27 @@ Alle Endpunkte sind unter `/api` erreichbar. Jeder Endpunkt:
 
 ---
 
+### `GET /api/learn`
+
+GET /api/learn?userId=<id> Returns all learning modules with lessons and per-user progress.
+
+
+---
+
+### `POST /api/learn/[moduleSlug]/[lessonSlug]/complete`
+
+POST /api/learn/[moduleSlug]/[lessonSlug]/complete Body: { userId: number } Marks a lesson as complete for the user and awards points (idempotent).
+
+
+---
+
+### `GET /api/learn/[moduleSlug]/[lessonSlug]`
+
+GET /api/learn/[moduleSlug]/[lessonSlug]?userId=<id> Returns lesson content, completion status, and prev/next navigation.
+
+
+---
+
 ### `GET /api/prompts`
 
 **Query-Parameter:**
@@ -139,4 +160,4 @@ Alle Timestamps werden als **ISO 8601** Strings zurückgegeben, z.B. `"2024-03-1
 
 
 ---
-*Automatisch generiert am 18.04.2026, 21:32 · [Quellcode](https://github.com/your-org/prompt-arena)*
+*Automatisch generiert am 18.04.2026, 22:14 · [Quellcode](https://github.com/your-org/prompt-arena)*

@@ -56,8 +56,50 @@ model User {
   votes                Vote[]
   challengeSubmissions ChallengeSubmission[]
   favorites            Favorite[]
+  lessonProgress       LessonProgress[]
 
   @@index([totalPoints])
+}
+
+// ─── Learning Path ────────────────────────────────────────────────────────────
+
+model LearningModule {
+  id          Int      @id @default(autoincrement())
+  slug        String   @unique
+  title       String
+  description String
+  icon        String
+  order       Int
+  lessons     Lesson[]
+}
+
+model Lesson {
+  id       Int    @id @default(autoincrement())
+  slug     String
+  moduleId Int
+  title    String
+  content  String  // JSON: ContentBlock[]
+  order    Int
+  points   Int     @default(15)
+
+  module   LearningModule  @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  progress LessonProgress[]
+
+  @@unique([moduleId, slug])
+  @@index([moduleId])
+}
+
+model LessonProgress {
+  id          Int      @id @default(autoincrement())
+  userId      Int
+  lessonId    Int
+  completedAt DateTime @default(now())
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lesson Lesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, lessonId])
+  @@index([userId])
 }
 
 model Prompt {
@@ -148,6 +190,7 @@ Punkte pro Aktion:
   FAVORITE_PROMPT: 10
   CHALLENGE_SUBMIT: 30
   CHALLENGE_WIN: 100
+  COMPLETE_LESSON: 15
 
 Level-Schwellenwerte:
   Prompt-Lehrling: ab 0 Pts
@@ -263,6 +306,9 @@ API-ROUTEN (app/api/)
 - GET /api/favorites
 - POST /api/favorites
 - GET /api/health
+- GET /api/learn
+- POST /api/learn/[moduleSlug]/[lessonSlug]/complete
+- GET /api/learn/[moduleSlug]/[lessonSlug]
 - GET /api/prompts
 - POST /api/prompts
 - POST /api/usage
@@ -399,4 +445,4 @@ SETUP-REIHENFOLGE
 
 
 ---
-*Automatisch generiert am 18.04.2026, 21:32 · [Quellcode](https://github.com/your-org/prompt-arena)*
+*Automatisch generiert am 18.04.2026, 22:14 · [Quellcode](https://github.com/your-org/prompt-arena)*
