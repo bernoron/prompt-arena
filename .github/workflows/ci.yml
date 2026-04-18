@@ -58,7 +58,7 @@ jobs:
         run: npm run build
         env:
           DATABASE_URL: file:./prisma/dev.db
-          ADMIN_SECRET: ci-test-secret
+          ADMIN_SECRET: admin1234
 
       - name: Start server + run E2E tests
         run: |
@@ -67,7 +67,7 @@ jobs:
           npm run test:e2e
         env:
           DATABASE_URL: file:./prisma/dev.db
-          ADMIN_SECRET: ci-test-secret
+          ADMIN_SECRET: admin1234
           NODE_ENV: production
           PORT: 3000
 
