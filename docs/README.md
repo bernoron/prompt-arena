@@ -18,6 +18,7 @@ Diese Dokumentation wird **automatisch aus dem Quellcode generiert** und ist ste
 | [Datenmodell](./05-datenmodell.md) | Datenbankschema, Entitäten und Relationen |
 | [Entwicklerdokumentation](./06-entwickler.md) | Codestruktur, Konventionen, Sicherheit |
 | [Onboarding](./07-onboarding.md) | Schnelleinstieg für neue Teammitglieder |
+| [Security Review & Hardening-Plan](./09-security-hardening-plan.md) | Vollständige Sicherheitsanalyse, Pentest-Fahrplan und Umsetzungs-Prompts |
 
 ---
 

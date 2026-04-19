@@ -5,6 +5,7 @@ on:
     branches: [main]
   pull_request:
     branches: [main]
+  workflow_dispatch:
 
 jobs:
   # ── Unit Tests ───────────────────────────────────────────────────────────────
@@ -54,22 +55,13 @@ jobs:
       - name: Install Playwright browsers
         run: npx playwright install chromium --with-deps
 
-      - name: Build Next.js app
-        run: npm run build
+      - name: Run E2E tests (Playwright starts webServer)
+        run: npm run test:e2e
         env:
           DATABASE_URL: file:./prisma/dev.db
           ADMIN_SECRET: admin1234
-
-      - name: Start server + run E2E tests
-        run: |
-          npm run start &
-          npx wait-on http://localhost:3000/api/health --timeout 30000
-          npm run test:e2e
-        env:
-          DATABASE_URL: file:./prisma/dev.db
-          ADMIN_SECRET: admin1234
-          NODE_ENV: production
-          PORT: 3000
+          NODE_ENV: development
+          PLAYWRIGHT_BASE_URL: http://127.0.0.1:3000
 
       - name: Upload Playwright report on failure
         if: failure()
