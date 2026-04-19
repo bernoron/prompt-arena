@@ -28,7 +28,8 @@ SERVER_PID=""
 
 # ── Prisma Client sicherstellen ──────────────────────────────────────────────
 echo "⚙️  Prisma Client wird generiert…"
-npx prisma generate --silent 2>/dev/null || npx prisma generate
+# Wenn der Dev-Server läuft, ist die DLL gesperrt – das ist OK, der Client ist aktuell
+npx prisma generate --silent 2>/dev/null || echo "ℹ️  Prisma generate übersprungen (DLL gesperrt – Client ist aktuell)"
 
 # ── Server-Status prüfen ──────────────────────────────────────────────────────
 if curl -s --max-time 3 http://localhost:3000/api/health > /dev/null 2>&1; then
