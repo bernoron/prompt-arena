@@ -99,9 +99,18 @@ Der `useCurrentUser`-Hook in `hooks/useCurrentUser.ts` abonniert dieses Event.
 | `npm run test:unit` | `vitest run` |
 | `npm run test:unit:watch` | `vitest` |
 | `npm run test:unit:coverage` | `vitest run --coverage` |
+| `npm run test:e2e:install` | `playwright install chromium` |
 | `npm run test:e2e` | `playwright test` |
 | `npm run test:e2e:headed` | `playwright test --headed` |
 | `npm run test` | `npm run test:unit && npm run test:e2e` |
+
+---
+
+
+### Playwright Setup-Hinweis
+
+- Beim ersten Lauf einmalig Browser installieren: `npm run test:e2e:install`.
+- Der E2E-Runner startet den lokalen Next.js-Server automatisch über `webServer` in `playwright.config.ts` (kein separates `npm run dev` nötig).
 
 ---
 

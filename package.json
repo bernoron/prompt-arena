@@ -22,7 +22,9 @@
     "test:unit:coverage": "vitest run --coverage",
     "test:e2e": "playwright test",
     "test:e2e:headed": "playwright test --headed",
-    "test": "npm run test:unit && npm run test:e2e"
+    "test": "npm run test:unit && npm run test:e2e",
+    "test:e2e:install": "playwright install chromium",
+    "test:e2e:setup": "npm run test:e2e:install"
   },
   "dependencies": {
     "@prisma/client": "^5.22.0",
