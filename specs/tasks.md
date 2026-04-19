@@ -111,6 +111,19 @@
 
 ---
 
+## Feature 09 – Erweiterte Lernmodule (09-extended-learning.md)
+
+- [x] AC-09-001: Seed um 5 Module erweitern (Vision, Coding, Files, Security, Model-Choice)
+- [x] AC-09-002: Modul „Vision" mit 4 Lektionen
+- [x] AC-09-003: Modul „Coding" mit 5 Lektionen
+- [x] AC-09-004: Modul „Files" mit 4 Lektionen
+- [x] AC-09-005: Modul „Security" mit 5 Lektionen
+- [x] AC-09-006: Modul „Model-Choice" mit 4 Lektionen
+- [x] AC-09-007: API gibt alle Module zurück (kein Code-Change)
+- [x] AC-09-008: Jedes Modul hat mind. 3 Patterns + 2 Alltagsbeispiele
+
+---
+
 ## Offene Verbesserungen
 
 - [ ] PERF-001: GET /api/prompts – votes groupBy statt include (Performance)
