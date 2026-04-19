@@ -131,7 +131,7 @@ test.describe("Library â Vote Stars", () => {
     await waitForCards(page);
     await page.locator("button.text-left").first().click();
     const modal = page.locator("div.fixed.inset-0.z-50");
-    await expect(modal.locator("text=Bewerten")).toBeVisible({ timeout: 5000 });
+    await expect(modal.locator("text=Bewerten:")).toBeVisible({ timeout: 5000 });
     await expect(modal.locator("button:has-text(\"★\")").first()).toBeVisible();
   });
 
