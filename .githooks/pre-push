@@ -17,6 +17,12 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 APP_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 cd "$APP_DIR"
 
+# ── Bei Tag-Push nur den Tag pushen – kein generate, keine Tests ─────────────
+# stdin: "<local-sha> <local-ref> <remote-sha> <remote-ref>"
+while read local_sha local_ref remote_sha remote_ref; do
+  case "$local_ref" in refs/tags/*) echo "🏷  Tag-Push erkannt – Tests werden übersprungen."; exit 0 ;; esac
+done
+
 SERVER_STARTED=0
 SERVER_PID=""
 

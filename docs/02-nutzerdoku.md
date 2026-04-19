@@ -108,4 +108,4 @@ Klicke oben rechts auf deinen Namen und wähle den richtigen Nutzer aus.
 
 
 ---
-*Automatisch generiert am 19.04.2026, 21:36 · [Quellcode](https://github.com/your-org/prompt-arena)*
+*Automatisch generiert am 19.04.2026, 22:02 · [Quellcode](https://github.com/your-org/prompt-arena)*
