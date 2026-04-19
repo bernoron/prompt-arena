@@ -13,6 +13,7 @@ import { readLimiter, writeLimiter, getClientIp } from '@/lib/rate-limit';
 
 // ─── GET /api/users ───────────────────────────────────────────────────────────
 
+// @spec AC-01-002
 export async function GET(req: NextRequest) {
   if (!readLimiter.check(getClientIp(req))) {
     return NextResponse.json({ error: 'Too many requests' }, { status: 429 });
@@ -32,6 +33,7 @@ export async function GET(req: NextRequest) {
 
 // ─── POST /api/users ──────────────────────────────────────────────────────────
 
+// @spec AC-01-001
 export async function POST(req: NextRequest) {
   if (!writeLimiter.check(getClientIp(req))) {
     return NextResponse.json({ error: 'Too many requests' }, { status: 429 });

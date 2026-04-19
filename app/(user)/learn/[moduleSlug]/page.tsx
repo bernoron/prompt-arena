@@ -6,6 +6,7 @@ import ProgressRing from '@/components/learn/ProgressRing';
 import type { LearningModuleWithProgress } from '@/lib/types';
 import { USER_ID_KEY } from '@/lib/constants';
 
+// @spec AC-08-005
 export default function ModulePage({ params }: { params: { moduleSlug: string } }) {
   const [mod, setMod] = useState<LearningModuleWithProgress | null>(null);
   const [loading, setLoading] = useState(true);

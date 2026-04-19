@@ -6,6 +6,7 @@ import { prisma } from '@/lib/prisma';
 import { PathId } from '@/lib/validation';
 import { writeLimiter, getClientIp } from '@/lib/rate-limit';
 
+// @spec AC-07-005
 export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
   if (!writeLimiter.check(getClientIp(req)))
     return NextResponse.json({ error: 'Too many requests' }, { status: 429 });

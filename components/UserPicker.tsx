@@ -90,6 +90,7 @@ function RegisterForm({ onCreated, onCancel }: {
   );
 }
 
+// @spec AC-01-004, AC-01-005
 export default function UserPicker({ dark = false }: { dark?: boolean }) {
   const [users, setUsers] = useState<User[]>([]);
   const [currentUser, setCurrentUser] = useState<User | null>(null);

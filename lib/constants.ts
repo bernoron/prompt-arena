@@ -16,6 +16,7 @@ export const USER_ID_KEY = 'promptarena_user_id';
  * Palette of avatar background colours assigned round-robin when a new user
  * registers (index = user count modulo palette length).
  */
+// @spec AC-01-006
 export const AVATAR_COLORS = [
   '#1D9E75', '#3B82F6', '#F59E0B', '#8B5CF6', '#EF4444',
   '#EC4899', '#14B8A6', '#F97316', '#6366F1', '#84CC16',

@@ -249,6 +249,7 @@ async function main() {
 
   const b = (blocks: Block[]) => JSON.stringify(blocks);
 
+  // @spec AC-08-012
   const modules = [
     // ── Modul 1: KI Verstehen ──────────────────────────────────────────────
     {
@@ -492,6 +493,7 @@ async function main() {
     },
   ];
 
+  // @spec AC-08-012
   let totalLessons = 0;
   for (const mod of modules) {
     const created = await prisma.learningModule.create({

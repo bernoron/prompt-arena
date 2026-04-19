@@ -19,6 +19,7 @@ import { logger, serializeError } from '@/lib/logger';
 
 // ─── GET /api/favorites ──────────────────────────────────────────────────────
 
+// @spec AC-05-002
 export async function GET(req: NextRequest) {
   const ip = getClientIp(req);
   if (!readLimiter.check(ip)) {
@@ -70,6 +71,7 @@ export async function GET(req: NextRequest) {
 
 // ─── POST /api/favorites ─────────────────────────────────────────────────────
 
+// @spec AC-05-001, AC-05-007
 export async function POST(req: NextRequest) {
   const ip = getClientIp(req);
   if (!writeLimiter.check(ip)) {

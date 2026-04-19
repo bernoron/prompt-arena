@@ -4,6 +4,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
+// @spec AC-07-004
 export async function GET() {
   const [
     totalUsers, totalPrompts, totalVotes, usageAgg,

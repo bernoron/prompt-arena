@@ -8,6 +8,7 @@ import { PathId } from '@/lib/validation';
 import { getLevel } from '@/lib/points';
 import { writeLimiter, getClientIp } from '@/lib/rate-limit';
 
+// @spec AC-07-007
 export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
   if (!writeLimiter.check(getClientIp(req)))
     return NextResponse.json({ error: 'Too many requests' }, { status: 429 });

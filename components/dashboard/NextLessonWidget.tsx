@@ -6,6 +6,7 @@ interface NextLessonWidgetProps {
   modules: LearningModuleWithProgress[];
 }
 
+// @spec AC-08-010
 const NextLessonWidget = memo(function NextLessonWidget({ modules }: NextLessonWidgetProps) {
   // Find the first incomplete lesson across all modules
   let nextModule: LearningModuleWithProgress | null = null;

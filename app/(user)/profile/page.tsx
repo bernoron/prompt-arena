@@ -26,6 +26,7 @@ const BADGES = [
   { id: 'botschafter',  label: 'KI-Botschafter',  icon: '🏅', desc: '600 Punkte erreicht',         condition: (u: UserProfile) => u.totalPoints >= 600 },
 ];
 
+// @spec AC-04-005
 export default function ProfilePage() {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);

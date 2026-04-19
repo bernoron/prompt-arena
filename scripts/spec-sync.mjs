@@ -21,7 +21,7 @@ import { fileURLToPath } from 'url';
 const __dirname = fileURLToPath(new URL('.', import.meta.url));
 const ROOT      = join(__dirname, '..');
 const SPECS_DIR = join(ROOT, 'specs', 'features');
-const CODE_DIRS = ['app', 'lib', 'components', 'middleware.ts'];
+const CODE_DIRS = ['app', 'lib', 'components', 'prisma', 'middleware.ts'];
 
 // ─── ANSI-Farben ─────────────────────────────────────────────────────────────
 const GREEN  = '\x1b[32m';

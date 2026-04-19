@@ -16,6 +16,7 @@ import { VoteSchema, validationError } from '@/lib/validation';
 import { writeLimiter, getClientIp } from '@/lib/rate-limit';
 import { logger, serializeError } from '@/lib/logger';
 
+// @spec AC-03-001
 export async function POST(req: NextRequest) {
   const ip = getClientIp(req);
   if (!writeLimiter.check(ip)) {

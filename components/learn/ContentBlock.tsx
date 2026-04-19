@@ -1,5 +1,6 @@
 import type { ContentBlock } from '@/lib/types';
 
+// @spec AC-08-006, AC-08-007
 export default function ContentBlockRenderer({ block }: { block: ContentBlock }) {
   switch (block.type) {
     case 'text':

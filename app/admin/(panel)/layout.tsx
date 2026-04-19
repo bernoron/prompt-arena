@@ -10,6 +10,7 @@ const adminLinks = [
   { href: '/admin/prompts',    label: 'Prompts',     icon: '📝' },
 ];
 
+// @spec AC-07-008
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router   = useRouter();

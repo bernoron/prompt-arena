@@ -12,6 +12,7 @@ import { calcAvgRating } from '@/lib/db-helpers';
 import { PathId } from '@/lib/validation';
 import { readLimiter, getClientIp } from '@/lib/rate-limit';
 
+// @spec AC-01-003
 export async function GET(
   req: NextRequest,
   { params }: { params: { id: string } }

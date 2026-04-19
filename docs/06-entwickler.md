@@ -117,4 +117,4 @@ Der `useCurrentUser`-Hook in `hooks/useCurrentUser.ts` abonniert dieses Event.
 
 
 ---
-*Automatisch generiert am 18.04.2026, 22:47 · [Quellcode](https://github.com/your-org/prompt-arena)*
+*Automatisch generiert am 19.04.2026, 21:36 · [Quellcode](https://github.com/your-org/prompt-arena)*

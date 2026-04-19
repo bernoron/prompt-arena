@@ -49,6 +49,7 @@ function LivePreviewCard({ title, titleEn, content, category, difficulty, author
   );
 }
 
+// @spec AC-02-009
 export default function SubmitPage() {
   const router = useRouter();
   const [challenge, setChallenge] = useState<WeeklyChallengeData | null>(null);

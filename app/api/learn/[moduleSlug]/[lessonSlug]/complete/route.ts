@@ -11,6 +11,7 @@ import { writeLimiter, getClientIp } from '@/lib/rate-limit';
 import { CompleteLessonSchema, validationError } from '@/lib/validation';
 import { POINTS, getLevel } from '@/lib/points';
 
+// @spec AC-08-003
 export async function POST(
   req: NextRequest,
   { params }: { params: { moduleSlug: string; lessonSlug: string } },

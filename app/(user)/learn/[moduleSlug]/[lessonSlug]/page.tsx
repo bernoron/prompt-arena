@@ -9,6 +9,7 @@ import type { LessonDetail } from '@/lib/types';
 import { USER_ID_KEY } from '@/lib/constants';
 import { POINTS } from '@/lib/points';
 
+// @spec AC-08-011
 export default function LessonPage({
   params,
 }: {
@@ -28,6 +29,7 @@ export default function LessonPage({
       .catch(() => setLoading(false));
   }, [params.moduleSlug, params.lessonSlug]);
 
+  // @spec AC-08-008
   const handleComplete = useCallback(async () => {
     if (!lesson || lesson.completed || completing || userId === 0) return;
     setCompleting(true);

@@ -7,6 +7,7 @@ interface LessonNavProps {
   moduleSlug: string;
 }
 
+// @spec AC-08-009
 export default function LessonNav({ prev, next, moduleSlug }: LessonNavProps) {
   return (
     <div className="flex items-center justify-between gap-4 pt-6 border-t border-slate-200 mt-8">

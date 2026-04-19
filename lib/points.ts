@@ -39,6 +39,7 @@ const THRESHOLDS: { min: number; level: LevelName }[] = [
  * Returns the level name for a given total-points value.
  * Used by API routes after every point-awarding action.
  */
+// @spec AC-04-002
 export function getLevel(points: number): LevelName {
   return THRESHOLDS.find((t) => points >= t.min)!.level;
 }
@@ -63,6 +64,7 @@ export interface LevelProgress {
  *
  * @param points - The user's total accumulated points.
  */
+// @spec AC-04-003
 export function getLevelProgress(points: number): LevelProgress {
   if (points >= 600) {
     return { level: 'KI-Botschafter', current: points - 600, max: 0, percentage: 100, nextLevel: null };

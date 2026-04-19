@@ -30,6 +30,7 @@ import { isAdminAuthorised, ADMIN_COOKIE } from '@/lib/admin-auth';
 /** Static-asset path prefixes that are too noisy to log. */
 const SILENT: string[] = ['/_next/', '/favicon'];
 
+// @spec AC-07-003
 export async function middleware(req: NextRequest): Promise<NextResponse> {
   const { pathname } = req.nextUrl;
 

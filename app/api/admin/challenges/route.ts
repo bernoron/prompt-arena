@@ -14,6 +14,7 @@ const CreateChallengeSchema = z.object({
   endDate:     z.string().datetime(),
 });
 
+// @spec AC-06-004, AC-06-005, AC-06-006, AC-07-006
 export async function GET() {
   const challenges = await prisma.weeklyChallenge.findMany({
     orderBy: { startDate: 'desc' },

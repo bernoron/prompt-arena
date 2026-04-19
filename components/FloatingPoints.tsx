@@ -32,6 +32,7 @@ export function triggerFloat(text: string, x: number, y: number) {
   window.dispatchEvent(new CustomEvent(FLOAT_EVENT, { detail: { text, x, y } }));
 }
 
+// @spec AC-04-007
 export default function FloatingPoints() {
   const [items, setItems] = useState<FloatItem[]>([]);
 

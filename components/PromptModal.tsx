@@ -14,6 +14,7 @@ interface PromptModalProps {
   onFavorite: (promptId: number) => Promise<void>;
 }
 
+// @spec AC-02-007, AC-03-003, AC-03-004, AC-03-005, AC-03-006, AC-05-004
 export default function PromptModal({
   prompt, currentUserId, onClose, onVote, onUsed, onFavorite,
 }: PromptModalProps) {

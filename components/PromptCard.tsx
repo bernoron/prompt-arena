@@ -21,6 +21,7 @@ function StarRating({ rating, count }: { rating: number; count: number }) {
   );
 }
 
+// @spec AC-02-008, AC-05-005
 export default function PromptCard({ prompt, onClick }: Props) {
   const accent = (CATEGORY_CONFIG[prompt.category as Category] as { accentBorder?: string })?.accentBorder ?? 'border-t-slate-300';
   const rarity = getRarity(prompt.usageCount);

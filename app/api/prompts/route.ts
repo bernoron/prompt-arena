@@ -18,6 +18,7 @@ import { logger, serializeError } from '@/lib/logger';
 
 // ─── GET /api/prompts ────────────────────────────────────────────────────────
 
+// @spec AC-02-002, AC-02-003, AC-02-004, AC-02-005, AC-02-006, AC-03-002, AC-05-003
 export async function GET(req: NextRequest) {
   const ip = getClientIp(req);
   if (!readLimiter.check(ip)) {
@@ -93,6 +94,7 @@ export async function GET(req: NextRequest) {
 
 // ─── POST /api/prompts ───────────────────────────────────────────────────────
 
+// @spec AC-02-001, AC-06-002, AC-06-003
 export async function POST(req: NextRequest) {
   const ip = getClientIp(req);
   if (!writeLimiter.check(ip)) {

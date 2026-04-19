@@ -39,12 +39,13 @@ Keine eigene API-Route — Punkte werden als Seiteneffekt in anderen Routes verg
 
 ### Punkte-Konstanten (lib/points.ts)
 ```ts
-SUBMIT_PROMPT:   20
-USE_PROMPT:       5
-VOTE_ON_PROMPT:   3
-FAVORITE_PROMPT: 10
+SUBMIT_PROMPT:    20
+USE_PROMPT:        5
+VOTE_ON_PROMPT:    3
+FAVORITE_PROMPT:  10
 CHALLENGE_SUBMIT: 30
 CHALLENGE_WIN:   100
+COMPLETE_LESSON:  15
 ```
 
 ---

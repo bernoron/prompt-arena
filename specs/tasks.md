@@ -94,9 +94,26 @@
 
 ---
 
+## Feature 08 – Lernpfad (08-learning-path.md)
+
+- [x] AC-08-001: Alle Module mit Fortschritt abrufen (GET /api/learn)
+- [x] AC-08-002: Einzelne Lektion abrufen (GET /api/learn/[moduleSlug]/[lessonSlug])
+- [x] AC-08-003: Lektion abschliessen (POST /api/learn/.../complete) – idempotent
+- [x] AC-08-004: Lernübersicht-Seite (/learn) mit ProgressRingen
+- [x] AC-08-005: Moduldetail-Seite (/learn/[moduleSlug])
+- [x] AC-08-006: Lektionsseite (/learn/[moduleSlug]/[lessonSlug])
+- [x] AC-08-007: ContentBlock-Renderer (text, tip, warning, example, pattern)
+- [x] AC-08-008: Abschluss vergibt +15 Punkte mit FloatingPoints-Animation
+- [x] AC-08-009: Modulübergreifende Vor/Zurück-Navigation (LessonNav)
+- [x] AC-08-010: Dashboard-Widget NextLessonWidget
+- [x] AC-08-011: Graceful degradation ohne eingeloggten User
+- [x] AC-08-012: Seed: 5 Module, 20 Lektionen über KI-Prompting
+
+---
+
 ## Offene Verbesserungen
 
 - [ ] PERF-001: GET /api/prompts – votes groupBy statt include (Performance)
 - [ ] PERF-002: awardPoints – Level-Update nur bei Level-Change
-- [ ] TEST-001: dashboard-ui.spec.ts Zeile 92 (//library/ → /\/library/)
-- [ ] TEST-002: FAVORITE_PROMPT in points.test.ts abdecken
+- [ ] TEST-003: E2E-Tests für Lernpfad (/learn) schreiben
+- [ ] TEST-004: FAVORITE_PROMPT in points.test.ts abdecken

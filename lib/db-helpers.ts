@@ -24,6 +24,7 @@ import { logger } from '@/lib/logger';
  * @param userId - Database ID of the user receiving the points
  * @param points - Number of points to award (use constants from lib/points.ts)
  */
+// @spec AC-04-001
 export async function awardPoints(userId: number, points: number): Promise<void> {
   const updatedUser = await prisma.$transaction(async (tx) => {
     const user = await tx.user.update({

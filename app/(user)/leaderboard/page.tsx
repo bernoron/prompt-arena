@@ -27,6 +27,7 @@ const DeptBar = memo(function DeptBar({ dept, points, max }: { dept: string; poi
   );
 });
 
+// @spec AC-04-006
 export default function LeaderboardPage() {
   const [users, setUsers] = useState<UserWithStats[]>([]);
   const [topPrompt, setTopPrompt] = useState<PromptWithDetails | null>(null);

@@ -71,6 +71,7 @@ Punkte werden **einmalig** pro Trigger vergeben. Entfernen einer Aktion gibt kei
 | Prompt favorisiert (erstmalig) | +10 | Autor |
 | Challenge-Einreichung | +30 | Einreicher |
 | Challenge gewonnen | +100 | Gewinner |
+| Lektion abschliessen (einmalig) | +15 | Lernender |
 
 Level-Schwellen: 0–99 Lehrling · 100–299 Handwerker · 300–599 Schmied · 600+ KI-Botschafter
 

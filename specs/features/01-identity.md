@@ -59,6 +59,7 @@ model User {
   votes                Vote[]
   challengeSubmissions ChallengeSubmission[]
   favorites            Favorite[]
+  lessonProgress       LessonProgress[]
 
   @@index([totalPoints])
 }

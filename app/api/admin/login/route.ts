@@ -11,6 +11,7 @@ import { hashSecret, ADMIN_COOKIE } from '@/lib/admin-auth';
 import { writeLimiter, getClientIp } from '@/lib/rate-limit';
 import { logger } from '@/lib/logger';
 
+// @spec AC-07-001
 export async function POST(req: NextRequest) {
   // Rate-limit login attempts to slow brute-force
   if (!writeLimiter.check(getClientIp(req))) {

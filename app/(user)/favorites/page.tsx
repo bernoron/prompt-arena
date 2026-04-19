@@ -12,6 +12,7 @@ import { useLevelUp } from '@/hooks/useLevelUp';
 
 // ─── Favorites Page ───────────────────────────────────────────────────────────
 
+// @spec AC-05-006, AC-05-008, AC-05-009
 export default function FavoritesPage() {
   const currentUserId = useCurrentUser();
   const { checkLevelUp } = useLevelUp(currentUserId);
