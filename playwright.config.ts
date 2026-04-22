@@ -17,7 +17,9 @@ export default defineConfig({
     navigationTimeout: 30000,
   },
   webServer: {
-    command: 'npm run dev',
+    // CI: use production build (already built in CI step) — deterministic, no JIT delays
+    // Local: reuse running dev server
+    command: process.env.CI ? 'npx next start' : 'npm run dev',
     url: baseURL,
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,

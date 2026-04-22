@@ -1,6 +1,6 @@
 # PromptArena – Dokumentation
 
-> Version 4.1.0 · Interne Unternehmensanwendung
+> Version 4.2.0 · Interne Unternehmensanwendung
 
 Diese Dokumentation wird **automatisch aus dem Quellcode generiert** und ist stets aktuell.
 
@@ -18,7 +18,6 @@ Diese Dokumentation wird **automatisch aus dem Quellcode generiert** und ist ste
 | [Datenmodell](./05-datenmodell.md) | Datenbankschema, Entitäten und Relationen |
 | [Entwicklerdokumentation](./06-entwickler.md) | Codestruktur, Konventionen, Sicherheit |
 | [Onboarding](./07-onboarding.md) | Schnelleinstieg für neue Teammitglieder |
-| [Security Review & Hardening-Plan](./09-security-hardening-plan.md) | Vollständige Sicherheitsanalyse, Pentest-Fahrplan und Umsetzungs-Prompts |
 
 ---
 
@@ -40,4 +39,4 @@ KI-Prompts zu teilen, zu bewerten und weiterzuentwickeln.
 
 
 ---
-*Automatisch generiert am 22.04.2026, 18:46 · [Quellcode](https://github.com/your-org/prompt-arena)*
+*Automatisch generiert am 22.04.2026, 19:23 · [Quellcode](https://github.com/your-org/prompt-arena)*
