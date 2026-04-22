@@ -9,6 +9,17 @@
             "command": "node scripts/spec-sync.mjs 2>/dev/null | tail -5"
           }
         ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node scripts/hooks/post-push-auto-tag.mjs",
+            "timeout": 60,
+            "statusMessage": "🏷️  Auto-Tagging…"
+          }
+        ]
       }
     ]
   }

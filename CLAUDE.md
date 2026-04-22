@@ -17,37 +17,88 @@ Do NOT ask for confirmation before:
 - **Tests**: Vitest (unit) + Playwright (E2E) – always run after changes
 - **Dev server**: managed via `.claude/launch.json` → `preview_start("prompt-arena")`
 
-## Spec-Driven Development (SDD) Workflow
+---
+
+## Spec-Driven Development (SDD) – Dreischichtige Architektur
 
 **Spec ist die Wahrheit. Code folgt der Spec — nie umgekehrt.**
 
-### Neues Feature
 ```
-/specify <beschreibung>   → Spec schreiben (specs/features/XX-name.md)
-/plan                     → Tech-Plan + tasks.md aktualisieren
-/tasks                    → Offene Tasks anzeigen
-/implement [AC-XX-NNN]    → Nächsten Task umsetzen
-/sync fix                 → tasks.md nach Implementierung aktualisieren
+Layer 1 – Business Spec   specs/business/NN-feature.md    PO / BA
+Layer 2 – Technical Spec  specs/technical/NN-feature.md   Dev / Claude
+Layer 3 – Code            // @spec AC-XX-NNN              Implementation
 ```
 
-### Bugfix / Änderung
-1. Erst die relevante Spec lesen (`specs/features/XX-name.md`)
-2. Wenn Verhalten sich ändert: Spec zuerst anpassen
-3. Dann Code ändern + `// @spec AC-XX-NNN` Kommentar setzen
-4. `/sync fix` ausführen
+---
+
+### Neues Feature – Vollständiger Workflow
+
+```
+/specify-business <beschreibung>   → Business-Spec schreiben (Layer 1)
+                                     Status: draft → PO setzt "approved"
+/specify-tech <feature-nr>         → Tech-Spec ableiten (Layer 2)
+                                     Status: draft → Tech Lead setzt "approved"
+/plan                              → tasks.md aktualisieren
+/tasks                             → Offene Tasks anzeigen
+/implement [AC-XX-NNN]             → Nächsten Task umsetzen
+/sync fix                          → Annotationen und tasks.md synchronisieren
+```
+
+---
+
+### Änderung an bestehendem Feature – CHANGE REQUEST PFLICHT
+
+```
+/change-request <feature> <beschreibung>   → CR erstellen (specs/changes/CR-NNN.md)
+                                             Impact-Analyse automatisch
+/approve-change CR-NNN approve --both      → PO + Tech genehmigen
+/implement                                 → Umsetzung (CR muss approved sein)
+```
+
+**⛔ /implement blockiert** wenn:
+- Änderung an einer approved Spec ohne genehmigtes CR
+- CR vorhanden aber Status ≠ `approved`
+
+---
+
+### Bugfix (kein Behavior-Change)
+1. Spec lesen — sicherstellen dass Bugfix dokumentiertes Verhalten NICHT ändert
+2. Code fixen + `// @spec AC-XX-NNN` Kommentar
+3. `npm run test:unit` + `npm run test:e2e`
+4. Commit: `fix(scope): beschreibung`
+
+---
 
 ### Regeln
-- Jedes neue AC bekommt eine stabile ID (`AC-XX-NNN`)
-- Code der ein AC implementiert trägt `// @spec AC-XX-NNN` Kommentar
-- `specs/constitution.md` ist das Gesetz — immer lesen vor Änderungen
-- `node scripts/spec-sync.mjs` zeigt welche ACs implementiert/offen sind
+- Jedes AC hat stabile ID: `AC-XX-NNN` (technisch) / `BAC-XX-NNN` (business)
+- Code trägt `// @spec AC-XX-NNN` Kommentar
+- `specs/constitution.md` = Gesetz — immer lesen vor Änderungen
+- `node scripts/spec-sync.mjs` = Wahrheits-Check für AC-Abdeckung
 
-### Standard-Entwicklungsflow
-1. Spec lesen / erstellen
-2. Code ändern
-3. `npm run test:unit` + `npm run test:e2e`
-4. `/sync fix`
-5. Commit mit conventional commits (`feat:`, `fix:`, `refactor:`, `test:`)
+---
+
+### Spec-Dateien Übersicht
+
+| Typ | Pfad | Für wen |
+|-----|------|---------|
+| Business-Spec | `specs/business/NN-*.md` | PO, BA, alle |
+| Technical-Spec (neu) | `specs/technical/NN-*.md` | Dev, Claude |
+| Technical-Spec (legacy) | `specs/features/NN-*.md` | Dev, Claude |
+| Change Request | `specs/changes/CR-NNN-*.md` | PO, Dev |
+| CR-Workflow | `specs/changes/WORKFLOW.md` | alle |
+| Prinzipien | `specs/constitution.md` | alle |
+
+---
+
+### Auto-Tagging (automatisch)
+Nach jedem `git push origin main` wird automatisch:
+1. Semver-Bump aus Conventional Commits berechnet (`feat`→minor, `fix`→patch)
+2. `package.json` Version erhöht
+3. Annotierter Git-Tag erstellt und gepusht
+
+Manual: `node scripts/auto-tag.mjs`
+
+---
 
 ## Key Files
 - `lib/constants.ts` – all magic values (categories, levels, points guide)
@@ -62,3 +113,4 @@ Do NOT ask for confirmation before:
 - Put magic values inline (use `lib/constants.ts`)
 - Skip Zod validation on POST endpoints
 - Skip rate limiting on any route handler
+- Change an approved feature spec without a CR

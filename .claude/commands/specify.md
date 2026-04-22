@@ -1,20 +1,36 @@
-Lese zuerst `specs/constitution.md` und alle bestehenden `specs/features/*.md` um den Kontext zu verstehen.
+# /specify – Feature-Spezifikation (Weiche)
 
-Der User beschreibt ein neues Feature oder eine Änderung: $ARGUMENTS
+Lese zuerst `specs/changes/WORKFLOW.md` um zu verstehen ob ein CR benötigt wird.
 
-Erstelle oder aktualisiere die passende Feature-Spec-Datei unter `specs/features/` nach folgenden Regeln:
+Der User beschreibt: $ARGUMENTS
 
-1. **Dateiname**: `XX-kebab-name.md` (XX = nächste freie Nummer, oder bestehende Datei wenn Feature schon existiert)
-2. **Vorlage**: Folge exakt dem Schema aus `specs/features/_template.md`
-3. **Status**: Setze Status auf `draft`
-4. **AC-IDs**: Jedes Akzeptanzkriterium bekommt eine stabile ID `AC-XX-NNN` (dreistellig, z.B. `AC-08-001`)
-5. **API-Vertrag**: Beschreibe alle neuen/geänderten Endpunkte präzise mit Request/Response-Shape
-6. **Datenmodell**: Beschreibe alle Prisma-Änderungen (neue Felder, neue Modelle, neue Indizes)
-7. **Punkte-Impact**: Wenn das Feature Punkte berührt, dokumentiere Aktion → Punkte → Empfänger
-8. **Tests**: Mindestens 1 E2E-Happy-Path und 1 Edge-Case beschreiben
+## Entscheide welchen Weg du nimmst:
 
-Halte dich strikt an die Regeln aus `constitution.md`.
+### Neues Feature?
+→ Starte mit `/specify-business`: erstelle `specs/business/NN-feature.md`
+   Danach (nach PO-Freigabe): `/specify-tech`
 
-Nach dem Schreiben der Spec: Gib eine kurze Zusammenfassung der wichtigsten Entscheidungen aus.
+### Änderung an bestehendem Feature (approved Spec vorhanden)?
+→ Starte mit `/change-request`: erstelle `specs/changes/CR-NNN-titel.md`
+   Danach (nach Freigabe): `/approve-change` → dann `/implement`
 
-**Nächster Schritt**: Führe `/plan` aus um den technischen Plan zu erstellen und tasks.md zu aktualisieren.
+### Bestehende Spec ergänzen (noch kein approved Status)?
+→ Bearbeite direkt die Spec-Datei
+   (Keine Freigabe nötig solange Status noch `draft`)
+
+---
+
+## Legacy-Features (specs/features/)
+
+Die bestehenden Specs in `specs/features/` gelten als technische Specs (Layer 2).
+Für Änderungen daran: `/change-request` starten.
+Neue Business-Specs für diese Features können optional in `specs/business/` nachgepflegt werden.
+
+---
+
+## Zusammenfassung nach Ausführung
+
+Zeige:
+- Welche Aktion wurde gewählt (neues Feature / CR / direkte Änderung)
+- Erstellte/geänderte Dateien
+- Nächster Schritt im Workflow
