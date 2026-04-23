@@ -1,7 +1,7 @@
-# Task-Liste – PromptArena Rebuild
+# Task List – PromptArena Rebuild
 
-> Format: `- [x]` = erledigt · `- [~]` = in Arbeit · `- [ ]` = offen
-> Jeder Task referenziert eine Feature-Spec und das Akzeptanzkriterium.
+> Format: `- [x]` = done · `- [~]` = in progress · `- [ ]` = open
+> Each task references a feature spec and acceptance criterion.
 
 ---
 
@@ -124,9 +124,21 @@
 
 ---
 
-## Offene Verbesserungen
+## Feature 10 – Profile & Badge System (10-profile.md)
 
-- [ ] PERF-001: GET /api/prompts – votes groupBy statt include (Performance)
-- [ ] PERF-002: awardPoints – Level-Update nur bei Level-Change
-- [ ] TEST-003: E2E-Tests für Lernpfad (/learn) schreiben
-- [ ] TEST-004: FAVORITE_PROMPT in points.test.ts abdecken
+- [x] AC-10-001: GET /api/users/[id] returns complete profile data
+- [x] AC-10-002: Profile page displays hero section with name, avatar, level, and stats
+- [x] AC-10-003: Profile lists user's submitted prompts sorted by usage count
+- [x] AC-10-004: Profile shows 7 badges (earned and locked)
+- [x] AC-10-005: Profile reacts to user selection and updates without page reload
+
+---
+
+## Open Improvements
+
+- [ ] PERF-001: GET /api/prompts – votes groupBy instead of include (Performance)
+- [ ] PERF-002: awardPoints – Update level only on level change
+- [ ] TEST-003: Write E2E tests for Learning Path (/learn)
+- [ ] TEST-004: Cover FAVORITE_PROMPT in points.test.ts
+- [ ] SPEC-001: Convert all remaining German specs to English
+- [ ] DOC-001: Add SPEC-DRIVEN-DEVELOPMENT.md guide (done – see /docs/)

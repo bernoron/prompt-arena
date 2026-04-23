@@ -19,9 +19,11 @@ Do NOT ask for confirmation before:
 
 ---
 
-## Spec-Driven Development (SDD) – Dreischichtige Architektur
+## Spec-Driven Development (SDD) – Three-Layer Architecture
 
-**Spec ist die Wahrheit. Code folgt der Spec — nie umgekehrt.**
+**📖 READ FIRST**: `/docs/SPEC-DRIVEN-DEVELOPMENT.md` — Complete guide for POs, BAs, and developers on how to propose, approve, and implement features using the SDD workflow.
+
+**Spec is the truth. Code follows the spec — never the reverse.**
 
 ```
 Layer 1 – Business Spec   specs/business/NN-feature.md    PO / BA
