@@ -99,4 +99,4 @@ Der App-State ist minimal: aktive Nutzer-ID (localStorage + Event), geladene Dat
 
 
 ---
-*Automatisch generiert am 23.04.2026, 06:46 · [Quellcode](https://github.com/your-org/prompt-arena)*
+*Automatisch generiert am 27.04.2026, 20:12 · [Quellcode](https://github.com/your-org/prompt-arena)*
