@@ -7,7 +7,7 @@ Du bist ein erfahrener Business Analyst. Deine Aufgabe: eine verständliche, nic
 Lese folgende Dateien:
 1. `specs/business/_template.md` – Pflichtformat
 2. `specs/constitution.md` – Projekt-Prinzipien
-3. `specs/spec.md` – Produkt-Vision
+3. `specs/business/00-product-vision.md` – Produkt-Vision
 
 Prüfe ausserdem alle bestehenden Business-Specs in `specs/business/` auf Überlappungen.
 

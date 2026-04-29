@@ -1,97 +1,72 @@
-# [Feature Name] – Business-Spezifikation
+# [Feature Name] – What We're Building
 
-## Metadaten
-- **Status**: `draft` | `review` | `approved`
-- **Version**: 1.0
-- **Feature-Nr**: XX
-- **Product Owner**: [Name]
-- **Letzte Änderung**: YYYY-MM-DD
-- **Technische Spec**: [noch nicht erstellt] | `specs/technical/XX-feature.md`
+> **For Product Owners & Business Analysts**  
+> No tech words. No file names. Just describe the user problem and solution.
 
 ---
 
-## Geschäftlicher Kontext
+## The Problem
 
-> Warum brauchen wir dieses Feature? Welches Problem löst es für das Unternehmen?
+[1-2 sentences: What's the user pain point? What does it prevent them from doing?]
 
-[2–3 Sätze in Alltagssprache. Keine Technologie, keine Implementierungsdetails.]
-
----
-
-## Zielgruppe
-
-| Rolle | Beschreibung | Hauptnutzen |
-|-------|-------------|-------------|
-| [z.B. Mitarbeiter] | [Wer ist das?] | [Was gewinnt er/sie?] |
+Example: *"Authors can't see how popular their prompts are. Without feedback, they don't know which ones to improve."*
 
 ---
 
-## User Stories
+## Who Benefits?
 
-- Als **[Rolle]** will ich **[Aktion]**, damit **[Nutzen]**.
-- Als **[Rolle]** will ich **[Aktion]**, damit **[Nutzen]**.
+[1-2 sentences: Who uses this? What do they gain?]
 
----
-
-## Business-Akzeptanzkriterien
-
-> Format: `BAC-XX-NNN` — Business Acceptance Criterion  
-> Diese IDs werden in der technischen Spec referenziert.
-
-- [ ] **BAC-XX-001**: [Was der Nutzer tun kann / was das System leisten muss]
-  - **Messgrösse**: [Wie wird Erfolg gemessen? Z.B. „Aktion dauert < 3 Sek."]
-  - **Geschäftsregel**: [Welche Regel gilt? Z.B. „Jeder User darf max. 1x täglich einreichen"]
-
-- [ ] **BAC-XX-002**: [...]
-  - **Messgrösse**: [...]
-  - **Geschäftsregel**: [...]
+Example: *"Prompt authors see which prompts matter to the team. This motivates them to improve quality."*
 
 ---
 
-## Nicht im Scope
+## What Are We Building?
 
-> Was gehört explizit NICHT zu diesem Feature? (verhindert Scope Creep)
+[Simple description. Imagine explaining it to your mom. No tech words.]
 
-- ❌ [Was wir NICHT bauen]
-- ❌ [Was erst in einem späteren Release kommt]
-
----
-
-## Abhängigkeiten
-
-| Feature / System | Typ | Beschreibung |
-|-----------------|-----|-------------|
-| [Feature XX] | benötigt | [Warum?] |
-| [Externes System] | optional | [Warum?] |
+Example: *"When an author clicks on their profile, they see a counter next to each prompt showing how many times it's been used. Prompts that reach 10+ uses get a special badge."*
 
 ---
 
-## Risiken & Annahmen
+## How Do We Know It Works?
 
-| # | Beschreibung | Wahrscheinlichkeit | Massnahme |
-|---|-------------|-------------------|-----------|
-| R1 | [Risiko] | hoch / mittel / niedrig | [Gegenmassnahme] |
-| A1 | [Annahme, die wir treffen] | — | [Was wenn falsch?] |
+[3-7 acceptance criteria. Each is ONE sentence. Each describes something a USER SEES OR DOES.]
 
----
+- [ ] [Users can see / Users can click / A badge appears when / etc.]
+- [ ] [...]
+- [ ] [...]
 
-## Erfolgsmessung (KPIs)
-
-| Metrik | Zielwert | Messmethode |
-|--------|----------|-------------|
-| [z.B. Feature-Nutzungsrate] | [z.B. > 30% der User pro Woche] | [Analytics / DB-Query] |
-
----
-
-## Änderungshistorie
-
-| Version | Datum | Änderung | Genehmigt von |
-|---------|-------|----------|---------------|
-| 1.0 | YYYY-MM-DD | Erstversion | [PO Name] |
+**Example**:
+- [ ] Authors can see how many times each of their prompts was used
+- [ ] Badges appear when a prompt reaches 10+ uses
+- [ ] The badge shows on both desktop and mobile
+- [ ] When there are no prompts yet, authors see a helpful message
+- [ ] Works for any size prompt or usage number
 
 ---
 
-## Freigabe
+## What's NOT in This Release?
 
-- [ ] **PO-Freigabe**: ___________________________ Datum: ___________
-- [ ] **BA-Review**: ___________________________ Datum: ___________
+[What are we explicitly NOT doing? What could people misunderstand?]
+
+Example:
+- No analytics dashboard (future feature)
+- No detailed usage graphs
+- No notifications when badges appear
+
+---
+
+## Review Checklist ✓
+
+Before you share this with Dev:
+
+- [ ] **Problem is specific** (not "improve the app")
+- [ ] **Who benefits is clear** (person role, not "everyone")
+- [ ] **What we're building is concrete** (imagine someone using it, could you describe it?)
+- [ ] **No tech words**: No "API", "database", "component", "fetch", "sync"
+- [ ] **Each AC is ONE sentence**
+- [ ] **Each AC is testable** (not "looks good", but "sees counter")
+- [ ] **Not in Scope prevents confusion**
+
+**Need help?** → `/spec-agent-business Feature: [Name] Action: review Content: [paste-this]`

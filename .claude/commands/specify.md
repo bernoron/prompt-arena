@@ -20,9 +20,9 @@ Der User beschreibt: $ARGUMENTS
 
 ---
 
-## Legacy-Features (specs/features/)
+## Legacy-Features (specs/technical/)
 
-Die bestehenden Specs in `specs/features/` gelten als technische Specs (Layer 2).
+Die bestehenden Specs in `specs/technical/` gelten als technische Specs (Layer 2).
 Für Änderungen daran: `/change-request` starten.
 Neue Business-Specs für diese Features können optional in `specs/business/` nachgepflegt werden.
 
