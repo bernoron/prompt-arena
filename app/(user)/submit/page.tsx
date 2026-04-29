@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import CategoryBadge from '@/components/CategoryBadge';
 import DifficultyBadge from '@/components/DifficultyBadge';
 import type { Category, Difficulty, WeeklyChallengeData, UserWithStats } from '@/lib/types';
+import { POINTS } from '@/lib/points';
 
 const CATEGORIES: { value: Category; icon: string }[] = [
   { value: 'Writing',  icon: '✍️' },
@@ -111,7 +112,7 @@ export default function SubmitPage() {
         <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">Prompt einreichen</h1>
         <p className="text-slate-500 mt-1">
           Teile deinen besten KI-Prompt mit dem Team und erhalte{' '}
-          <span className="font-bold text-emerald-600">+20 Punkte</span>.
+          <span className="font-bold text-emerald-600">+{POINTS.SUBMIT_PROMPT} Punkte</span>.
         </p>
       </div>
 
@@ -242,7 +243,7 @@ export default function SubmitPage() {
           <button type="submit" disabled={!valid || !currentUser || submitting}
             className="w-full py-3.5 rounded-xl text-white font-bold text-sm transition-all hover:opacity-90 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed shadow-lg"
             style={{ background: 'linear-gradient(135deg, #059669, #0891b2)' }}>
-            {submitting ? '⏳ Wird eingereicht...' : '🚀 Prompt einreichen (+20 Punkte)'}
+            {submitting ? '⏳ Wird eingereicht...' : `🚀 Prompt einreichen (+${POINTS.SUBMIT_PROMPT} Punkte)`}
           </button>
         </form>
 
@@ -259,7 +260,7 @@ export default function SubmitPage() {
               style={{ background: 'linear-gradient(135deg, #F0FDF4, #ECFDF5)' }}>
               <p className="text-sm font-bold text-emerald-800">✅ Bereit zum Einreichen</p>
               <p className="text-xs text-emerald-600 mt-1">
-                Du erhältst <span className="font-bold">+20 Punkte</span>
+                Du erhältst <span className="font-bold">+{POINTS.SUBMIT_PROMPT} Punkte</span>
                 {linkChallenge ? <span className="font-bold"> + 30 Challenge-Punkte</span> : ''}.
               </p>
             </div>

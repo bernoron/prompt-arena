@@ -8,6 +8,7 @@ import FloatingPoints, { triggerFloat } from '@/components/FloatingPoints';
 import LevelUpModal from '@/components/LevelUpModal';
 import type { PromptWithDetails, Category } from '@/lib/types';
 import { useCurrentUser } from '@/hooks/useCurrentUser';
+import { POINTS } from '@/lib/points';
 import { useLevelUp } from '@/hooks/useLevelUp';
 
 const CATEGORIES: { value: 'all' | Category; label: string; icon: string }[] = [
@@ -159,7 +160,7 @@ function LibraryPageInner() {
       {successToast && (
         <div className="fixed top-20 left-1/2 -translate-x-1/2 z-50 bg-emerald-600 text-white px-6 py-3 rounded-2xl shadow-xl flex items-center gap-3 animate-pop-in">
           <span className="text-lg">🎉</span>
-          <span className="font-semibold">Prompt eingereicht! <span className="font-bold">+20 Punkte</span></span>
+          <span className="font-semibold">Prompt eingereicht! <span className="font-bold">+{POINTS.SUBMIT_PROMPT} Punkte</span></span>
           <button onClick={() => setSuccessToast(false)} className="ml-2 opacity-70 hover:opacity-100">✕</button>
         </div>
       )}
