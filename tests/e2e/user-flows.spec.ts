@@ -31,13 +31,13 @@ test.describe('User Flows', () => {
     await page.goto('/dashboard');
     await page.waitForLoadState('domcontentloaded');
 
-    await page.click('text=Bibliothek');
+    await page.click('nav a[href="/library"]');
     await expect(page).toHaveURL(/\/library/, { timeout: 10000 });
 
-    await page.click('text=Rangliste');
+    await page.click('nav a[href="/leaderboard"]');
     await expect(page).toHaveURL(/\/leaderboard/, { timeout: 10000 });
 
-    await page.click('text=Dashboard');
+    await page.click('nav a[href="/dashboard"]');
     await expect(page).toHaveURL(/\/dashboard/, { timeout: 10000 });
   });
 
