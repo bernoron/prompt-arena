@@ -16,7 +16,7 @@ import type { LevelName } from './types';
  * Use these constants in API routes; never hard-code raw numbers.
  */
 export const POINTS = {
-  SUBMIT_PROMPT:  1000,
+  SUBMIT_PROMPT:    20,
   PROMPT_USED:       5,
   VOTE_ON_PROMPT:    3,
   FAVORITE_PROMPT:  10,

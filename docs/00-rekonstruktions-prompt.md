@@ -184,7 +184,7 @@ model ChallengeSubmission {
 GAMIFICATION-LOGIK
 ════════════════════════════════════════════════════════════
 Punkte pro Aktion:
-  SUBMIT_PROMPT: 1000
+  SUBMIT_PROMPT: 20
   PROMPT_USED: 5
   VOTE_ON_PROMPT: 3
   FAVORITE_PROMPT: 10
@@ -445,4 +445,4 @@ SETUP-REIHENFOLGE
 
 
 ---
-*Automatisch generiert am 29.04.2026, 12:44 · [Quellcode](https://github.com/your-org/prompt-arena)*
+*Automatisch generiert am 29.04.2026, 17:23 · [Quellcode](https://github.com/your-org/prompt-arena)*
