@@ -10,7 +10,7 @@ import ImprovementCard from '@/components/dashboard/ImprovementCard';
 import NextLessonWidget from '@/components/dashboard/NextLessonWidget';
 import type { WeeklyChallengeData, UserWithStats, LevelName, PromptWithDetails, RankedUser, RankDiff, LearningModuleWithProgress } from '@/lib/types';
 import { getLevelProgress } from '@/lib/points';
-import { LEVEL_CONFIG } from '@/lib/constants';
+import { LEVEL_CONFIG, POINTS_GUIDE } from '@/lib/constants';
 
 // ─── Local types ──────────────────────────────────────────────────────────────
 
@@ -436,21 +436,9 @@ export default function DashboardPage() {
                 style={{ background: 'linear-gradient(135deg, #F0FDF4, #ECFDF5)' }}>
                 <p className="text-sm font-bold text-emerald-800 mb-3">💡 Punkte verdienen</p>
                 <div className="space-y-2">
-                  {[
-                    { icon: '📝', label: 'Prompt einreichen',   pts: '+20',  href: '/submit' },
-                    { icon: '🚀', label: 'Prompt genutzt',       pts: '+5',   href: null },
-                    { icon: '⭐', label: 'Bewertung abgeben',    pts: '+3',   href: '/library' },
-                    { icon: '🏆', label: 'Challenge teilnehmen', pts: '+30',  href: '/submit' },
-                    { icon: '🥇', label: 'Challenge gewinnen',   pts: '+100', href: null },
-                  ].map(({ icon, label, pts, href }) => (
-                    <div key={label} className="flex items-center justify-between text-xs">
-                      {href ? (
-                        <Link href={href} className="text-emerald-700 hover:text-emerald-900 hover:underline">
-                          {icon} {label}
-                        </Link>
-                      ) : (
-                        <span className="text-emerald-700">{icon} {label}</span>
-                      )}
+                  {POINTS_GUIDE.map(({ icon, action, pts }) => (
+                    <div key={action} className="flex items-center justify-between text-xs">
+                      <span className="text-emerald-700">{icon} {action}</span>
                       <span className="font-bold text-emerald-800 bg-emerald-100 px-1.5 py-0.5 rounded-full">{pts}</span>
                     </div>
                   ))}
