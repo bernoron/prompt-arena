@@ -9,7 +9,7 @@ Falls `$ARGUMENTS` eine AC-ID (z.B. `AC-05-003`) oder einen Task-Namen angibt, i
 **Bevor du irgendeinen Code schreibst oder eine Spec änderst:**
 
 1. Zu welchem Feature gehört dieser Task? (aus AC-ID ableiten: AC-05-NNN → Feature 05)
-2. Hat dieses Feature eine approved Spec (`specs/technical/` oder `specs/features/`)?
+2. Hat dieses Feature eine approved Spec (`specs/technical/`)?
 3. Gibt es einen offenen CR für dieses Feature in `specs/changes/`?
 
 ```
@@ -40,8 +40,7 @@ ls specs/changes/CR-*.md 2>/dev/null | xargs grep -l "Feature.*[NN]" 2>/dev/null
 ## Schritt 1: Specs lesen
 
 1. **Feature-Spec**: Finde die Spec für den Task
-   - Neu (Layer 2): `specs/technical/NN-feature.md`
-   - Legacy: `specs/features/NN-feature.md`
+   - `specs/technical/NN-feature.md`
 2. **Business-Spec** (falls vorhanden): `specs/business/NN-feature.md` — für Kontext
 3. **constitution.md**: Diese Regeln gelten immer
 4. **Relevante bestehende Dateien** (immer vor dem Bearbeiten lesen)

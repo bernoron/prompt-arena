@@ -1,6 +1,6 @@
 Lese:
 - `specs/constitution.md` (Regeln)
-- `specs/plan.md` (Tech-Stack und Architektur)
+- `specs/technical/00-architecture.md` (Tech-Stack und Architektur)
 - Die Feature-Spec die als Argument angegeben wurde, oder alle Specs mit `Status: draft` wenn kein Argument: $ARGUMENTS
 
 Für jede relevante Feature-Spec tue Folgendes:

@@ -20,9 +20,9 @@ Wenn nein → STOP. Gib aus:
 Lese:
 1. `specs/technical/_template.md`
 2. `specs/constitution.md`
-3. `specs/plan.md`
+3. `specs/technical/00-architecture.md`
 4. Die Business-Spec `specs/business/NN-feature-name.md`
-5. Alle bestehenden technischen Specs in `specs/technical/` und `specs/features/` auf Überlappungen
+5. Alle bestehenden technischen Specs in `specs/technical/` auf Überlappungen
 
 ## Ableitung: Business → Technisch
 

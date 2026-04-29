@@ -21,7 +21,7 @@ Lese:
 1. `specs/changes/_template.md`
 2. `specs/changes/WORKFLOW.md`
 3. Die betroffene Business-Spec `specs/business/NN-feature.md` (falls vorhanden)
-4. Die betroffene technische Spec `specs/technical/NN-feature.md` oder `specs/features/NN-feature.md`
+4. Die betroffene technische Spec `specs/technical/NN-feature.md` oder ``
 5. Alle bestehenden CRs in `specs/changes/` → nächste CR-Nummer ermitteln
 
 ## CR-Nummer ermitteln
