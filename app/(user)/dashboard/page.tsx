@@ -9,7 +9,7 @@ import TrendingPrompts from '@/components/dashboard/TrendingPrompts';
 import ImprovementCard from '@/components/dashboard/ImprovementCard';
 import NextLessonWidget from '@/components/dashboard/NextLessonWidget';
 import type { WeeklyChallengeData, UserWithStats, LevelName, PromptWithDetails, RankedUser, RankDiff, LearningModuleWithProgress } from '@/lib/types';
-import { getLevelProgress } from '@/lib/points';
+import { getLevelProgress, POINTS } from '@/lib/points';
 import { LEVEL_CONFIG, POINTS_GUIDE } from '@/lib/constants';
 
 // ─── Local types ──────────────────────────────────────────────────────────────
@@ -265,7 +265,7 @@ export default function DashboardPage() {
                         {challenge.submissionCount} Einreichungen
                       </span>
                       <span className="text-xs bg-amber-400/20 text-amber-200 px-2 py-0.5 rounded-full font-bold">
-                        +30 Pts Teilnahme · +100 Pts Sieg
+                        +{POINTS.CHALLENGE_SUBMIT} Pts Teilnahme · +{POINTS.CHALLENGE_WIN} Pts Sieg
                       </span>
                     </div>
                     <h2 className="text-xl font-extrabold mb-1.5">{challenge.title}</h2>

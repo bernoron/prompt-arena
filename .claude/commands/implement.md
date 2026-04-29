@@ -48,6 +48,25 @@ ls specs/changes/CR-*.md 2>/dev/null | xargs grep -l "Feature.*[NN]" 2>/dev/null
 
 ---
 
+## Schritt 1b: Ripple-Analyse (PFLICHT bei Wert- oder Konstanten-Änderungen)
+
+Wenn der Task einen Wert ändert der in der UI angezeigt wird (Punkte, Labels, Schwellenwerte):
+
+```bash
+# Suche ALLE Vorkommen des alten Werts im gesamten Projekt
+grep -rn "<alter-wert>" app/ components/ --include="*.tsx" --include="*.ts"
+```
+
+**Regel**: Erst wenn alle Fundstellen bekannt sind, mit der Implementierung beginnen.  
+Jede Fundstelle muss entweder:
+- auf die Konstante umgestellt werden (`POINTS.XXXX`)
+- oder bewusst ausgenommen und dokumentiert sein
+
+> ⚠️ Einen Wert in `lib/points.ts` oder `lib/constants.ts` zu ändern reicht **nicht** —  
+> es muss sichergestellt sein, dass nirgendwo hardcodierte Kopien existieren.
+
+---
+
 ## Schritt 2: Implementieren
 
 - Schreibe den Code der das Akzeptanzkriterium erfüllt

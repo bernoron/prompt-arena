@@ -5,6 +5,7 @@ import Link from 'next/link';
 import ProgressRing from '@/components/learn/ProgressRing';
 import type { LearningModuleWithProgress } from '@/lib/types';
 import { USER_ID_KEY } from '@/lib/constants';
+import { POINTS } from '@/lib/points';
 
 // @spec AC-08-004
 export default function LearnPage() {
@@ -141,7 +142,7 @@ export default function LearnPage() {
           </div>
           <div className="flex gap-2">
             <span className="text-lg flex-shrink-0">⭐</span>
-            <div><p className="font-semibold text-slate-700">Punkte sammeln</p><p>Pro abgeschlossener Lektion erhältst du +15 Punkte für das Ranking.</p></div>
+            <div><p className="font-semibold text-slate-700">Punkte sammeln</p><p>Pro abgeschlossener Lektion erhältst du +{POINTS.COMPLETE_LESSON} Punkte für das Ranking.</p></div>
           </div>
         </div>
       </div>

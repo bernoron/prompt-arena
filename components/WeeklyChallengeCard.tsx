@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import type { WeeklyChallengeData } from '@/lib/types';
+import { POINTS } from '@/lib/points';
 
 interface Props {
   challenge: WeeklyChallengeData;
@@ -50,7 +51,7 @@ export default function WeeklyChallengeCard({ challenge, onSubmit }: Props) {
 
       <div className="flex items-center justify-between">
         <span className="text-white/70 text-sm">
-          {challenge.submissionCount} Einreichungen · +30 Pts
+          {challenge.submissionCount} Einreichungen · +{POINTS.CHALLENGE_SUBMIT} Pts
         </span>
         <button
           onClick={onSubmit}

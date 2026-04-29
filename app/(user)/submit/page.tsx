@@ -136,7 +136,7 @@ export default function SubmitPage() {
                 <div>
                   <p className="text-sm font-bold text-slate-800">🏆 Für Weekly Challenge einreichen</p>
                   <p className="text-sm text-slate-600 mt-0.5">{challenge.title}</p>
-                  <span className="mt-1.5 inline-block text-xs font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full">+30 Zusatzpunkte</span>
+                  <span className="mt-1.5 inline-block text-xs font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full">+{POINTS.CHALLENGE_SUBMIT} Zusatzpunkte</span>
                 </div>
               </div>
             </div>
@@ -261,7 +261,7 @@ export default function SubmitPage() {
               <p className="text-sm font-bold text-emerald-800">✅ Bereit zum Einreichen</p>
               <p className="text-xs text-emerald-600 mt-1">
                 Du erhältst <span className="font-bold">+{POINTS.SUBMIT_PROMPT} Punkte</span>
-                {linkChallenge ? <span className="font-bold"> + 30 Challenge-Punkte</span> : ''}.
+                {linkChallenge ? <span className="font-bold"> + {POINTS.CHALLENGE_SUBMIT} Challenge-Punkte</span> : ''}.
               </p>
             </div>
           )}

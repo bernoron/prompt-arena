@@ -1,6 +1,7 @@
 import { memo } from 'react';
 import Link from 'next/link';
 import type { LearningModuleWithProgress } from '@/lib/types';
+import { POINTS } from '@/lib/points';
 
 interface NextLessonWidgetProps {
   modules: LearningModuleWithProgress[];
@@ -67,7 +68,7 @@ const NextLessonWidget = memo(function NextLessonWidget({ modules }: NextLessonW
         <span className="text-xs text-slate-700 flex-1 group-hover:text-violet-700 transition-colors font-medium">
           {nextLessonTitle}
         </span>
-        <span className="text-xs font-bold text-emerald-600">+15 Pts</span>
+        <span className="text-xs font-bold text-emerald-600">+{POINTS.COMPLETE_LESSON} Pts</span>
       </Link>
     </div>
   );
