@@ -39,7 +39,7 @@ Mitarbeiter sollen langfristig motiviert sein, die Plattform aktiv zu nutzen —
 
 - [ ] **BAC-04-001**: Für definierte Aktionen werden automatisch Punkte vergeben — ohne manuelle Bestätigung.
   - **Messgrösse**: Nach jeder punkteauslösenden Aktion steigt der Punktestand des betreffenden Nutzers sofort um den korrekten Betrag.
-  - **Geschäftsregel**: Punkte werden einmalig pro Auslöser vergeben. Das Rückgängigmachen einer Aktion (z. B. Favorit entfernen) gibt keine Punkte zurück. Punktetabelle: Prompt einreichen +20, Prompt wird benutzt +5 (an Autor), Prompt bewerten +3, Prompt favorisiert (erstmalig) +10 (an Autor), Challenge-Einreichung +30, Challenge gewonnen +100, Lektion abschliessen +15.
+  - **Geschäftsregel**: Punkte werden einmalig pro Auslöser vergeben. Das Rückgängigmachen einer Aktion (z. B. Favorit entfernen) gibt keine Punkte zurück. Punktetabelle: Prompt einreichen +1000, Prompt wird benutzt +5 (an Autor), Prompt bewerten +3, Prompt favorisiert (erstmalig) +10 (an Autor), Challenge-Einreichung +30, Challenge gewonnen +100, Lektion abschliessen +15.
 
 - [ ] **BAC-04-002**: Das Level eines Mitarbeiters wird nach jeder Punktevergabe automatisch aktualisiert.
   - **Messgrösse**: Das angezeigte Level stimmt jederzeit mit dem aktuellen Punktestand überein.

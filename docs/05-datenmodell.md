@@ -162,7 +162,7 @@ WeeklyChallenge 1──n ChallengeSubmission
 
 | Aktion | Punkte |
 |---|---|
-| SUBMIT_PROMPT | +20 |
+| SUBMIT_PROMPT | +1000 |
 | PROMPT_USED | +5 |
 | VOTE_ON_PROMPT | +3 |
 | FAVORITE_PROMPT | +10 |
@@ -188,4 +188,4 @@ Für Produktivbetrieb empfiehlt sich PostgreSQL (nur `schema.prisma` anpassen).
 
 
 ---
-*Automatisch generiert am 27.04.2026, 20:12 · [Quellcode](https://github.com/your-org/prompt-arena)*
+*Automatisch generiert am 29.04.2026, 12:30 · [Quellcode](https://github.com/your-org/prompt-arena)*
