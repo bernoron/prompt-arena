@@ -1,5 +1,18 @@
 # Changelog
 
+## [5.2.0](https://github.com/bernoron/prompt-arena/compare/v5.1.1...v5.2.0) (2026-06-27)
+
+
+### Features
+
+* harden and complete review findings (security, UX, perf, quality) ([7ad063f](https://github.com/bernoron/prompt-arena/commit/7ad063fd3b3aa43ed3d75a2937cf763834584ac6))
+
+
+### Bug Fixes
+
+* extract items array from API response in dashboard ([e3307a1](https://github.com/bernoron/prompt-arena/commit/e3307a1240f9a8aad16130eccbbd7635d3a2a777))
+* remove debug logs from library page and API ([16eefea](https://github.com/bernoron/prompt-arena/commit/16eefea25a57e7a46e8ae7735251d350b4edccf3))
+
 ## [5.1.1](https://github.com/bernoron/prompt-arena/compare/v5.1.0...v5.1.1) (2026-06-27)
 
 
