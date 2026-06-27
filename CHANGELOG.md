@@ -1,5 +1,18 @@
 # Changelog
 
+## [5.3.0](https://github.com/bernoron/prompt-arena/compare/v5.2.0...v5.3.0) (2026-06-27)
+
+
+### Features
+
+* close spec/implementation gaps and harden review findings ([0832ed3](https://github.com/bernoron/prompt-arena/commit/0832ed3ced59c74d7a649a94a59b5aadf353c4ec))
+* production hardening and deployment setup for go-live ([a781c9b](https://github.com/bernoron/prompt-arena/commit/a781c9b201e757c0d9a150738704f8420f8c93e4))
+
+
+### Bug Fixes
+
+* security leak-audit hardening and WAL pragma fix ([25d0f5e](https://github.com/bernoron/prompt-arena/commit/25d0f5e47d58f4c7f0db3f0afa658d0f5a60fe91))
+
 ## [5.2.0](https://github.com/bernoron/prompt-arena/compare/v5.1.1...v5.2.0) (2026-06-27)
 
 
