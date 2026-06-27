@@ -8,7 +8,7 @@ import SinceLastVisit from '@/components/dashboard/SinceLastVisit';
 import TrendingPrompts from '@/components/dashboard/TrendingPrompts';
 import ImprovementCard from '@/components/dashboard/ImprovementCard';
 import NextLessonWidget from '@/components/dashboard/NextLessonWidget';
-import type { WeeklyChallengeData, UserWithStats, LevelName, PromptWithDetails, RankedUser, RankDiff, LearningModuleWithProgress, PromptPage } from '@/lib/types';
+import type { WeeklyChallengeData, UserWithStats, LevelName, PromptWithDetails, RankedUser, RankDiff, LearningModuleWithProgress } from '@/lib/types';
 import { getLevelProgress, POINTS } from '@/lib/points';
 import { LEVEL_CONFIG, POINTS_GUIDE } from '@/lib/constants';
 

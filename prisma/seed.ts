@@ -379,7 +379,7 @@ async function main() {
           title: 'Pattern: Beispiele zeigen',
           content: b([
             { type: 'text', content: 'Few-Shot Prompting bedeutet, dass du dem Modell 1–3 Beispiele zeigst, bevor du die eigentliche Aufgabe stellst. So "kalibrierst" du den erwarteten Stil, Ton und die Struktur – ohne ihn langatmig zu beschreiben.' },
-            { type: 'pattern', name: 'Few-Shot', template: 'Hier sind [X] Beispiele, wie ich [Aufgabe] formuliere:\n\nBeispiel 1: [Input] → [Output]\nBeispiel 2: [Input] → [Output]\n\nJetzt mach dasselbe für: [Neue Eingabe]', example: 'Hier sind zwei Beispiele, wie wir Kundenbeschwerden beantworten:\n\nBeschwerde 1: "Mein Schaden wurde abgelehnt." → Antwort: "Wir bedauern Ihre Enttäuschung. Ich prüfe den Fall nochmals persönlich und melde mich bis Donnerstag bei Ihnen."\n\nBeschwerde 2: "Niemand hat mich zurückgerufen." → Antwort: "Das tut uns leid. Ich sorge dafür, dass Sie noch heute von unserem zuständigen Berater kontaktiert werden."\n\nNow formuliere eine Antwort auf: "Ich warte seit 3 Wochen auf meine Auszahlung."', useCase: 'Konsistente Tonalität einhalten, Corporate Writing, Texte die einem bestimmten Unternehmensstil folgen sollen.' },
+            { type: 'pattern', name: 'Few-Shot', template: 'Hier sind [X] Beispiele, wie ich [Aufgabe] formuliere:\n\nBeispiel 1: [Input] → [Output]\nBeispiel 2: [Input] → [Output]\n\nJetzt mach dasselbe für: [Neue Eingabe]', example: 'Hier sind zwei Beispiele, wie wir Kundenbeschwerden beantworten:\n\nBeschwerde 1: "Mein Schaden wurde abgelehnt." → Antwort: "Wir bedauern Ihre Enttäuschung. Ich prüfe den Fall nochmals persönlich und melde mich bis Donnerstag bei Ihnen."\n\nBeschwerde 2: "Niemand hat mich zurückgerufen." → Antwort: "Das tut uns leid. Ich sorge dafür, dass Sie noch heute von unserem zuständigen Berater kontaktiert werden."\n\nJetzt formuliere eine Antwort auf: "Ich warte seit 3 Wochen auf meine Auszahlung."', useCase: 'Konsistente Tonalität einhalten, Corporate Writing, Texte die einem bestimmten Unternehmensstil folgen sollen.' },
             { type: 'tip', content: 'Few-Shot ist besonders mächtig, wenn du vorhandene gute Beispiele aus deinem Unternehmen hast – Antworten auf Kundenbeschwerden, bewährte E-Mail-Formulierungen, etc.' },
           ]),
         },
@@ -796,7 +796,7 @@ async function main() {
   console.log(`   👥 ${users.length} users`);
   console.log(`   📝 ${prompts.length} prompts`);
   console.log(`   🏆 1 weekly challenge`);
-  console.log(`   🧠 5 Lernmodule, ${totalLessons} Lektionen`);
+  console.log(`   🧠 ${modules.length} Lernmodule, ${totalLessons} Lektionen`);
 }
 
 main()

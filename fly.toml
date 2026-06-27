@@ -1,0 +1,58 @@
+# Fly.io deployment config for PromptArena.
+#
+# This is the recommended low-cost setup: a single small machine with a
+# persistent volume that holds the SQLite database. Migrations run automatically
+# on startup via docker-entrypoint.sh.
+#
+# Before first deploy:
+#   fly launch --no-deploy            # creates the app, picks a region
+#   fly volumes create data --size 1  # 1 GB persistent volume (holds prod.db)
+#   fly secrets set ADMIN_SECRET=...  USER_SECRET=...
+#   fly deploy
+#
+# Replace "prompt-arena" with your unique app name and set your region.
+
+app = "prompt-arena"
+primary_region = "fra"   # Frankfurt — pick the region closest to your users
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  NODE_ENV = "production"
+  PORT = "3000"
+  # SQLite lives on the mounted volume so it survives restarts and redeploys.
+  DATABASE_URL = "file:/data/prod.db"
+  LOG_LEVEL = "info"
+
+# Persistent volume — mounted at /data (matches DATABASE_URL above).
+[mounts]
+  source = "data"
+  destination = "/data"
+
+[http_service]
+  internal_port = 3000
+  force_https = true
+  auto_stop_machines = true     # scale to zero when idle → lower cost
+  auto_start_machines = true
+  min_machines_running = 0
+
+  [http_service.concurrency]
+    type = "requests"
+    soft_limit = 200
+    hard_limit = 250
+
+# Health check drives auto-restart and zero-downtime deploys.
+[[http_service.checks]]
+  interval = "30s"
+  timeout = "5s"
+  grace_period = "15s"
+  method = "GET"
+  path = "/api/health"
+
+[[vm]]
+  size = "shared-cpu-1x"
+  memory = "256mb"   # plenty for this app; bump to 512mb if builds/seed need it
+
+# IMPORTANT: keep a single machine. SQLite cannot be shared across machines.
+# Do not scale this app horizontally without first migrating to Postgres.

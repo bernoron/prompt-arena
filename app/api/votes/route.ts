@@ -42,6 +42,19 @@ export async function POST(req: NextRequest) {
   const userId = resolved;
 
   try {
+    // The prompt must exist; voting on your own prompt is forbidden.
+    // @spec AC-03-006 — enforced server-side, not only via the disabled UI button.
+    const target = await prisma.prompt.findUnique({
+      where: { id: promptId },
+      select: { authorId: true },
+    });
+    if (!target) {
+      return NextResponse.json({ error: 'Prompt not found' }, { status: 404 });
+    }
+    if (target.authorId === userId) {
+      return NextResponse.json({ error: 'Cannot vote on your own prompt' }, { status: 403 });
+    }
+
     // Check if a vote already exists BEFORE the upsert so we can decide
     // whether to award points. Points are only earned once per (prompt, user) pair.
     const existing = await prisma.vote.findUnique({

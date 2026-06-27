@@ -36,6 +36,11 @@ const cspDirectives = [
 const nextConfig = {
   output: 'standalone',
 
+  // Run instrumentation.ts once on server startup (env/secret validation).
+  experimental: {
+    instrumentationHook: true,
+  },
+
   /**
    * HTTP security headers applied to every response.
    *

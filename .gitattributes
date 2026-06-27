@@ -1,0 +1,14 @@
+# Force LF for files that run inside Linux containers — a CRLF in the shebang
+# line breaks the script (`/bin/sh\r: not found`).
+*.sh            text eol=lf
+docker-entrypoint.sh text eol=lf
+Dockerfile      text eol=lf
+*.toml          text eol=lf
+
+# Normalise common text files; let Git handle the rest automatically.
+*.ts            text
+*.tsx           text
+*.js            text
+*.mjs           text
+*.json          text
+*.md            text

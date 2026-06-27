@@ -35,12 +35,12 @@ export async function GET() {
     const dbMs = Date.now() - start;
     const message = err instanceof Error ? err.message : String(err);
 
+    // Log the real cause server-side; never echo internal error details to clients.
     logger.error('health check failed', { dbMs, error: message });
 
     return NextResponse.json(
       {
         status: 'error',
-        error:  message,
         ts:     new Date().toISOString(),
       },
       { status: 503 },

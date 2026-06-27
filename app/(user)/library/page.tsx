@@ -93,7 +93,7 @@ function LibraryPageInner() {
       setPrompts(items);
       setNextCursor(data.nextCursor);
       setHasNextPage(data.hasNextPage);
-    } catch (err) {
+    } catch {
       setPrompts([]);
       setNextCursor(null);
       setHasNextPage(false);

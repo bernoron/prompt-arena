@@ -6,6 +6,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
+import { Prisma } from '@prisma/client';
 import { prisma } from '@/lib/prisma';
 import { AVATAR_COLORS } from '@/lib/constants';
 import { CreateUserSchema, validationError } from '@/lib/validation';
@@ -64,7 +65,11 @@ export async function POST(req: NextRequest) {
     });
 
     return NextResponse.json(user, { status: 201 });
-  } catch {
+  } catch (err) {
+    // Unique-name constraint (schema: @@unique([name])) → 409, not a generic 500.
+    if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2002') {
+      return NextResponse.json({ error: 'Dieser Name ist bereits vergeben' }, { status: 409 });
+    }
     return NextResponse.json({ error: 'Registrierung fehlgeschlagen' }, { status: 500 });
   }
 }

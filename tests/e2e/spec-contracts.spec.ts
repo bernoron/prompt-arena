@@ -107,12 +107,22 @@ test.describe('PromptArena spec contracts', () => {
     const prompt = await createRes.json() as { id: number; title: string; authorId: number; usageCount: number };
     expect(prompt).toMatchObject({ title, authorId: user.id, usageCount: 0 });
 
-    const voteRes = await request.post('/api/votes', {
+    // AC-03-006: voting on your own prompt is rejected server-side (not just in the UI).
+    const selfVoteRes = await request.post('/api/votes', {
       headers: { Cookie: cookie },
       data: { promptId: prompt.id, userId: user.id, value: 5 },
     });
+    expect(selfVoteRes.status()).toBe(403);
+
+    // A different user can vote legitimately (200).
+    const voter = await createUser(request);
+    const voterCookie = await loginUser(request, voter.id);
+    const voteRes = await request.post('/api/votes', {
+      headers: { Cookie: voterCookie },
+      data: { promptId: prompt.id, userId: voter.id, value: 5 },
+    });
     expect(voteRes.status()).toBe(200);
-    await expect(voteRes.json()).resolves.toMatchObject({ promptId: prompt.id, userId: user.id, value: 5 });
+    await expect(voteRes.json()).resolves.toMatchObject({ promptId: prompt.id, userId: voter.id, value: 5 });
 
     const mismatchRes = await request.post('/api/votes', {
       headers: { Cookie: cookie },

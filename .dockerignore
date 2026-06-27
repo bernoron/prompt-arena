@@ -1,0 +1,28 @@
+# Keep the build context small and never bake secrets or local data into the image.
+node_modules
+.next
+.git
+.github
+
+# Secrets & local environment
+.env
+.env*.local
+
+# Local SQLite database (dev data must never end up in the image)
+*.db
+*.db-shm
+*.db-wal
+*.db-journal
+
+# Tests & reports
+coverage
+test-results
+tests/playwright-report
+playwright-report
+
+# Misc
+.DS_Store
+*.tsbuildinfo
+npm-debug.log*
+README*.md
+docs
