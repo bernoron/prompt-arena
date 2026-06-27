@@ -86,13 +86,14 @@ function LibraryPageInner() {
   const fetchPrompts = useCallback(async () => {
     setLoading(true);
     try {
-      const res  = await fetch(buildUrl());
+      const url = buildUrl();
+      const res  = await fetch(url);
       const data = await res.json() as PromptPage;
       const items  = data.items ?? [];
       setPrompts(items);
       setNextCursor(data.nextCursor);
       setHasNextPage(data.hasNextPage);
-    } catch {
+    } catch (err) {
       setPrompts([]);
       setNextCursor(null);
       setHasNextPage(false);

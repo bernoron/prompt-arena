@@ -93,8 +93,6 @@ GET /api/admin/stats  – Aggregate statistics for the admin dashboard Protected
 
 ### `POST /api/auth/login`
 
-POST /api/auth/login Body: { userId: number } Sets a signed HttpOnly `user_session` cookie for the given user. Called by UserPicker when the user selects or creates a profile.
-
 
 ---
 
@@ -126,14 +124,10 @@ GET /api/categories Returns all active prompt categories ordered by display orde
 
 ### `GET /api/favorites`
 
-GET  /api/favorites?userId=<id>  – Fetch all favorited prompts for a user POST /api/favorites               – Toggle a prompt as favorite (add / remove) POST body: { promptId: number, userId: number } Idempotent point distribution: The FIRST time a user favorites a prompt the prompt author receives FAVORITE_PROMPT points. Removing and re-adding a favorite does NOT award points again. We track this via the `pointsAwarded` flag on the Favorite row, which persists even after soft-deletion (isActive = false). Soft-delete pattern: Favorites are never hard-deleted. "Remove" sets isActive = false so the pointsAwarded history is preserved. "Add" sets isActive = true (upsert).
-
 
 ---
 
 ### `POST /api/favorites`
-
-GET  /api/favorites?userId=<id>  – Fetch all favorited prompts for a user POST /api/favorites               – Toggle a prompt as favorite (add / remove) POST body: { promptId: number, userId: number } Idempotent point distribution: The FIRST time a user favorites a prompt the prompt author receives FAVORITE_PROMPT points. Removing and re-adding a favorite does NOT award points again. We track this via the `pointsAwarded` flag on the Favorite row, which persists even after soft-deletion (isActive = false). Soft-delete pattern: Favorites are never hard-deleted. "Remove" sets isActive = false so the pointsAwarded history is preserved. "Add" sets isActive = true (upsert).
 
 
 ---
@@ -230,4 +224,4 @@ Alle Timestamps werden als **ISO 8601** Strings zurückgegeben, z.B. `"2024-03-1
 
 
 ---
-*Automatisch generiert am 27.06.2026, 22:30 · [Quellcode](https://github.com/your-org/prompt-arena)*
+*Automatisch generiert am 27.06.2026, 23:14 · [Quellcode](https://github.com/your-org/prompt-arena)*
