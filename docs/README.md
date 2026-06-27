@@ -1,6 +1,6 @@
 # PromptArena – Dokumentation
 
-> Version 5.1.1 · Interne Unternehmensanwendung
+> Version 5.2.0 · Interne Unternehmensanwendung
 
 Diese Dokumentation wird **automatisch aus dem Quellcode generiert** und ist stets aktuell.
 
@@ -39,4 +39,4 @@ KI-Prompts zu teilen, zu bewerten und weiterzuentwickeln.
 
 
 ---
-*Automatisch generiert am 27.06.2026, 23:30 · [Quellcode](https://github.com/your-org/prompt-arena)*
+*Automatisch generiert am 27.06.2026, 23:41 · [Quellcode](https://github.com/your-org/prompt-arena)*

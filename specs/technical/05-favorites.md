@@ -11,39 +11,39 @@
 
 ## Technische Akzeptanzkriterien
 
-- [ ] **AC-05-001**: `POST /api/favorites` mit `{ promptId, userId }` — wenn Favorit existiert: löschen + `{ favorited: false }`; wenn nicht: erstellen + `{ favorited: true }`.
+- [x] **AC-05-001**: `POST /api/favorites` mit `{ promptId, userId }` — wenn Favorit existiert: löschen + `{ favorited: false }`; wenn nicht: erstellen + `{ favorited: true }`.
   - **Referenz**: BAC-05-001
   - **Testbar durch**: E2E
 
-- [ ] **AC-05-002**: Punkte (`POINTS.FAVORITE_PROMPT` = 10) werden nur beim ersten Favorisieren vergeben: geprüft via `existing`-Lookup vor dem Erstellen des `Favorite`-Eintrags.
+- [x] **AC-05-002**: Punkte (`POINTS.FAVORITE_PROMPT` = 10) werden nur beim ersten Favorisieren vergeben: geprüft via `existing`-Lookup vor dem Erstellen des `Favorite`-Eintrags.
   - **Referenz**: BAC-05-002
   - **Testbar durch**: E2E
 
-- [ ] **AC-05-003**: `GET /api/prompts?userId=<id>` enthält `userFavorite: boolean` für jeden Prompt — via separatem Query auf `Favorite`-Tabelle (kein `include: { favorites: true }`).
+- [x] **AC-05-003**: `GET /api/prompts?userId=<id>` enthält `userFavorite: boolean` für jeden Prompt — via separatem Query auf `Favorite`-Tabelle (kein `include: { favorites: true }`).
   - **Referenz**: BAC-05-003
   - **Testbar durch**: E2E
 
-- [ ] **AC-05-004**: `GET /api/favorites?userId=<id>` gibt `PromptWithDetails[]` zurück, in denen `userFavorite` immer `true` ist; Vote-Aggregat via `groupBy`.
+- [x] **AC-05-004**: `GET /api/favorites?userId=<id>` gibt `PromptWithDetails[]` zurück, in denen `userFavorite` immer `true` ist; Vote-Aggregat via `groupBy`.
   - **Referenz**: BAC-05-004
   - **Testbar durch**: E2E
 
-- [ ] **AC-05-005**: `PromptCard` zeigt Stern-Badge wenn `userFavorite === true`.
+- [x] **AC-05-005**: `PromptCard` zeigt Stern-Badge wenn `userFavorite === true`.
   - **Referenz**: BAC-05-003
   - **Testbar durch**: E2E, Manual
 
-- [ ] **AC-05-006**: `PromptModal` enthält Favorit-Toggle-Button (`☆ Merken` / `★ Favorit`); Klick löst optimistischen State-Update aus, dann `POST /api/favorites`.
+- [x] **AC-05-006**: `PromptModal` enthält Favorit-Toggle-Button (`☆ Merken` / `★ Favorit`); Klick löst optimistischen State-Update aus, dann `POST /api/favorites`.
   - **Referenz**: BAC-05-001
   - **Testbar durch**: E2E
 
-- [ ] **AC-05-007**: Seite `/favorites` zeigt alle Favoriten des aktiven Users mit Client-seitiger Suchfunktion; leerer Zustand zeigt Hinweistext und Link zur Bibliothek.
+- [x] **AC-05-007**: Seite `/favorites` zeigt alle Favoriten des aktiven Users mit Client-seitiger Suchfunktion; leerer Zustand zeigt Hinweistext und Link zur Bibliothek.
   - **Referenz**: BAC-05-004, BAC-05-005
   - **Testbar durch**: E2E
 
-- [ ] **AC-05-008**: Wenn User entfavorisiert während er auf `/favorites` ist, verschwindet der Prompt sofort aus der Liste (optimistisches Update).
+- [x] **AC-05-008**: Wenn User entfavorisiert während er auf `/favorites` ist, verschwindet der Prompt sofort aus der Liste (optimistisches Update).
   - **Referenz**: BAC-05-001
   - **Testbar durch**: E2E
 
-- [ ] **AC-05-009**: Ohne aktiven User ist der Favorit-Button disabled (kein `userId` verfügbar).
+- [x] **AC-05-009**: Ohne aktiven User ist der Favorit-Button disabled (kein `userId` verfügbar).
   - **Referenz**: BAC-05-003
   - **Testbar durch**: E2E, Manual
 

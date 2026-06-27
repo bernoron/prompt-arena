@@ -11,27 +11,27 @@
 
 ## Technische Akzeptanzkriterien
 
-- [ ] **AC-01-001**: `POST /api/users` erstellt einen neuen User mit `name`, `department`, berechnet `avatarColor` (Round-Robin aus Palette) und gibt `UserWithStats` mit Status 201 zurück.
+- [x] **AC-01-001**: `POST /api/users` erstellt einen neuen User mit `name`, `department`, berechnet `avatarColor` (Round-Robin aus Palette) und gibt `UserWithStats` mit Status 201 zurück.
   - **Referenz**: BAC-01-001
   - **Testbar durch**: E2E, Unit
 
-- [ ] **AC-01-002**: `GET /api/users` gibt alle User als `UserWithStats[]` sortiert nach `totalPoints DESC` zurück, mit Cache-Control-Header `public, s-maxage=20, stale-while-revalidate=60`.
+- [x] **AC-01-002**: `GET /api/users` gibt alle User als `UserWithStats[]` sortiert nach `totalPoints DESC` zurück, mit Cache-Control-Header `public, s-maxage=20, stale-while-revalidate=60`.
   - **Referenz**: BAC-01-003
   - **Testbar durch**: E2E
 
-- [ ] **AC-01-003**: `GET /api/users/[id]` gibt einen einzelnen User mit `rank` (Position in Gesamtliste) und `prompts` zurück; antwortet mit 404 wenn User nicht gefunden.
+- [x] **AC-01-003**: `GET /api/users/[id]` gibt einen einzelnen User mit `rank` (Position in Gesamtliste) und `prompts` zurück; antwortet mit 404 wenn User nicht gefunden.
   - **Referenz**: BAC-01-005
   - **Testbar durch**: E2E
 
-- [ ] **AC-01-004**: Der aktive User wird im Browser via `localStorage['promptarena_user_id']` persistiert; `UserPicker`-Dropdown liest und schreibt diesen Wert ohne Seiten-Neuladen.
+- [x] **AC-01-004**: Der aktive User wird im Browser via `localStorage['promptarena_user_id']` persistiert; `UserPicker`-Dropdown liest und schreibt diesen Wert ohne Seiten-Neuladen.
   - **Referenz**: BAC-01-002, BAC-01-003
   - **Testbar durch**: E2E
 
-- [ ] **AC-01-005**: `UserPicker` öffnet Registrierungsformular bei Auswahl „Neuer Benutzer"; nach Absenden wird der neue User automatisch ausgewählt.
+- [x] **AC-01-005**: `UserPicker` öffnet Registrierungsformular bei Auswahl „Neuer Benutzer"; nach Absenden wird der neue User automatisch ausgewählt.
   - **Referenz**: BAC-01-001
   - **Testbar durch**: E2E
 
-- [ ] **AC-01-006**: Avatar-Farbe wird serverseitig per Round-Robin aus der Farbpalette in `lib/constants.ts` zugewiesen — nicht clientseitig.
+- [x] **AC-01-006**: Avatar-Farbe wird serverseitig per Round-Robin aus der Farbpalette in `lib/constants.ts` zugewiesen — nicht clientseitig.
   - **Referenz**: BAC-01-004
   - **Testbar durch**: Unit
 

@@ -11,27 +11,27 @@
 
 ## Technische Akzeptanzkriterien
 
-- [ ] **AC-03-001**: `POST /api/votes` führt Upsert via `@@unique([promptId, userId])` durch — erstellt eine neue Bewertung oder überschreibt die bestehende; gibt `{ avgRating, voteCount }` zurück.
+- [x] **AC-03-001**: `POST /api/votes` führt Upsert via `@@unique([promptId, userId])` durch — erstellt eine neue Bewertung oder überschreibt die bestehende; gibt `{ avgRating, voteCount }` zurück.
   - **Referenz**: BAC-03-001
   - **Testbar durch**: E2E, Unit
 
-- [ ] **AC-03-002**: Punkte (`POINTS.VOTE_ON_PROMPT` = 3) werden nur vergeben, wenn zuvor kein Vote dieser User-Prompt-Kombination existierte — geprüft via `existing`-Check vor dem Upsert.
+- [x] **AC-03-002**: Punkte (`POINTS.VOTE_ON_PROMPT` = 3) werden nur vergeben, wenn zuvor kein Vote dieser User-Prompt-Kombination existierte — geprüft via `existing`-Check vor dem Upsert.
   - **Referenz**: BAC-03-002
   - **Testbar durch**: E2E
 
-- [ ] **AC-03-003**: `GET /api/prompts?userId=<id>` liefert `userVote: number | null` für jeden Prompt des eingeloggten Users.
+- [x] **AC-03-003**: `GET /api/prompts?userId=<id>` liefert `userVote: number | null` für jeden Prompt des eingeloggten Users.
   - **Referenz**: BAC-03-002, BAC-03-005
   - **Testbar durch**: E2E
 
-- [ ] **AC-03-004**: Die Stern-UI im `PromptModal` zeigt die aktuelle User-Bewertung hervorgehoben; bei `authorId === userId` sind die Sterne-Buttons `disabled` mit erläuterndem Tooltip.
+- [x] **AC-03-004**: Die Stern-UI im `PromptModal` zeigt die aktuelle User-Bewertung hervorgehoben; bei `authorId === userId` sind die Sterne-Buttons `disabled` mit erläuterndem Tooltip.
   - **Referenz**: BAC-03-003, BAC-03-005
   - **Testbar durch**: E2E, Manual
 
-- [ ] **AC-03-005**: `PromptCard` und `PromptModal` zeigen `avgRating` (auf 1 Dezimalstelle) und `voteCount`.
+- [x] **AC-03-005**: `PromptCard` und `PromptModal` zeigen `avgRating` (auf 1 Dezimalstelle) und `voteCount`.
   - **Referenz**: BAC-03-004
   - **Testbar durch**: E2E
 
-- [ ] **AC-03-006**: Serverseitig wird geprüft, dass `userId !== prompt.authorId`; ein Vote auf den eigenen Prompt gibt HTTP 403 zurück.
+- [x] **AC-03-006**: Serverseitig wird geprüft, dass `userId !== prompt.authorId`; ein Vote auf den eigenen Prompt gibt HTTP 403 zurück.
   - **Referenz**: BAC-03-003
   - **Testbar durch**: E2E
 

@@ -11,51 +11,51 @@
 
 ## Technische Akzeptanzkriterien
 
-- [ ] **AC-08-001**: `GET /api/learn?userId=<id>` gibt `LearningModuleWithProgress[]` zurück — inkl. `completedLessons`, `totalLessons` und `lessons[].completed` per User.
+- [x] **AC-08-001**: `GET /api/learn?userId=<id>` gibt `LearningModuleWithProgress[]` zurück — inkl. `completedLessons`, `totalLessons` und `lessons[].completed` per User.
   - **Referenz**: BAC-08-001
   - **Testbar durch**: E2E
 
-- [ ] **AC-08-002**: `GET /api/learn/[moduleSlug]/[lessonSlug]?userId=<id>` gibt `LessonDetail` mit vollständigem `content: ContentBlock[]` (geparst aus JSON), `completed`, `prev`, `next` zurück.
+- [x] **AC-08-002**: `GET /api/learn/[moduleSlug]/[lessonSlug]?userId=<id>` gibt `LessonDetail` mit vollständigem `content: ContentBlock[]` (geparst aus JSON), `completed`, `prev`, `next` zurück.
   - **Referenz**: BAC-08-002, BAC-08-004
   - **Testbar durch**: E2E
 
-- [ ] **AC-08-003**: `POST /api/learn/[moduleSlug]/[lessonSlug]/complete` mit `{ userId }` ist idempotent — bei bereits abgeschlossener Lektion gibt `{ alreadyCompleted: true, pointsAwarded: 0 }` zurück; bei erster Abschliessung `awardPoints(userId, POINTS.COMPLETE_LESSON)` und `{ alreadyCompleted: false, pointsAwarded: 15 }`.
+- [x] **AC-08-003**: `POST /api/learn/[moduleSlug]/[lessonSlug]/complete` mit `{ userId }` ist idempotent — bei bereits abgeschlossener Lektion gibt `{ alreadyCompleted: true, pointsAwarded: 0 }` zurück; bei erster Abschliessung `awardPoints(userId, POINTS.COMPLETE_LESSON)` und `{ alreadyCompleted: false, pointsAwarded: 15 }`.
   - **Referenz**: BAC-08-003
   - **Testbar durch**: E2E
 
-- [ ] **AC-08-004**: Seite `/learn` rendert alle Module mit `ProgressRing`-Komponente; Seite `/learn/[moduleSlug]` zeigt Lektionsliste mit Abschluss-Status.
+- [x] **AC-08-004**: Seite `/learn` rendert alle Module mit `ProgressRing`-Komponente; Seite `/learn/[moduleSlug]` zeigt Lektionsliste mit Abschluss-Status.
   - **Referenz**: BAC-08-001
   - **Testbar durch**: E2E
 
-- [ ] **AC-08-005**: Seite `/learn/[moduleSlug]/[lessonSlug]` rendert alle `ContentBlock`-Typen via `ContentBlockRenderer`; Button „Lektion abschliessen" nur sichtbar wenn User aktiv und Lektion noch offen.
+- [x] **AC-08-005**: Seite `/learn/[moduleSlug]/[lessonSlug]` rendert alle `ContentBlock`-Typen via `ContentBlockRenderer`; Button „Lektion abschliessen" nur sichtbar wenn User aktiv und Lektion noch offen.
   - **Referenz**: BAC-08-002, BAC-08-003
   - **Testbar durch**: E2E, Manual
 
-- [ ] **AC-08-006**: `LessonNav`-Komponente navigiert korrekt zu `prev.moduleSlug/prev.slug` und `next.moduleSlug/next.slug` — auch modulübergreifend.
+- [x] **AC-08-006**: `LessonNav`-Komponente navigiert korrekt zu `prev.moduleSlug/prev.slug` und `next.moduleSlug/next.slug` — auch modulübergreifend.
   - **Referenz**: BAC-08-004
   - **Testbar durch**: E2E
 
-- [ ] **AC-08-007**: `ContentBlockRenderer` rendert alle 5 Typen: `text`, `tip`, `warning`, `example` (Bad/Good), `pattern` — visuell differenziert.
+- [x] **AC-08-007**: `ContentBlockRenderer` rendert alle 5 Typen: `text`, `tip`, `warning`, `example` (Bad/Good), `pattern` — visuell differenziert.
   - **Referenz**: BAC-08-002
   - **Testbar durch**: E2E, Manual
 
-- [ ] **AC-08-008**: Nach Lektionsabschluss: `triggerFloat('+15 Pts', ...)` ausgelöst; Button wechselt zu grüner Bestätigungsanzeige; `completed`-State wird ohne Seitenneuladen aktualisiert.
+- [x] **AC-08-008**: Nach Lektionsabschluss: `triggerFloat('+15 Pts', ...)` ausgelöst; Button wechselt zu grüner Bestätigungsanzeige; `completed`-State wird ohne Seitenneuladen aktualisiert.
   - **Referenz**: BAC-08-003
   - **Testbar durch**: E2E
 
-- [ ] **AC-08-009**: Vor/Zurück-Navigation funktioniert modulübergreifend — letztes Lesson eines Moduls verlinkt auf erstes Lesson des nächsten Moduls.
+- [x] **AC-08-009**: Vor/Zurück-Navigation funktioniert modulübergreifend — letztes Lesson eines Moduls verlinkt auf erstes Lesson des nächsten Moduls.
   - **Referenz**: BAC-08-004
   - **Testbar durch**: E2E
 
-- [ ] **AC-08-010**: `NextLessonWidget` auf Dashboard zeigt nächste offene Lektion (erste mit `completed: false`) + Gesamtfortschritt; direkter Link zur Lektion.
+- [x] **AC-08-010**: `NextLessonWidget` auf Dashboard zeigt nächste offene Lektion (erste mit `completed: false`) + Gesamtfortschritt; direkter Link zur Lektion.
   - **Referenz**: BAC-08-005
   - **Testbar durch**: E2E
 
-- [ ] **AC-08-011**: Ohne `userId` (kein User gewählt): API gibt Inhalt ohne Fortschrittsdaten zurück; UI zeigt Hinweis statt Abschluss-Button.
+- [x] **AC-08-011**: Ohne `userId` (kein User gewählt): API gibt Inhalt ohne Fortschrittsdaten zurück; UI zeigt Hinweis statt Abschluss-Button.
   - **Referenz**: BAC-08-001, BAC-08-003
   - **Testbar durch**: E2E, Manual
 
-- [ ] **AC-08-012**: Seed enthält 5 Module (ki-verstehen, grundregeln, prompt-muster, alltagsbeispiele, fortgeschrittene) mit je mind. 3 Lektionen; mindestens 20 Lektionen gesamt.
+- [x] **AC-08-012**: Seed enthält 5 Module (ki-verstehen, grundregeln, prompt-muster, alltagsbeispiele, fortgeschrittene) mit je mind. 3 Lektionen; mindestens 20 Lektionen gesamt.
   - **Referenz**: BAC-08-006
   - **Testbar durch**: Manual (DB-Check)
 

@@ -11,35 +11,35 @@
 
 ## Technische Akzeptanzkriterien
 
-- [ ] **AC-09-001**: `prisma/seed.ts` wird um 5 neue Modul-Objekte (vision, coding, files, security, model-choice) mit `order` 6–10 erweitert; nach erneutem Seed-Lauf erscheinen alle 5 Module in `GET /api/learn`.
+- [x] **AC-09-001**: `prisma/seed.ts` wird um 5 neue Modul-Objekte (vision, coding, files, security, model-choice) mit `order` 6–10 erweitert; nach erneutem Seed-Lauf erscheinen alle 5 Module in `GET /api/learn`.
   - **Referenz**: BAC-09-006
   - **Testbar durch**: Manual (DB-Check nach `npx prisma db seed`)
 
-- [ ] **AC-09-002**: Modul `vision` (slug: `vision`, order: 6, icon: `📸`) enthält 4 Lektionen mit vollständigen `ContentBlock[]`-Arrays.
+- [x] **AC-09-002**: Modul `vision` (slug: `vision`, order: 6, icon: `📸`) enthält 4 Lektionen mit vollständigen `ContentBlock[]`-Arrays.
   - **Referenz**: BAC-09-001
   - **Testbar durch**: E2E
 
-- [ ] **AC-09-003**: Modul `coding` (slug: `coding`, order: 7, icon: `🖥️`) enthält 5 Lektionen mit vollständigen `ContentBlock[]`-Arrays.
+- [x] **AC-09-003**: Modul `coding` (slug: `coding`, order: 7, icon: `🖥️`) enthält 5 Lektionen mit vollständigen `ContentBlock[]`-Arrays.
   - **Referenz**: BAC-09-002
   - **Testbar durch**: E2E
 
-- [ ] **AC-09-004**: Modul `files` (slug: `files`, order: 8, icon: `📁`) enthält 4 Lektionen mit vollständigen `ContentBlock[]`-Arrays.
+- [x] **AC-09-004**: Modul `files` (slug: `files`, order: 8, icon: `📁`) enthält 4 Lektionen mit vollständigen `ContentBlock[]`-Arrays.
   - **Referenz**: BAC-09-003
   - **Testbar durch**: E2E
 
-- [ ] **AC-09-005**: Modul `security` (slug: `security`, order: 9, icon: `🔐`) enthält 5 Lektionen mit vollständigen `ContentBlock[]`-Arrays.
+- [x] **AC-09-005**: Modul `security` (slug: `security`, order: 9, icon: `🔐`) enthält 5 Lektionen mit vollständigen `ContentBlock[]`-Arrays.
   - **Referenz**: BAC-09-004
   - **Testbar durch**: E2E
 
-- [ ] **AC-09-006**: Modul `model-choice` (slug: `model-choice`, order: 10, icon: `⚖️`) enthält 4 Lektionen mit vollständigen `ContentBlock[]`-Arrays.
+- [x] **AC-09-006**: Modul `model-choice` (slug: `model-choice`, order: 10, icon: `⚖️`) enthält 4 Lektionen mit vollständigen `ContentBlock[]`-Arrays.
   - **Referenz**: BAC-09-005
   - **Testbar durch**: E2E
 
-- [ ] **AC-09-007**: Kein Code-Change an API-Routen, Seiten oder Komponenten nötig — alle neuen Module erscheinen automatisch durch den Seed-Eintrag in der DB.
+- [x] **AC-09-007**: Kein Code-Change an API-Routen, Seiten oder Komponenten nötig — alle neuen Module erscheinen automatisch durch den Seed-Eintrag in der DB.
   - **Referenz**: BAC-09-006
   - **Testbar durch**: Manual
 
-- [ ] **AC-09-008**: Jede Lektion aller 5 neuen Module enthält mind. 3 `pattern`-Blöcke und mind. 2 `example`-Blöcke (good/bad) im `content`-JSON.
+- [x] **AC-09-008**: Jede Lektion aller 5 neuen Module enthält mind. 3 `pattern`-Blöcke und mind. 2 `example`-Blöcke (good/bad) im `content`-JSON.
   - **Referenz**: BAC-09-001 bis BAC-09-005
   - **Testbar durch**: Unit (Seed-Validierung)
 

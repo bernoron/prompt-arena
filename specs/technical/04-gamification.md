@@ -11,35 +11,35 @@
 
 ## Technische Akzeptanzkriterien
 
-- [ ] **AC-04-001**: `awardPoints(userId, amount)` in `lib/points.ts` inkrementiert `user.totalPoints` atomar via Prisma `update` mit `increment`; berechnet danach das neue Level und speichert es.
+- [x] **AC-04-001**: `awardPoints(userId, amount)` in `lib/points.ts` inkrementiert `user.totalPoints` atomar via Prisma `update` mit `increment`; berechnet danach das neue Level und speichert es.
   - **Referenz**: BAC-04-001
   - **Testbar durch**: Unit
 
-- [ ] **AC-04-002**: `getLevel(points: number): string` gibt den korrekten Level-String basierend auf den Schwellen zurück; wird nach jeder `awardPoints`-Ausführung gespeichert.
+- [x] **AC-04-002**: `getLevel(points: number): string` gibt den korrekten Level-String basierend auf den Schwellen zurück; wird nach jeder `awardPoints`-Ausführung gespeichert.
   - **Referenz**: BAC-04-002
   - **Testbar durch**: Unit
 
-- [ ] **AC-04-003**: Das `LevelUpModal` erscheint client-seitig, wenn nach einer Aktion der Level-String des Users sich ändert — geprüft durch Vergleich des alten und neuen Levels.
+- [x] **AC-04-003**: Das `LevelUpModal` erscheint client-seitig, wenn nach einer Aktion der Level-String des Users sich ändert — geprüft durch Vergleich des alten und neuen Levels.
   - **Referenz**: BAC-04-003
   - **Testbar durch**: E2E
 
-- [ ] **AC-04-004**: `/dashboard` zeigt `totalPoints`, `level`, globalen `rank` (aus `GET /api/users/[id]`) und `getLevelProgress(points)` als Prozentwert.
+- [x] **AC-04-004**: `/dashboard` zeigt `totalPoints`, `level`, globalen `rank` (aus `GET /api/users/[id]`) und `getLevelProgress(points)` als Prozentwert.
   - **Referenz**: BAC-04-004
   - **Testbar durch**: E2E
 
-- [ ] **AC-04-005**: `/dashboard` zeigt die letzten 3 eigenen Prompts und 3 Trending Prompts (höchster `usageCount`).
+- [x] **AC-04-005**: `/dashboard` zeigt die letzten 3 eigenen Prompts und 3 Trending Prompts (höchster `usageCount`).
   - **Referenz**: BAC-04-004
   - **Testbar durch**: E2E
 
-- [ ] **AC-04-006**: `/leaderboard` lädt `GET /api/users` (sortiert nach `totalPoints DESC`) und hebt den aktiven User hervor.
+- [x] **AC-04-006**: `/leaderboard` lädt `GET /api/users` (sortiert nach `totalPoints DESC`) und hebt den aktiven User hervor.
   - **Referenz**: BAC-04-005
   - **Testbar durch**: E2E
 
-- [ ] **AC-04-007**: `FloatingPoints`-Komponente wird über `triggerFloat(label: string)` ausgelöst; zeigt die Einblendung für 2 Sekunden; verschwindet danach automatisch.
+- [x] **AC-04-007**: `FloatingPoints`-Komponente wird über `triggerFloat(label: string)` ausgelöst; zeigt die Einblendung für 2 Sekunden; verschwindet danach automatisch.
   - **Referenz**: BAC-04-006
   - **Testbar durch**: E2E, Manual
 
-- [ ] **AC-04-008**: `/profile/[id]` zeigt User-Stats (Punkte, Level, Rang, Prompt-Anzahl, Durchschnittsbewertung eigener Prompts) und alle eigenen Prompts.
+- [x] **AC-04-008**: `/profile/[id]` zeigt User-Stats (Punkte, Level, Rang, Prompt-Anzahl, Durchschnittsbewertung eigener Prompts) und alle eigenen Prompts.
   - **Referenz**: BAC-04-004
   - **Testbar durch**: E2E
 

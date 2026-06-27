@@ -11,27 +11,27 @@
 
 ## Technische Akzeptanzkriterien
 
-- [ ] **AC-06-001**: `GET /api/challenges` gibt aktive Challenges als `WeeklyChallengeData[]` zurück (gefiltert nach `isActive: true`); Admin-Zugriff gibt alle zurück.
+- [x] **AC-06-001**: `GET /api/challenges` gibt aktive Challenges als `WeeklyChallengeData[]` zurück (gefiltert nach `isActive: true`); Admin-Zugriff gibt alle zurück.
   - **Referenz**: BAC-06-001
   - **Testbar durch**: E2E
 
-- [ ] **AC-06-002**: `POST /api/prompts` mit `challengeId` erstellt zusätzlich einen `ChallengeSubmission`-Eintrag und vergibt `POINTS.CHALLENGE_SUBMIT` (30) an den Autor.
+- [x] **AC-06-002**: `POST /api/prompts` mit `challengeId` erstellt zusätzlich einen `ChallengeSubmission`-Eintrag und vergibt `POINTS.CHALLENGE_SUBMIT` (30) an den Autor.
   - **Referenz**: BAC-06-002
   - **Testbar durch**: E2E
 
-- [ ] **AC-06-003**: `/submit`-Seite zeigt `WeeklyChallengeCard` wenn `GET /api/challenges` mindestens eine aktive Challenge liefert; Checkbox `challengeId` im POST-Body mitschicken.
+- [x] **AC-06-003**: `/submit`-Seite zeigt `WeeklyChallengeCard` wenn `GET /api/challenges` mindestens eine aktive Challenge liefert; Checkbox `challengeId` im POST-Body mitschicken.
   - **Referenz**: BAC-06-001, BAC-06-002
   - **Testbar durch**: E2E
 
-- [ ] **AC-06-004**: `POST /api/admin/challenges` erstellt eine neue Challenge (anfangs inaktiv).
+- [x] **AC-06-004**: `POST /api/admin/challenges` erstellt eine neue Challenge (anfangs inaktiv).
   - **Referenz**: BAC-06-003
   - **Testbar durch**: E2E
 
-- [ ] **AC-06-005**: `PUT /api/admin/challenges/[id]` mit `{ isActive: true }` setzt alle anderen Challenges auf `isActive: false` via Transaktion.
+- [x] **AC-06-005**: `PUT /api/admin/challenges/[id]` mit `{ isActive: true }` setzt alle anderen Challenges auf `isActive: false` via Transaktion.
   - **Referenz**: BAC-06-004
   - **Testbar durch**: E2E
 
-- [ ] **AC-06-006**: `PUT /api/admin/challenges/[id]` mit `{ isActive: false }` beendet eine Challenge.
+- [x] **AC-06-006**: `PUT /api/admin/challenges/[id]` mit `{ isActive: false }` beendet eine Challenge.
   - **Referenz**: BAC-06-004
   - **Testbar durch**: E2E
 

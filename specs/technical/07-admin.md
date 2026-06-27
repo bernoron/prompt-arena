@@ -11,35 +11,35 @@
 
 ## Technische Akzeptanzkriterien
 
-- [ ] **AC-07-001**: `POST /api/admin/login` prüft `body.password` gegen `process.env.ADMIN_PASSWORD`; bei Erfolg setzt `HttpOnly`-Cookie `admin_session` mit signiertem Wert und gibt `{ ok: true }` zurück.
+- [x] **AC-07-001**: `POST /api/admin/login` prüft `body.password` gegen `process.env.ADMIN_PASSWORD`; bei Erfolg setzt `HttpOnly`-Cookie `admin_session` mit signiertem Wert und gibt `{ ok: true }` zurück.
   - **Referenz**: BAC-07-001
   - **Testbar durch**: E2E
 
-- [ ] **AC-07-002**: `POST /api/admin/logout` löscht Cookie `admin_session` (setzt `Max-Age=0`) und gibt `{ ok: true }` zurück.
+- [x] **AC-07-002**: `POST /api/admin/logout` löscht Cookie `admin_session` (setzt `Max-Age=0`) und gibt `{ ok: true }` zurück.
   - **Referenz**: BAC-07-007
   - **Testbar durch**: E2E
 
-- [ ] **AC-07-003**: `middleware.ts` prüft Cookie `admin_session` auf allen `/admin/*`-Pfaden (ausser `/admin/login`); bei fehlendem/ungültigem Cookie → `NextResponse.redirect('/admin/login')`.
+- [x] **AC-07-003**: `middleware.ts` prüft Cookie `admin_session` auf allen `/admin/*`-Pfaden (ausser `/admin/login`); bei fehlendem/ungültigem Cookie → `NextResponse.redirect('/admin/login')`.
   - **Referenz**: BAC-07-002
   - **Testbar durch**: E2E
 
-- [ ] **AC-07-004**: `GET /api/admin/stats` gibt `{ users, prompts, votes, challenges }` als Gesamtzahlen zurück.
+- [x] **AC-07-004**: `GET /api/admin/stats` gibt `{ users, prompts, votes, challenges }` als Gesamtzahlen zurück.
   - **Referenz**: BAC-07-003
   - **Testbar durch**: E2E
 
-- [ ] **AC-07-005**: `GET /api/admin/prompts` gibt alle Prompts mit Autor-Info zurück; `PUT /api/admin/prompts/[id]` aktualisiert Felder; `DELETE /api/admin/prompts/[id]` löscht Prompt (kaskadierend: Votes, Favorites, Submissions).
+- [x] **AC-07-005**: `GET /api/admin/prompts` gibt alle Prompts mit Autor-Info zurück; `PUT /api/admin/prompts/[id]` aktualisiert Felder; `DELETE /api/admin/prompts/[id]` löscht Prompt (kaskadierend: Votes, Favorites, Submissions).
   - **Referenz**: BAC-07-004
   - **Testbar durch**: E2E
 
-- [ ] **AC-07-006**: Admin-Challenge-Verwaltung via `GET/POST /api/admin/challenges` und `PUT /api/admin/challenges/[id]` (Spec in Feature 06 detailliert).
+- [x] **AC-07-006**: Admin-Challenge-Verwaltung via `GET/POST /api/admin/challenges` und `PUT /api/admin/challenges/[id]` (Spec in Feature 06 detailliert).
   - **Referenz**: BAC-07-005
   - **Testbar durch**: E2E
 
-- [ ] **AC-07-007**: `GET /api/admin/users` und `GET/PUT /api/admin/users/[id]` für Nutzerverwaltung.
+- [x] **AC-07-007**: `GET /api/admin/users` und `GET/PUT /api/admin/users/[id]` für Nutzerverwaltung.
   - **Referenz**: BAC-07-006
   - **Testbar durch**: E2E
 
-- [ ] **AC-07-008**: Admin-Layout verwendet separate `app/admin/layout.tsx` mit Sidebar (keine User-Navigation, kein UserPicker).
+- [x] **AC-07-008**: Admin-Layout verwendet separate `app/admin/layout.tsx` mit Sidebar (keine User-Navigation, kein UserPicker).
   - **Referenz**: BAC-07-003 (Abgrenzung vom User-Bereich)
   - **Testbar durch**: E2E, Manual
 

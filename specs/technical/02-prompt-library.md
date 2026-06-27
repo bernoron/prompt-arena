@@ -11,39 +11,39 @@
 
 ## Technische Akzeptanzkriterien
 
-- [ ] **AC-02-001**: `POST /api/prompts` erstellt einen Prompt mit `title`, `titleEn`, `content`, `contentEn`, `category`, `difficulty`, `authorId`; vergibt `POINTS.SUBMIT_PROMPT` (20) an den Autor; gibt Status 201 zurück.
+- [x] **AC-02-001**: `POST /api/prompts` erstellt einen Prompt mit `title`, `titleEn`, `content`, `contentEn`, `category`, `difficulty`, `authorId`; vergibt `POINTS.SUBMIT_PROMPT` (20) an den Autor; gibt Status 201 zurück.
   - **Referenz**: BAC-02-001
   - **Testbar durch**: E2E, Unit
 
-- [ ] **AC-02-002**: `GET /api/prompts` gibt `PromptWithDetails[]` zurück, inkl. berechneter `avgRating`, `voteCount` (via `groupBy`), `userVote` und `userFavorite` (wenn `userId` übergeben).
+- [x] **AC-02-002**: `GET /api/prompts` gibt `PromptWithDetails[]` zurück, inkl. berechneter `avgRating`, `voteCount` (via `groupBy`), `userVote` und `userFavorite` (wenn `userId` übergeben).
   - **Referenz**: BAC-02-002
   - **Testbar durch**: E2E
 
-- [ ] **AC-02-003**: `GET /api/prompts?category=Writing` filtert korrekt; `category=all` oder kein Parameter gibt alle zurück.
+- [x] **AC-02-003**: `GET /api/prompts?category=Writing` filtert korrekt; `category=all` oder kein Parameter gibt alle zurück.
   - **Referenz**: BAC-02-003
   - **Testbar durch**: E2E
 
-- [ ] **AC-02-004**: `GET /api/prompts?search=<term>` führt Volltextsuche über `title`, `titleEn`, `content`, `contentEn` durch (case-insensitiv, via Prisma `contains`).
+- [x] **AC-02-004**: `GET /api/prompts?search=<term>` führt Volltextsuche über `title`, `titleEn`, `content`, `contentEn` durch (case-insensitiv, via Prisma `contains`).
   - **Referenz**: BAC-02-004
   - **Testbar durch**: E2E
 
-- [ ] **AC-02-005**: `GET /api/prompts?sortBy=most-used` sortiert nach `usageCount DESC`; Standardsortierung ist `createdAt DESC`.
+- [x] **AC-02-005**: `GET /api/prompts?sortBy=most-used` sortiert nach `usageCount DESC`; Standardsortierung ist `createdAt DESC`.
   - **Referenz**: BAC-02-005
   - **Testbar durch**: E2E
 
-- [ ] **AC-02-006**: Das `PromptModal` zeigt vollständigen Inhalt; der Kopieren-Button überträgt `content` in die Zwischenablage via `navigator.clipboard.writeText`.
+- [x] **AC-02-006**: Das `PromptModal` zeigt vollständigen Inhalt; der Kopieren-Button überträgt `content` in die Zwischenablage via `navigator.clipboard.writeText`.
   - **Referenz**: BAC-02-006
   - **Testbar durch**: E2E, Manual
 
-- [ ] **AC-02-007**: `POST /api/usage` mit `{ promptId, userId }` inkrementiert `prompt.usageCount` und vergibt `POINTS.USE_PROMPT` (5) an den Autor; gibt `{ usageCount: number }` zurück.
+- [x] **AC-02-007**: `POST /api/usage` mit `{ promptId, userId }` inkrementiert `prompt.usageCount` und vergibt `POINTS.USE_PROMPT` (5) an den Autor; gibt `{ usageCount: number }` zurück.
   - **Referenz**: BAC-02-007
   - **Testbar durch**: E2E
 
-- [ ] **AC-02-008**: `PromptCard` zeigt Rarity-Badge und optionalen Glow-Effekt basierend auf `usageCount`: Common (< 10), Rare (≥ 10), Epic (≥ 30), Legendary (≥ 60).
+- [x] **AC-02-008**: `PromptCard` zeigt Rarity-Badge und optionalen Glow-Effekt basierend auf `usageCount`: Common (< 10), Rare (≥ 10), Epic (≥ 30), Legendary (≥ 60).
   - **Referenz**: BAC-02-002
   - **Testbar durch**: E2E, Manual
 
-- [ ] **AC-02-009**: Punkte-Vergabe für Einreichung erfolgt via `awardPoints(authorId, POINTS.SUBMIT_PROMPT)` in der POST-Route — atomar mit der Prompt-Erstellung.
+- [x] **AC-02-009**: Punkte-Vergabe für Einreichung erfolgt via `awardPoints(authorId, POINTS.SUBMIT_PROMPT)` in der POST-Route — atomar mit der Prompt-Erstellung.
   - **Referenz**: BAC-02-001
   - **Testbar durch**: E2E
 

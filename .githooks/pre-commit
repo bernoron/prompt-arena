@@ -27,3 +27,9 @@ echo "📄 Dokumentation wird aktualisiert…"
 npm run docs
 git add docs/
 echo "✅ Dokumentation aktualisiert und gestaged."
+
+# ── 3. Spec-Sync: Checkboxen in specs/technical/ und tasks.md nachführen ──────
+echo "📋 Specs werden synchronisiert…"
+node scripts/spec-sync.mjs --fix
+git add specs/technical/ specs/tasks.md
+echo "✅ Specs synchronisiert und gestaged."
