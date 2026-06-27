@@ -16,7 +16,8 @@ test.describe('API Smoke Tests', () => {
     const res = await request.get('/api/prompts');
     expect(res.status()).toBe(200);
     const body = await res.json();
-    expect(Array.isArray(body)).toBe(true);
+    expect(body).toHaveProperty('items');
+    expect(Array.isArray(body.items)).toBe(true);
   });
 
   test('GET /api/challenges returns array', async ({ request }) => {

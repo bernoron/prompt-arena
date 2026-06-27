@@ -131,4 +131,4 @@ spass­bringend und sichtbar.
 
 
 ---
-*Automatisch generiert am 27.06.2026, 14:51 · [Quellcode](https://github.com/your-org/prompt-arena)*
+*Automatisch generiert am 27.06.2026, 15:32 · [Quellcode](https://github.com/your-org/prompt-arena)*
