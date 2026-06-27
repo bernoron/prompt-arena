@@ -29,15 +29,22 @@ test.describe('User Flows', () => {
 
   test('navigation between pages works', async ({ page }) => {
     await page.goto('/dashboard');
-    await page.waitForLoadState('domcontentloaded');
+    await page.waitForLoadState('networkidle');
 
-    await page.click('nav a[href="/library"]');
+    // Use the desktop nav (hidden md:flex) — click via href attribute
+    const libraryLink = page.locator('header nav a[href="/library"]').first();
+    await libraryLink.waitFor({ state: 'visible', timeout: 10000 });
+    await libraryLink.click();
     await expect(page).toHaveURL(/\/library/, { timeout: 10000 });
 
-    await page.click('nav a[href="/leaderboard"]');
+    const leaderboardLink = page.locator('header nav a[href="/leaderboard"]').first();
+    await leaderboardLink.waitFor({ state: 'visible', timeout: 10000 });
+    await leaderboardLink.click();
     await expect(page).toHaveURL(/\/leaderboard/, { timeout: 10000 });
 
-    await page.click('nav a[href="/dashboard"]');
+    const dashboardLink = page.locator('header nav a[href="/dashboard"]').first();
+    await dashboardLink.waitFor({ state: 'visible', timeout: 10000 });
+    await dashboardLink.click();
     await expect(page).toHaveURL(/\/dashboard/, { timeout: 10000 });
   });
 

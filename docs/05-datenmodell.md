@@ -79,6 +79,20 @@ WeeklyChallenge 1──n ChallengeSubmission
 
 ---
 
+### PromptCategory
+
+| Feld | Typ | Pflicht | Hinweise |
+|---|---|---|---|
+| `id` | `Int` | Pflicht | @id @default(autoincrement()) |
+| `slug` | `String` | Pflicht | @unique 'writing', 'email' — used in API/validation |
+| `label` | `String` | Pflicht | 'Writing', 'Email' — displayed in UI |
+| `icon` | `String` | Pflicht | Emoji displayed in badges |
+| `color` | `String` | Pflicht | Tailwind color name, e.g. 'teal' |
+| `order` | `Int` | Pflicht | @default(0) Display order in filters |
+| `prompts` | `Prompt[]` | Pflicht |  |
+
+---
+
 ### Prompt
 
 | Feld | Typ | Pflicht | Hinweise |
@@ -94,6 +108,7 @@ WeeklyChallenge 1──n ChallengeSubmission
 | `usageCount` | `Int` | Pflicht | @default(0) |
 | `createdAt` | `DateTime` | Pflicht | @default(now()) |
 | `author` | `User` | Pflicht | @relation(fields: [authorId], references: [id]) |
+| `categoryRef` | `PromptCategory` | Optional | @relation(fields: [category], references: [slug]) |
 | `votes` | `Vote[]` | Pflicht |  |
 | `challengeSubmissions` | `ChallengeSubmission[]` | Pflicht |  |
 | `favorites` | `Favorite[]` | Pflicht |  |
@@ -121,6 +136,8 @@ WeeklyChallenge 1──n ChallengeSubmission
 | `id` | `Int` | Pflicht | @id @default(autoincrement()) |
 | `promptId` | `Int` | Pflicht |  |
 | `userId` | `Int` | Pflicht |  |
+| `isActive` | `Boolean` | Pflicht | @default(true) false = user un-favorited (soft-delete) |
+| `pointsAwarded` | `Boolean` | Pflicht | @default(false) true = author already received FAVORITE_PROMPT points |
 | `createdAt` | `DateTime` | Pflicht | @default(now()) |
 | `prompt` | `Prompt` | Pflicht | @relation(fields: [promptId], references: [id]) |
 | `user` | `User` | Pflicht | @relation(fields: [userId], references: [id]) |
@@ -188,4 +205,4 @@ Für Produktivbetrieb empfiehlt sich PostgreSQL (nur `schema.prisma` anpassen).
 
 
 ---
-*Automatisch generiert am 29.04.2026, 22:08 · [Quellcode](https://github.com/your-org/prompt-arena)*
+*Automatisch generiert am 27.06.2026, 14:51 · [Quellcode](https://github.com/your-org/prompt-arena)*

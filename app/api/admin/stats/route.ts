@@ -1,11 +1,22 @@
 /**
  * GET /api/admin/stats  – Aggregate statistics for the admin dashboard
+ *
+ * Protected by admin-session middleware (see middleware.ts).
+ * Rate-limited to prevent abuse of the heavy aggregation queries.
  */
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { readLimiter, getClientIp } from '@/lib/rate-limit';
+import { logger } from '@/lib/logger';
 
 // @spec AC-07-004
-export async function GET() {
+export async function GET(req: NextRequest) {
+  // Rate-limit the heavy aggregation queries
+  if (!readLimiter.check(getClientIp(req))) {
+    logger.warn('rate limit hit', { route: 'GET /api/admin/stats', ip: getClientIp(req) });
+    return NextResponse.json({ error: 'Too many requests' }, { status: 429 });
+  }
+
   const [
     totalUsers, totalPrompts, totalVotes, usageAgg,
     topPrompts, recentUsers, categoryBreakdown,

@@ -9,6 +9,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { writeLimiter, getClientIp } from '@/lib/rate-limit';
 import { CompleteLessonSchema, validationError } from '@/lib/validation';
+import { resolveUserId, USER_COOKIE } from '@/lib/user-auth';
 import { POINTS, getLevel } from '@/lib/points';
 
 // @spec AC-08-003
@@ -27,7 +28,11 @@ export async function POST(
     return NextResponse.json(errBody, { status });
   }
 
-  const { userId } = parsed.data;
+  const resolved = await resolveUserId(req.cookies.get(USER_COOKIE)?.value, parsed.data.userId);
+  if (typeof resolved === 'object' && 'error' in resolved) {
+    return NextResponse.json({ error: resolved.error }, { status: resolved.status });
+  }
+  const userId = resolved;
   const { moduleSlug, lessonSlug } = params;
 
   // Find the lesson

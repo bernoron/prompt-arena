@@ -37,9 +37,10 @@ export default function LeaderboardPage() {
   useEffect(() => {
     Promise.all([
       fetch('/api/users').then((r) => r.json()),
-      fetch('/api/prompts').then((r) => r.json()),
-    ]).then(([u, p]: [UserWithStats[], PromptWithDetails[]]) => {
+      fetch('/api/prompts?take=100').then((r) => r.json()),
+    ]).then(([u, data]: [UserWithStats[], { items: PromptWithDetails[]; hasNextPage: boolean }]) => {
       setUsers(u);
+      const p = data.items ?? [];
       const oneWeekAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
       const thisWeek = p.filter((x) => new Date(x.createdAt).getTime() > oneWeekAgo);
       const best = [...(thisWeek.length ? thisWeek : p)].sort((a, b) => b.avgRating - a.avgRating)[0];

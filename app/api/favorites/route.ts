@@ -4,9 +4,15 @@
  *
  * POST body: { promptId: number, userId: number }
  *
- * The first time a user favorites a prompt the prompt author receives
- * FAVORITE_PROMPT points. Removing and re-adding a favorite does NOT
- * award points again (idempotent point distribution).
+ * Idempotent point distribution:
+ *   The FIRST time a user favorites a prompt the prompt author receives
+ *   FAVORITE_PROMPT points. Removing and re-adding a favorite does NOT
+ *   award points again. We track this via the `pointsAwarded` flag on the
+ *   Favorite row, which persists even after soft-deletion (isActive = false).
+ *
+ * Soft-delete pattern:
+ *   Favorites are never hard-deleted. "Remove" sets isActive = false so the
+ *   pointsAwarded history is preserved. "Add" sets isActive = true (upsert).
  */
 
 import { NextRequest, NextResponse } from 'next/server';
@@ -15,6 +21,7 @@ import { awardPoints, calcAvgRating } from '@/lib/db-helpers';
 import { POINTS } from '@/lib/points';
 import { FavoriteSchema, PathId, validationError } from '@/lib/validation';
 import { writeLimiter, readLimiter, getClientIp } from '@/lib/rate-limit';
+import { resolveUserId, USER_COOKIE } from '@/lib/user-auth';
 import { logger, serializeError } from '@/lib/logger';
 
 // ─── GET /api/favorites ──────────────────────────────────────────────────────
@@ -40,12 +47,12 @@ export async function GET(req: NextRequest) {
 
   try {
     const favorites = await prisma.favorite.findMany({
-      where: { userId: parsedUserId },
+      where: { userId: parsedUserId, isActive: true },
       include: {
         prompt: {
           include: {
             author: { select: { id: true, name: true, avatarColor: true, department: true } },
-            votes: true,
+            votes: { select: { value: true, userId: true } }, // @fix N+1: only needed fields
           },
         },
       },
@@ -86,31 +93,61 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(errBody, { status });
   }
 
-  const { promptId, userId } = result.data;
   const reqId = req.headers.get('x-request-id') ?? undefined;
 
+  const resolved = await resolveUserId(req.cookies.get(USER_COOKIE)?.value, result.data.userId);
+  if (typeof resolved === 'object' && 'error' in resolved) {
+    return NextResponse.json({ error: resolved.error }, { status: resolved.status });
+  }
+  const { promptId } = result.data;
+  const userId = resolved;
+
   try {
+    // Look up any existing record (active OR soft-deleted) for this pair
     const existing = await prisma.favorite.findUnique({
       where: { promptId_userId: { promptId, userId } },
     });
 
-    if (existing) {
-      // Remove favorite – no points deducted
-      await prisma.favorite.delete({ where: { promptId_userId: { promptId, userId } } });
+    if (existing?.isActive) {
+      // ── Remove favorite (soft-delete) ─────────────────────────────────────
+      // pointsAwarded is preserved so re-adding won't trigger another payout.
+      await prisma.favorite.update({
+        where: { promptId_userId: { promptId, userId } },
+        data:  { isActive: false },
+      });
       logger.debug('favorite removed', { promptId, userId, reqId });
       return NextResponse.json({ favorited: false });
     }
 
-    // Add favorite
-    await prisma.favorite.create({ data: { promptId, userId } });
-
-    // Award author points (only on first-ever favorite — never on re-adding)
-    const prompt = await prisma.prompt.findUnique({ where: { id: promptId }, select: { authorId: true } });
-    if (prompt && prompt.authorId !== userId) {
-      await awardPoints(prompt.authorId, POINTS.FAVORITE_PROMPT);
+    if (existing && !existing.isActive) {
+      // ── Re-add favorite (un-soft-delete) ──────────────────────────────────
+      // Points were already awarded on the first-ever favorite — skip award.
+      await prisma.favorite.update({
+        where: { promptId_userId: { promptId, userId } },
+        data:  { isActive: true },
+      });
+      logger.debug('favorite re-added (no points — already awarded)', { promptId, userId, reqId });
+      return NextResponse.json({ favorited: true });
     }
 
-    logger.info('favorite added', { promptId, userId, reqId });
+    // ── First-ever favorite ────────────────────────────────────────────────
+    // Create the record and — atomically — award points to the author.
+    const prompt = await prisma.prompt.findUnique({
+      where: { id: promptId },
+      select: { authorId: true },
+    });
+
+    await prisma.$transaction(async (tx) => {
+      await tx.favorite.create({
+        data: { promptId, userId, isActive: true, pointsAwarded: true },
+      });
+      // Only award if the author isn't the same user who favorited
+      if (prompt && prompt.authorId !== userId) {
+        await awardPoints(prompt.authorId, POINTS.FAVORITE_PROMPT, tx);
+      }
+    });
+
+    logger.info('favorite added (points awarded)', { promptId, userId, reqId });
     return NextResponse.json({ favorited: true });
   } catch (err) {
     logger.error('favorite toggle failed', { promptId, userId, reqId, ...serializeError(err) });

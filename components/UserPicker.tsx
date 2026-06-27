@@ -108,24 +108,41 @@ export default function UserPicker({ dark = false }: { dark?: boolean }) {
         if (selected) {
           setCurrentUser(selected);
           localStorage.setItem(USER_ID_KEY, String(selected.id));
+          // Sync session cookie on page load (idempotent)
+          fetch('/api/auth/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ userId: selected.id }),
+          }).catch(() => {});
         }
       });
   };
 
   useEffect(() => { loadUsers(); }, []);
 
-  const select = (user: User) => {
+  const select = async (user: User) => {
     localStorage.setItem(USER_ID_KEY, String(user.id));
     setCurrentUser(user);
     setOpen(false);
     setShowRegister(false);
+    // Set server-side session cookie alongside localStorage
+    await fetch('/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId: user.id }),
+    }).catch(() => { /* non-fatal: localStorage still works */ });
     window.dispatchEvent(new CustomEvent('userChanged', { detail: user }));
   };
 
-  const handleCreated = (user: User) => {
+  const handleCreated = async (user: User) => {
     setOpen(false);
     setShowRegister(false);
     loadUsers(user.id);
+    await fetch('/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId: user.id }),
+    }).catch(() => {});
     window.dispatchEvent(new CustomEvent('userChanged', { detail: user }));
   };
 

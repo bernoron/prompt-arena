@@ -6,6 +6,7 @@
  * On success sets an HttpOnly `admin_session` cookie and returns { ok: true }.
  * On failure returns 401.
  */
+import { timingSafeEqual } from 'crypto';
 import { NextRequest, NextResponse } from 'next/server';
 import { hashSecret, ADMIN_COOKIE } from '@/lib/admin-auth';
 import { writeLimiter, getClientIp } from '@/lib/rate-limit';
@@ -35,7 +36,16 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Invalid request body' }, { status: 400 });
   }
 
-  if (password !== secret) {
+  // Timing-safe comparison prevents brute-force timing attacks.
+  // Both buffers must be the same byte length for timingSafeEqual;
+  // length mismatch itself reveals nothing beyond "wrong password".
+  const passwordBuf = Buffer.from(password);
+  const secretBuf   = Buffer.from(secret);
+  const matches =
+    passwordBuf.length === secretBuf.length &&
+    timingSafeEqual(passwordBuf, secretBuf);
+
+  if (!matches) {
     logger.warn('Admin login failed', { ip: getClientIp(req) });
     return NextResponse.json({ error: 'Invalid password' }, { status: 401 });
   }

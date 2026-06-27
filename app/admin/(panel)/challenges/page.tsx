@@ -22,6 +22,7 @@ export default function AdminChallenges() {
   const [saving, setSaving]         = useState(false);
   const [error, setError]           = useState('');
   const [showForm, setShowForm]     = useState(false);
+  const [editingId, setEditingId]   = useState<number | null>(null);
   const [form, setForm] = useState({ title: '', description: '', startDate: '', endDate: '' });
 
   const load = () => {
@@ -34,11 +35,14 @@ export default function AdminChallenges() {
 
   useEffect(() => { load(); }, []);
 
-  const handleCreate = async (e: React.FormEvent) => {
+  const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     setSaving(true); setError('');
-    const res = await fetch('/api/admin/challenges', {
-      method: 'POST',
+    const isEdit = editingId !== null;
+    const url = isEdit ? `/api/admin/challenges/${editingId}` : '/api/admin/challenges';
+    const method = isEdit ? 'PATCH' : 'POST';
+    const res = await fetch(url, {
+      method,
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         ...form,
@@ -49,12 +53,34 @@ export default function AdminChallenges() {
     if (res.ok) {
       setForm({ title: '', description: '', startDate: '', endDate: '' });
       setShowForm(false);
+      setEditingId(null);
       load();
     } else {
       const d = await res.json();
-      setError(d.error ?? 'Fehler beim Erstellen');
+      setError(d.error ?? (isEdit ? 'Fehler beim Speichern' : 'Fehler beim Erstellen'));
     }
     setSaving(false);
+  };
+
+  const startEdit = (c: Challenge) => {
+    setEditingId(c.id);
+    setShowForm(true);
+    const toDatetimeLocal = (iso: string) => {
+      const d = new Date(iso);
+      return d.toISOString().slice(0, 16);
+    };
+    setForm({
+      title: c.title,
+      description: c.description,
+      startDate: toDatetimeLocal(c.startDate),
+      endDate: toDatetimeLocal(c.endDate),
+    });
+  };
+
+  const cancelEdit = () => {
+    setEditingId(null);
+    setShowForm(false);
+    setForm({ title: '', description: '', startDate: '', endDate: '' });
   };
 
   const toggleActive = async (c: Challenge) => {
@@ -79,17 +105,24 @@ export default function AdminChallenges() {
           <h1 className="text-2xl font-extrabold text-slate-900">🏆 Challenges</h1>
           <p className="text-slate-400 text-sm mt-1">Weekly Challenges erstellen und verwalten.</p>
         </div>
-        <button onClick={() => setShowForm((v) => !v)}
+        <button onClick={() => {
+          if (showForm) cancelEdit();
+          else {
+            setEditingId(null);
+            setForm({ title: '', description: '', startDate: '', endDate: '' });
+            setShowForm(true);
+          }
+        }}
           className="px-4 py-2 rounded-xl text-sm font-semibold text-white transition-all hover:opacity-90"
           style={{ background: 'linear-gradient(135deg,#059669,#0891b2)' }}>
-          + Neue Challenge
+          {showForm ? '✕ Abbrechen' : '+ Neue Challenge'}
         </button>
       </div>
 
-      {/* Create Form */}
+      {/* Create/Edit Form */}
       {showForm && (
-        <form onSubmit={handleCreate} className="bg-white rounded-2xl border border-emerald-200 shadow-sm p-5 space-y-4">
-          <h2 className="font-bold text-slate-800">Neue Challenge erstellen</h2>
+        <form onSubmit={handleSave} className="bg-white rounded-2xl border border-emerald-200 shadow-sm p-5 space-y-4">
+          <h2 className="font-bold text-slate-800">{editingId ? 'Challenge bearbeiten' : 'Neue Challenge erstellen'}</h2>
           <div className="grid grid-cols-1 gap-3">
             <input required value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })}
               placeholder="Titel (z.B. «Schadensmeldungen zusammenfassen»)"
@@ -112,14 +145,14 @@ export default function AdminChallenges() {
           </div>
           {error && <p className="text-xs text-red-500 font-medium">{error}</p>}
           <div className="flex gap-3">
-            <button type="button" onClick={() => setShowForm(false)}
+            <button type="button" onClick={cancelEdit}
               className="flex-1 py-2 text-sm text-slate-600 rounded-xl border border-slate-200 hover:bg-slate-50">
               Abbrechen
             </button>
             <button type="submit" disabled={saving}
               className="flex-1 py-2 text-sm font-semibold text-white rounded-xl disabled:opacity-50"
               style={{ background: 'linear-gradient(135deg,#059669,#0891b2)' }}>
-              {saving ? 'Wird erstellt…' : 'Challenge erstellen'}
+              {saving ? (editingId ? 'Wird gespeichert…' : 'Wird erstellt…') : (editingId ? 'Challenge speichern' : 'Challenge erstellen')}
             </button>
           </div>
         </form>
@@ -156,6 +189,10 @@ export default function AdminChallenges() {
                   </div>
                 </div>
                 <div className="flex items-center gap-2 flex-shrink-0">
+                  <button onClick={() => startEdit(c)}
+                    className="px-3 py-1.5 rounded-lg text-xs font-semibold border border-slate-200 text-slate-600 hover:bg-slate-50 transition-all">
+                    Bearbeiten
+                  </button>
                   <button onClick={() => toggleActive(c)}
                     className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all border ${
                       c.isActive

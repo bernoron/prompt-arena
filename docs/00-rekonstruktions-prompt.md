@@ -58,6 +58,7 @@ model User {
   favorites            Favorite[]
   lessonProgress       LessonProgress[]
 
+  @@unique([name])
   @@index([totalPoints])
 }
 
@@ -102,6 +103,19 @@ model LessonProgress {
   @@index([userId])
 }
 
+model PromptCategory {
+  id    Int    @id @default(autoincrement())
+  slug  String @unique          // 'writing', 'email' — used in API/validation
+  label String                  // 'Writing', 'Email' — displayed in UI
+  icon  String                  // Emoji displayed in badges
+  color String                  // Tailwind color name, e.g. 'teal'
+  order Int    @default(0)      // Display order in filters
+
+  prompts Prompt[]
+
+  @@index([order])
+}
+
 model Prompt {
   id         Int      @id @default(autoincrement())
   title      String
@@ -115,6 +129,7 @@ model Prompt {
   createdAt  DateTime @default(now())
 
   author               User                  @relation(fields: [authorId], references: [id])
+  categoryRef          PromptCategory?       @relation(fields: [category], references: [slug])
   votes                Vote[]
   challengeSubmissions ChallengeSubmission[]
   favorites            Favorite[]
@@ -140,16 +155,19 @@ model Vote {
 }
 
 model Favorite {
-  id        Int      @id @default(autoincrement())
-  promptId  Int
-  userId    Int
-  createdAt DateTime @default(now())
+  id            Int      @id @default(autoincrement())
+  promptId      Int
+  userId        Int
+  isActive      Boolean  @default(true)   // false = user un-favorited (soft-delete)
+  pointsAwarded Boolean  @default(false)  // true = author already received FAVORITE_PROMPT points
+  createdAt     DateTime @default(now())
 
   prompt Prompt @relation(fields: [promptId], references: [id])
   user   User   @relation(fields: [userId], references: [id])
 
   @@unique([promptId, userId])
   @@index([userId])
+  @@index([userId, isActive])
 }
 
 model WeeklyChallenge {
@@ -292,6 +310,10 @@ useCurrentUser.ts:
 ════════════════════════════════════════════════════════════
 API-ROUTEN (app/api/)
 ════════════════════════════════════════════════════════════
+- GET /api/admin/categories
+- POST /api/admin/categories
+- PATCH /api/admin/categories/[id]
+- DELETE /api/admin/categories/[id]
 - GET /api/admin/challenges
 - POST /api/admin/challenges
 - PATCH /api/admin/challenges/[id]
@@ -302,6 +324,10 @@ API-ROUTEN (app/api/)
 - GET /api/admin/stats
 - PATCH /api/admin/users/[id]
 - DELETE /api/admin/users/[id]
+- POST /api/auth/login
+- POST /api/auth/logout
+- GET /api/auth/me
+- GET /api/categories
 - GET /api/challenges
 - GET /api/favorites
 - POST /api/favorites
@@ -445,4 +471,4 @@ SETUP-REIHENFOLGE
 
 
 ---
-*Automatisch generiert am 29.04.2026, 22:08 · [Quellcode](https://github.com/your-org/prompt-arena)*
+*Automatisch generiert am 27.06.2026, 14:51 · [Quellcode](https://github.com/your-org/prompt-arena)*

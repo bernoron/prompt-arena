@@ -241,15 +241,24 @@ export default function DashboardPage() {
           {/* Challenges */}
           {loading ? (
             <div className="bg-slate-200 rounded-2xl h-44 animate-pulse" />
-          ) : challenges.length === 0 ? (
-            <div className="bg-white rounded-2xl border border-slate-200 p-8 text-center">
-              <p className="text-3xl mb-2">🏆</p>
-              <p className="font-bold text-slate-700">Aktuell keine aktive Challenge</p>
-              <p className="text-sm text-slate-400 mt-1">Schau bald wieder vorbei — die nächste Challenge startet demnächst.</p>
-            </div>
-          ) : (
-            <div className="space-y-4">
-              {challenges.map((challenge) => (
+          ) : (() => {
+            // Filter: only active challenges that have started and haven't ended
+            const activeChallenges = challenges.filter((c) => {
+              const now = Date.now();
+              const hasStarted = new Date(c.startDate).getTime() <= now;
+              const isEnded = new Date(c.endDate).getTime() < now;
+              return c.isActive && hasStarted && !isEnded;
+            });
+
+            return activeChallenges.length === 0 ? (
+              <div className="bg-white rounded-2xl border border-slate-200 p-8 text-center">
+                <p className="text-3xl mb-2">🏆</p>
+                <p className="font-bold text-slate-700">Aktuell keine aktive Challenge</p>
+                <p className="text-sm text-slate-400 mt-1">Schau bald wieder vorbei — die nächste Challenge startet demnächst.</p>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {activeChallenges.map((challenge) => (
                 <div key={challenge.id}
                   className="rounded-2xl p-6 text-white shadow-xl relative overflow-hidden"
                   style={{ background: 'linear-gradient(135deg, #065f46 0%, #0e7490 100%)' }}>
@@ -282,8 +291,9 @@ export default function DashboardPage() {
                   </div>
                 </div>
               ))}
-            </div>
-          )}
+              </div>
+            );
+          })()}
 
           {/* Trending Prompts */}
           <TrendingPrompts allPrompts={allPrompts} />

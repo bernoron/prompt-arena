@@ -30,8 +30,8 @@ export default function AdminPrompts() {
 
   const load = () => {
     setLoading(true);
-    fetch('/api/prompts').then((r) => r.json()).then((d) => {
-      setPrompts(Array.isArray(d) ? d : []);
+    fetch('/api/prompts?take=500').then((r) => r.json()).then((d) => {
+      setPrompts(d.items ? d.items : Array.isArray(d) ? d : []);
       setLoading(false);
     });
   };

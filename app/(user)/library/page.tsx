@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback, Suspense } from 'react';
+import { useState, useEffect, useCallback, useRef, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import PromptCard from '@/components/PromptCard';
 import PromptModal from '@/components/PromptModal';
@@ -11,6 +11,7 @@ import { useCurrentUser } from '@/hooks/useCurrentUser';
 import { POINTS } from '@/lib/points';
 import { useLevelUp } from '@/hooks/useLevelUp';
 
+// Categories come from constants; Fix #4 will make these dynamic via API.
 const CATEGORIES: { value: 'all' | Category; label: string; icon: string }[] = [
   { value: 'all',      label: 'Alle',     icon: '✨' },
   { value: 'Writing',  label: 'Writing',  icon: '✍️' },
@@ -19,21 +20,40 @@ const CATEGORIES: { value: 'all' | Category; label: string; icon: string }[] = [
   { value: 'Excel',    label: 'Excel',    icon: '📈' },
 ];
 
+const PAGE_SIZE = 20;
+
+interface PromptPage {
+  items: PromptWithDetails[];
+  nextCursor: number | null;
+  hasNextPage: boolean;
+}
+
 function LibraryPageInner() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [prompts, setPrompts] = useState<PromptWithDetails[]>([]);
-  const [loading, setLoading] = useState(true);
+
+  const [prompts, setPrompts]         = useState<PromptWithDetails[]>([]);
+  const [nextCursor, setNextCursor]   = useState<number | null>(null);
+  const [hasNextPage, setHasNextPage] = useState(false);
+  const [loading, setLoading]         = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+
   const [category, setCategory] = useState<'all' | Category>('all');
-  const [search, setSearch] = useState('');
+  const [search, setSearch]     = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
-  const [sortBy, setSortBy] = useState<'newest' | 'most-used' | 'top-rated'>('newest');
+  const [sortBy, setSortBy]     = useState<'newest' | 'most-used' | 'top-rated'>('newest');
+
   const [selectedPrompt, setSelectedPrompt] = useState<PromptWithDetails | null>(null);
-  const [levelUpName, setLevelUpName] = useState<string | null>(null);
-  const [successToast, setSuccessToast] = useState(false);
+  const [levelUpName, setLevelUpName]       = useState<string | null>(null);
+  const [successToast, setSuccessToast]     = useState(false);
+
   const currentUserId = useCurrentUser();
   const { checkLevelUp } = useLevelUp(currentUserId);
 
+  // Sentinel element for IntersectionObserver infinite scroll
+  const sentinelRef = useRef<HTMLDivElement>(null);
+
+  // ── Toast on redirect from /submit ─────────────────────────────────────────
   useEffect(() => {
     if (searchParams.get('success') === '1') {
       setSuccessToast(true);
@@ -42,7 +62,84 @@ function LibraryPageInner() {
     }
   }, [searchParams, router]);
 
-  // Auto-open prompt modal when ?prompt=<id> is in the URL
+  // ── Search debounce ─────────────────────────────────────────────────────────
+  useEffect(() => {
+    const t = setTimeout(() => setDebouncedSearch(search), 300);
+    return () => clearTimeout(t);
+  }, [search]);
+
+  // ── Build API URL ────────────────────────────────────────────────────────────
+  const buildUrl = useCallback(
+    (cursor?: number | null) => {
+      const params = new URLSearchParams();
+      if (category !== 'all') params.set('category', category);
+      if (debouncedSearch)    params.set('search', debouncedSearch);
+      if (currentUserId)      params.set('userId', String(currentUserId));
+      if (sortBy !== 'top-rated') params.set('sortBy', sortBy);
+      params.set('take', String(PAGE_SIZE));
+      if (cursor)             params.set('cursor', String(cursor));
+      return `/api/prompts?${params}`;
+    },
+    [category, debouncedSearch, currentUserId, sortBy],
+  );
+
+  // ── Initial / filter-change load (resets list) ───────────────────────────────
+  const fetchPrompts = useCallback(async () => {
+    setLoading(true);
+    try {
+      const res  = await fetch(buildUrl());
+      const data = await res.json() as PromptPage;
+      let items  = data.items ?? [];
+      if (sortBy === 'top-rated') {
+        items = [...items].sort((a, b) => b.avgRating - a.avgRating || b.voteCount - a.voteCount);
+      }
+      setPrompts(items);
+      setNextCursor(data.nextCursor);
+      setHasNextPage(data.hasNextPage);
+    } catch {
+      setPrompts([]);
+      setNextCursor(null);
+      setHasNextPage(false);
+    }
+    setLoading(false);
+  }, [buildUrl, sortBy]);
+
+  useEffect(() => { fetchPrompts(); }, [fetchPrompts]);
+
+  // ── Load more (append) ───────────────────────────────────────────────────────
+  const loadMore = useCallback(async () => {
+    if (!hasNextPage || loadingMore || !nextCursor) return;
+    setLoadingMore(true);
+    try {
+      const res  = await fetch(buildUrl(nextCursor));
+      const data = await res.json() as PromptPage;
+      let items  = data.items ?? [];
+      if (sortBy === 'top-rated') {
+        items = [...items].sort((a, b) => b.avgRating - a.avgRating || b.voteCount - a.voteCount);
+      }
+      setPrompts((prev) => [...prev, ...items]);
+      setNextCursor(data.nextCursor);
+      setHasNextPage(data.hasNextPage);
+    } catch { /* keep existing state */ }
+    setLoadingMore(false);
+  }, [hasNextPage, loadingMore, nextCursor, buildUrl, sortBy]);
+
+  // ── IntersectionObserver for infinite scroll ────────────────────────────────
+  useEffect(() => {
+    const sentinel = sentinelRef.current;
+    if (!sentinel) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) loadMore(); },
+      { rootMargin: '200px' },
+    );
+    observer.observe(sentinel);
+    return () => observer.disconnect();
+  }, [loadMore]);
+
+  // ── Prime level baseline ────────────────────────────────────────────────────
+  useEffect(() => { if (currentUserId) checkLevelUp(); }, [currentUserId, checkLevelUp]);
+
+  // ── Auto-open prompt from URL param ─────────────────────────────────────────
   useEffect(() => {
     const promptId = searchParams.get('prompt');
     if (!promptId || prompts.length === 0) return;
@@ -53,105 +150,58 @@ function LibraryPageInner() {
     }
   }, [searchParams, prompts, router]);
 
-  useEffect(() => {
-    const t = setTimeout(() => setDebouncedSearch(search), 300);
-    return () => clearTimeout(t);
-  }, [search]);
-
-  const fetchPrompts = useCallback(async () => {
-    setLoading(true);
-    const params = new URLSearchParams();
-    if (category !== 'all') params.set('category', category);
-    if (debouncedSearch) params.set('search', debouncedSearch);
-    if (currentUserId) params.set('userId', String(currentUserId));
-    if (sortBy !== 'top-rated') params.set('sortBy', sortBy);
-    try {
-      const res = await fetch(`/api/prompts?${params}`);
-      const data: PromptWithDetails[] = await res.json();
-      if (Array.isArray(data)) {
-        if (sortBy === 'top-rated') {
-          data.sort((a, b) => b.avgRating - a.avgRating || b.voteCount - a.voteCount);
-        }
-        setPrompts(data);
-      } else {
-        setPrompts([]);
-      }
-    } catch {
-      setPrompts([]);
-    }
-    setLoading(false);
-  }, [category, debouncedSearch, currentUserId, sortBy]);
-
-  useEffect(() => { fetchPrompts(); }, [fetchPrompts]);
-
-  // Prime the level baseline so first real action doesn't false-fire level-up
-  useEffect(() => { if (currentUserId) checkLevelUp(); }, [currentUserId, checkLevelUp]);
-
+  // ── Interactions ─────────────────────────────────────────────────────────────
   const handleVote = async (promptId: number, value: number) => {
     if (!currentUserId) return;
-
-    // Optimistic update – reflect new vote instantly in the list
     setPrompts((prev) => prev.map((p) => {
       if (p.id !== promptId) return p;
       const wasNew  = !p.userVote;
-      const newCount = wasNew ? p.voteCount + 1 : p.voteCount;
-      return { ...p, userVote: value, voteCount: newCount };
+      return { ...p, userVote: value, voteCount: wasNew ? p.voteCount + 1 : p.voteCount };
     }));
-
     triggerFloat('+3 Pts', window.innerWidth / 2 - 28, window.innerHeight / 2 + 60);
-
-    // Fire request + background-sync accurate data (avgRating requires server recalc)
     fetch('/api/votes', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ promptId, userId: currentUserId, value }),
     }).then(() => {
       fetchPrompts();
-      checkLevelUp().then((newLevel) => { if (newLevel) setLevelUpName(newLevel); });
+      checkLevelUp().then((nl) => { if (nl) setLevelUpName(nl); });
     });
   };
 
   const handleFavorite = async (promptId: number) => {
     if (!currentUserId) return;
-
-    // Optimistic toggle in the local list
     setPrompts((prev) => prev.map((p) =>
       p.id === promptId ? { ...p, userFavorite: !p.userFavorite } : p,
     ));
-
-    const res = await fetch('/api/favorites', {
+    const res  = await fetch('/api/favorites', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ promptId, userId: currentUserId }),
     });
     const data = await res.json() as { favorited: boolean };
-
     if (data.favorited) {
       triggerFloat('⭐ +10 Pts', window.innerWidth / 2 - 40, window.innerHeight / 2 + 60);
-      checkLevelUp().then((newLevel) => { if (newLevel) setLevelUpName(newLevel); });
+      checkLevelUp().then((nl) => { if (nl) setLevelUpName(nl); });
     }
-    // Background sync for accuracy
     fetchPrompts();
   };
 
   const handleUsed = async (promptId: number) => {
-    // Optimistic update – increment usageCount immediately
     setPrompts((prev) => prev.map((p) =>
       p.id === promptId ? { ...p, usageCount: p.usageCount + 1 } : p,
     ));
     setSelectedPrompt((prev) =>
-      prev && prev.id === promptId ? { ...prev, usageCount: prev.usageCount + 1 } : prev,
+      prev?.id === promptId ? { ...prev, usageCount: prev.usageCount + 1 } : prev,
     );
-
     triggerFloat('+5 Pts', window.innerWidth / 2 - 28, window.innerHeight / 2 + 80);
-
     fetch('/api/usage', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ promptId }),
     }).then(() => {
       fetchPrompts();
-      checkLevelUp().then((newLevel) => { if (newLevel) setLevelUpName(newLevel); });
+      checkLevelUp().then((nl) => { if (nl) setLevelUpName(nl); });
     });
   };
 
@@ -165,11 +215,8 @@ function LibraryPageInner() {
         </div>
       )}
 
-      {/* Global overlays */}
       <FloatingPoints />
-      {levelUpName && (
-        <LevelUpModal newLevel={levelUpName} onClose={() => setLevelUpName(null)} />
-      )}
+      {levelUpName && <LevelUpModal newLevel={levelUpName} onClose={() => setLevelUpName(null)} />}
 
       <div className="mb-6">
         <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">Prompt-Bibliothek</h1>
@@ -180,19 +227,26 @@ function LibraryPageInner() {
       <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 mb-6 flex flex-col sm:flex-row gap-3 items-start sm:items-center">
         <div className="relative flex-1 max-w-sm">
           <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">🔍</span>
-          <input type="text" placeholder="Prompts durchsuchen…" value={search}
+          <input
+            type="text"
+            placeholder="Prompts durchsuchen…"
+            value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-9 pr-4 py-2 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:border-transparent bg-slate-50" />
+            className="w-full pl-9 pr-4 py-2 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:border-transparent bg-slate-50"
+          />
         </div>
         <div className="flex gap-2 flex-wrap">
           {CATEGORIES.map((cat) => (
-            <button key={cat.value} onClick={() => setCategory(cat.value)}
+            <button
+              key={cat.value}
+              onClick={() => setCategory(cat.value)}
               className={`px-3 py-1.5 rounded-xl text-sm font-semibold transition-all ${
                 category === cat.value
                   ? 'text-white shadow-sm'
                   : 'bg-slate-50 border border-slate-200 text-slate-600 hover:border-emerald-300 hover:text-emerald-700'
               }`}
-              style={category === cat.value ? { background: 'linear-gradient(135deg, #059669, #0891b2)' } : {}}>
+              style={category === cat.value ? { background: 'linear-gradient(135deg, #059669, #0891b2)' } : {}}
+            >
               {cat.icon} {cat.label}
             </button>
           ))}
@@ -202,12 +256,15 @@ function LibraryPageInner() {
       {/* Sort controls */}
       <div className="flex gap-2 mt-3 mb-4">
         {(['newest', 'most-used', 'top-rated'] as const).map((s) => (
-          <button key={s} onClick={() => setSortBy(s)}
+          <button
+            key={s}
+            onClick={() => setSortBy(s)}
             className={`text-xs font-semibold px-3 py-1.5 rounded-xl border transition-colors ${
               sortBy === s
                 ? 'bg-emerald-600 text-white border-emerald-600'
                 : 'bg-white text-slate-600 border-slate-200 hover:border-emerald-300'
-            }`}>
+            }`}
+          >
             {s === 'newest' ? '✨ Neueste' : s === 'most-used' ? '🔥 Meistgenutzt' : '⭐ Bestbewertet'}
           </button>
         ))}
@@ -216,6 +273,7 @@ function LibraryPageInner() {
       {!loading && (
         <p className="text-xs text-slate-400 font-semibold mb-4 uppercase tracking-widest">
           {prompts.length} Prompt{prompts.length !== 1 ? 's' : ''}
+          {hasNextPage && ' (mehr verfügbar)'}
         </p>
       )}
 
@@ -232,11 +290,28 @@ function LibraryPageInner() {
           <p className="text-slate-400 text-sm mt-1">Versuche einen anderen Suchbegriff oder Filter.</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-          {prompts.map((prompt) => (
-            <PromptCard key={prompt.id} prompt={prompt} onClick={() => setSelectedPrompt(prompt)} />
-          ))}
-        </div>
+        <>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            {prompts.map((prompt) => (
+              <PromptCard key={prompt.id} prompt={prompt} onClick={() => setSelectedPrompt(prompt)} />
+            ))}
+          </div>
+
+          {/* Infinite scroll sentinel */}
+          <div ref={sentinelRef} className="h-px mt-4" />
+
+          {loadingMore && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mt-5">
+              {Array.from({ length: 3 }).map((_, i) => (
+                <div key={i} className="bg-white rounded-2xl border border-slate-200 h-52 animate-pulse" />
+              ))}
+            </div>
+          )}
+
+          {!hasNextPage && prompts.length > PAGE_SIZE && (
+            <p className="text-center text-xs text-slate-400 mt-6">Alle {prompts.length} Prompts geladen</p>
+          )}
+        </>
       )}
 
       {selectedPrompt && (

@@ -8,8 +8,19 @@
  */
 
 import { prisma } from '@/lib/prisma';
+import { Prisma } from '@prisma/client';
 import { getLevel } from '@/lib/points';
 import { logger } from '@/lib/logger';
+
+/**
+ * Prisma interactive-transaction client type.
+ * Allows awardPoints to run either standalone (own transaction) or
+ * inside a caller-managed transaction (pass the tx object).
+ */
+type TxClient = Omit<
+  typeof prisma,
+  '$connect' | '$disconnect' | '$on' | '$transaction' | '$use' | '$extends'
+>;
 
 /**
  * Awards points to a user and re-evaluates their level.
@@ -23,10 +34,17 @@ import { logger } from '@/lib/logger';
  *
  * @param userId - Database ID of the user receiving the points
  * @param points - Number of points to award (use constants from lib/points.ts)
+ * @param txClient - Optional Prisma transaction client. When provided the
+ *                   caller is responsible for the transaction boundary; no
+ *                   nested transaction is created.
  */
 // @spec AC-04-001
-export async function awardPoints(userId: number, points: number): Promise<void> {
-  const updatedUser = await prisma.$transaction(async (tx) => {
+export async function awardPoints(
+  userId: number,
+  points: number,
+  txClient?: TxClient,
+): Promise<void> {
+  const run = async (tx: TxClient) => {
     const user = await tx.user.update({
       where: { id: userId },
       data:  { totalPoints: { increment: points } },
@@ -37,7 +55,11 @@ export async function awardPoints(userId: number, points: number): Promise<void>
       data:  { level: newLevel },
     });
     return { ...user, level: newLevel };
-  });
+  };
+
+  const updatedUser = txClient
+    ? await run(txClient)
+    : await prisma.$transaction(run);
 
   logger.info('points awarded', { userId, points, total: updatedUser.totalPoints });
 
@@ -50,6 +72,9 @@ export async function awardPoints(userId: number, points: number): Promise<void>
     });
   }
 }
+
+// Re-export Prisma for convenience in files that import from here
+export type { Prisma };
 
 /**
  * Computes the average rating for a list of vote values.

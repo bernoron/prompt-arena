@@ -57,7 +57,8 @@ jobs:
         run: npm run build
         env:
           DATABASE_URL: file:./dev.db
-          ADMIN_SECRET: admin1234
+          ADMIN_SECRET: ${{ secrets.ADMIN_SECRET }}
+          USER_SECRET: ${{ secrets.USER_SECRET }}
           NODE_ENV: production
 
       - name: Install Playwright browsers
@@ -67,7 +68,8 @@ jobs:
         run: npm run test:e2e
         env:
           DATABASE_URL: file:./dev.db
-          ADMIN_SECRET: admin1234
+          ADMIN_SECRET: ${{ secrets.ADMIN_SECRET }}
+          USER_SECRET: ${{ secrets.USER_SECRET }}
           NODE_ENV: production
           PLAYWRIGHT_BASE_URL: http://127.0.0.1:3000
 

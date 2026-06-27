@@ -35,13 +35,17 @@ export async function POST(req: NextRequest) {
   const reqId = req.headers.get('x-request-id') ?? undefined;
 
   try {
-    const prompt = await prisma.prompt.update({
-      where: { id: promptId },
-      data:  { usageCount: { increment: 1 } },
+    // Wrap both operations in a single transaction so usageCount increment
+    // and points award are atomic — no partial updates on failure.
+    const prompt = await prisma.$transaction(async (tx) => {
+      const updated = await tx.prompt.update({
+        where: { id: promptId },
+        data:  { usageCount: { increment: 1 } },
+      });
+      // Reward the author, not the user who clicked the button
+      await awardPoints(updated.authorId, POINTS.PROMPT_USED, tx);
+      return updated;
     });
-
-    // Reward the author, not the user who clicked the button
-    await awardPoints(prompt.authorId, POINTS.PROMPT_USED);
 
     logger.info('prompt used', { promptId, authorId: prompt.authorId, usageCount: prompt.usageCount, reqId });
     return NextResponse.json({ usageCount: prompt.usageCount });

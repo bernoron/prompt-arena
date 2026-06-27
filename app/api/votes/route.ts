@@ -14,6 +14,7 @@ import { awardPoints } from '@/lib/db-helpers';
 import { POINTS } from '@/lib/points';
 import { VoteSchema, validationError } from '@/lib/validation';
 import { writeLimiter, getClientIp } from '@/lib/rate-limit';
+import { resolveUserId, USER_COOKIE } from '@/lib/user-auth';
 import { logger, serializeError } from '@/lib/logger';
 
 // @spec AC-03-001
@@ -31,8 +32,14 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(errBody, { status });
   }
 
-  const { promptId, userId, value } = result.data;
+  const { promptId, value } = result.data;
   const reqId = req.headers.get('x-request-id') ?? undefined;
+
+  const resolved = await resolveUserId(req.cookies.get(USER_COOKIE)?.value, result.data.userId);
+  if (typeof resolved === 'object' && 'error' in resolved) {
+    return NextResponse.json({ error: resolved.error }, { status: resolved.status });
+  }
+  const userId = resolved;
 
   try {
     // Check if a vote already exists BEFORE the upsert so we can decide

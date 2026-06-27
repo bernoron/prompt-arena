@@ -29,6 +29,8 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
   if (typeof body.isActive === 'boolean') data.isActive = body.isActive;
   if (typeof body.title === 'string' && body.title.trim()) data.title = body.title.trim();
   if (typeof body.description === 'string' && body.description.trim()) data.description = body.description.trim();
+  if (typeof body.startDate === 'string') data.startDate = new Date(body.startDate);
+  if (typeof body.endDate === 'string') data.endDate = new Date(body.endDate);
 
   const challenge = await prisma.weeklyChallenge.update({ where: { id: idResult.data }, data }).catch(() => null);
   if (!challenge) return NextResponse.json({ error: 'Not found' }, { status: 404 });
