@@ -6,19 +6,10 @@ import PromptCard from '@/components/PromptCard';
 import PromptModal from '@/components/PromptModal';
 import FloatingPoints, { triggerFloat } from '@/components/FloatingPoints';
 import LevelUpModal from '@/components/LevelUpModal';
-import type { PromptWithDetails, Category } from '@/lib/types';
+import type { PromptWithDetails, Category, PromptCategoryInfo } from '@/lib/types';
 import { useCurrentUser } from '@/hooks/useCurrentUser';
 import { POINTS } from '@/lib/points';
 import { useLevelUp } from '@/hooks/useLevelUp';
-
-// Categories come from constants; Fix #4 will make these dynamic via API.
-const CATEGORIES: { value: 'all' | Category; label: string; icon: string }[] = [
-  { value: 'all',      label: 'Alle',     icon: '✨' },
-  { value: 'Writing',  label: 'Writing',  icon: '✍️' },
-  { value: 'Email',    label: 'Email',    icon: '📧' },
-  { value: 'Analysis', label: 'Analysis', icon: '📊' },
-  { value: 'Excel',    label: 'Excel',    icon: '📈' },
-];
 
 const PAGE_SIZE = 20;
 
@@ -39,9 +30,10 @@ function LibraryPageInner() {
   const [loadingMore, setLoadingMore] = useState(false);
 
   const [category, setCategory] = useState<'all' | Category>('all');
+  const [categories, setCategories] = useState<PromptCategoryInfo[]>([]);
   const [search, setSearch]     = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
-  const [sortBy, setSortBy]     = useState<'newest' | 'most-used' | 'top-rated'>('newest');
+  const [sortBy, setSortBy]     = useState<'newest' | 'most-used'>('newest');
 
   const [selectedPrompt, setSelectedPrompt] = useState<PromptWithDetails | null>(null);
   const [levelUpName, setLevelUpName]       = useState<string | null>(null);
@@ -62,6 +54,13 @@ function LibraryPageInner() {
     }
   }, [searchParams, router]);
 
+  useEffect(() => {
+    fetch('/api/categories')
+      .then((r) => r.json())
+      .then((data) => setCategories(Array.isArray(data) ? data : []))
+      .catch(() => setCategories([]));
+  }, []);
+
   // ── Search debounce ─────────────────────────────────────────────────────────
   useEffect(() => {
     const t = setTimeout(() => setDebouncedSearch(search), 300);
@@ -75,7 +74,7 @@ function LibraryPageInner() {
       if (category !== 'all') params.set('category', category);
       if (debouncedSearch)    params.set('search', debouncedSearch);
       if (currentUserId)      params.set('userId', String(currentUserId));
-      if (sortBy !== 'top-rated') params.set('sortBy', sortBy);
+      params.set('sortBy', sortBy);
       params.set('take', String(PAGE_SIZE));
       if (cursor)             params.set('cursor', String(cursor));
       return `/api/prompts?${params}`;
@@ -89,10 +88,7 @@ function LibraryPageInner() {
     try {
       const res  = await fetch(buildUrl());
       const data = await res.json() as PromptPage;
-      let items  = data.items ?? [];
-      if (sortBy === 'top-rated') {
-        items = [...items].sort((a, b) => b.avgRating - a.avgRating || b.voteCount - a.voteCount);
-      }
+      const items  = data.items ?? [];
       setPrompts(items);
       setNextCursor(data.nextCursor);
       setHasNextPage(data.hasNextPage);
@@ -102,7 +98,7 @@ function LibraryPageInner() {
       setHasNextPage(false);
     }
     setLoading(false);
-  }, [buildUrl, sortBy]);
+  }, [buildUrl]);
 
   useEffect(() => { fetchPrompts(); }, [fetchPrompts]);
 
@@ -113,16 +109,13 @@ function LibraryPageInner() {
     try {
       const res  = await fetch(buildUrl(nextCursor));
       const data = await res.json() as PromptPage;
-      let items  = data.items ?? [];
-      if (sortBy === 'top-rated') {
-        items = [...items].sort((a, b) => b.avgRating - a.avgRating || b.voteCount - a.voteCount);
-      }
+      const items  = data.items ?? [];
       setPrompts((prev) => [...prev, ...items]);
       setNextCursor(data.nextCursor);
       setHasNextPage(data.hasNextPage);
     } catch { /* keep existing state */ }
     setLoadingMore(false);
-  }, [hasNextPage, loadingMore, nextCursor, buildUrl, sortBy]);
+  }, [hasNextPage, loadingMore, nextCursor, buildUrl]);
 
   // ── IntersectionObserver for infinite scroll ────────────────────────────────
   useEffect(() => {
@@ -188,6 +181,7 @@ function LibraryPageInner() {
   };
 
   const handleUsed = async (promptId: number) => {
+    if (!currentUserId) return;
     setPrompts((prev) => prev.map((p) =>
       p.id === promptId ? { ...p, usageCount: p.usageCount + 1 } : p,
     ));
@@ -198,7 +192,7 @@ function LibraryPageInner() {
     fetch('/api/usage', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ promptId }),
+      body: JSON.stringify({ promptId, userId: currentUserId }),
     }).then(() => {
       fetchPrompts();
       checkLevelUp().then((nl) => { if (nl) setLevelUpName(nl); });
@@ -236,16 +230,16 @@ function LibraryPageInner() {
           />
         </div>
         <div className="flex gap-2 flex-wrap">
-          {CATEGORIES.map((cat) => (
+          {[{ slug: 'all', label: 'Alle', icon: '✨' }, ...categories].map((cat) => (
             <button
-              key={cat.value}
-              onClick={() => setCategory(cat.value)}
+              key={cat.slug}
+              onClick={() => setCategory(cat.slug as 'all' | Category)}
               className={`px-3 py-1.5 rounded-xl text-sm font-semibold transition-all ${
-                category === cat.value
+                category === cat.slug
                   ? 'text-white shadow-sm'
                   : 'bg-slate-50 border border-slate-200 text-slate-600 hover:border-emerald-300 hover:text-emerald-700'
               }`}
-              style={category === cat.value ? { background: 'linear-gradient(135deg, #059669, #0891b2)' } : {}}
+              style={category === cat.slug ? { background: 'linear-gradient(135deg, #059669, #0891b2)' } : {}}
             >
               {cat.icon} {cat.label}
             </button>
@@ -255,7 +249,7 @@ function LibraryPageInner() {
 
       {/* Sort controls */}
       <div className="flex gap-2 mt-3 mb-4">
-        {(['newest', 'most-used', 'top-rated'] as const).map((s) => (
+        {(['newest', 'most-used'] as const).map((s) => (
           <button
             key={s}
             onClick={() => setSortBy(s)}
@@ -265,7 +259,7 @@ function LibraryPageInner() {
                 : 'bg-white text-slate-600 border-slate-200 hover:border-emerald-300'
             }`}
           >
-            {s === 'newest' ? '✨ Neueste' : s === 'most-used' ? '🔥 Meistgenutzt' : '⭐ Bestbewertet'}
+            {s === 'newest' ? '✨ Neueste' : '🔥 Meistgenutzt'}
           </button>
         ))}
       </div>

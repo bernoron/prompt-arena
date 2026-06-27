@@ -17,7 +17,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { awardPoints, calcAvgRating } from '@/lib/db-helpers';
+import { awardPoints } from '@/lib/db-helpers';
 import { POINTS } from '@/lib/points';
 import { FavoriteSchema, PathId, validationError } from '@/lib/validation';
 import { writeLimiter, readLimiter, getClientIp } from '@/lib/rate-limit';
@@ -52,22 +52,51 @@ export async function GET(req: NextRequest) {
         prompt: {
           include: {
             author: { select: { id: true, name: true, avatarColor: true, department: true } },
-            votes: { select: { value: true, userId: true } }, // @fix N+1: only needed fields
           },
         },
       },
       orderBy: { createdAt: 'desc' },
     });
 
-    const result = favorites.map(({ prompt }) => ({
-      ...prompt,
-      votes:       undefined,
-      avgRating:   calcAvgRating(prompt.votes),
-      voteCount:   prompt.votes.length,
-      userVote:    prompt.votes.find((v) => v.userId === parsedUserId)?.value ?? null,
-      userFavorite: true,
-      createdAt:   prompt.createdAt.toISOString(),
-    }));
+    const promptIds = favorites.map(({ prompt }) => prompt.id);
+    const ratingRows = promptIds.length
+      ? await prisma.vote.groupBy({
+          by: ['promptId'],
+          where: { promptId: { in: promptIds } },
+          _avg: { value: true },
+          _count: { value: true },
+        })
+      : [];
+    const ratingMap = new Map(
+      ratingRows.map((row) => [
+        row.promptId,
+        {
+          avgRating: row._avg.value ? Math.round(row._avg.value * 10) / 10 : 0,
+          voteCount: row._count.value,
+        },
+      ]),
+    );
+
+    const userVoteMap = promptIds.length
+      ? new Map(
+          (await prisma.vote.findMany({
+            where: { userId: parsedUserId, promptId: { in: promptIds } },
+            select: { promptId: true, value: true },
+          })).map((v) => [v.promptId, v.value]),
+        )
+      : new Map<number, number>();
+
+    const result = favorites.map(({ prompt }) => {
+      const rating = ratingMap.get(prompt.id) ?? { avgRating: 0, voteCount: 0 };
+      return {
+        ...prompt,
+        avgRating:   rating.avgRating,
+        voteCount:   rating.voteCount,
+        userVote:    userVoteMap.get(prompt.id) ?? null,
+        userFavorite: true,
+        createdAt:   prompt.createdAt.toISOString(),
+      };
+    });
 
     return NextResponse.json(result);
   } catch (err) {

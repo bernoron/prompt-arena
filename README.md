@@ -66,7 +66,7 @@ npm run docs             # generate docs from specs
 
 The admin area is protected by `ADMIN_SECRET` and an HttpOnly `admin_session` cookie.
 
-User identity is intentionally lightweight: selecting a user creates a signed HttpOnly `user_session` cookie using `USER_SECRET`. Mutating API routes verify that the body `userId` matches the signed cookie user. If `USER_SECRET` is not set, local development falls back to trusting the body user ID for backward compatibility.
+User identity is intentionally lightweight: selecting a user creates a signed HttpOnly `user_session` cookie using `USER_SECRET`. Mutating API routes verify that the body `userId` matches the signed cookie user. If `USER_SECRET` is not set, local development falls back to trusting the body user ID for backward compatibility; production returns a configuration error instead.
 
 ## Project Structure
 

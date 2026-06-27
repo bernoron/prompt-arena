@@ -2,9 +2,11 @@ import { describe, it, expect, afterEach } from 'vitest';
 import { signUserId, verifyUserCookie, resolveUserId } from '../../../lib/user-auth';
 
 const originalUserSecret = process.env.USER_SECRET;
+const originalNodeEnv = process.env.NODE_ENV;
 
 afterEach(() => {
   process.env.USER_SECRET = originalUserSecret;
+  process.env.NODE_ENV = originalNodeEnv;
 });
 
 describe('user session cookies', () => {
@@ -46,7 +48,18 @@ describe('resolveUserId', () => {
 
   it('falls back to the body user in dev mode without USER_SECRET', async () => {
     process.env.USER_SECRET = '';
+    process.env.NODE_ENV = 'development';
 
     await expect(resolveUserId(undefined, 7)).resolves.toBe(7);
+  });
+
+  it('rejects body fallback in production without USER_SECRET', async () => {
+    process.env.USER_SECRET = '';
+    process.env.NODE_ENV = 'production';
+
+    await expect(resolveUserId(undefined, 7)).resolves.toEqual({
+      error: 'User authentication is not configured on this server',
+      status: 503,
+    });
   });
 });

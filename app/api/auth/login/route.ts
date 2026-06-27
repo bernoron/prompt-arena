@@ -18,6 +18,14 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Too many requests' }, { status: 429 });
   }
 
+  if (!process.env.USER_SECRET && process.env.NODE_ENV === 'production') {
+    logger.error('USER_SECRET is not set - user login disabled');
+    return NextResponse.json(
+      { error: 'User authentication is not configured on this server' },
+      { status: 503 },
+    );
+  }
+
   let userId: number;
   try {
     const body = await req.json();

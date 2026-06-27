@@ -29,8 +29,8 @@ describe('CreatePromptSchema', () => {
   it('accepts valid input', () => {
     expect(CreatePromptSchema.safeParse(valid).success).toBe(true);
   });
-  it('rejects invalid category', () => {
-    expect(CreatePromptSchema.safeParse({ ...valid, category: 'Invalid' }).success).toBe(false);
+  it('rejects invalid category slug format', () => {
+    expect(CreatePromptSchema.safeParse({ ...valid, category: 'Invalid Category' }).success).toBe(false);
   });
   it('rejects invalid difficulty', () => {
     expect(CreatePromptSchema.safeParse({ ...valid, difficulty: 'Hard' }).success).toBe(false);
@@ -49,6 +49,7 @@ describe('VoteSchema', () => {
 });
 
 describe('UsageSchema', () => {
-  it('accepts valid promptId', () => expect(UsageSchema.safeParse({ promptId: 1 }).success).toBe(true));
+  it('accepts valid promptId and userId', () => expect(UsageSchema.safeParse({ promptId: 1, userId: 1 }).success).toBe(true));
   it('rejects missing promptId', () => expect(UsageSchema.safeParse({}).success).toBe(false));
+  it('rejects missing userId', () => expect(UsageSchema.safeParse({ promptId: 1 }).success).toBe(false));
 });
