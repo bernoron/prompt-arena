@@ -34,6 +34,8 @@ const cspDirectives = [
 ];
 
 const nextConfig = {
+  output: 'standalone',
+
   /**
    * HTTP security headers applied to every response.
    *

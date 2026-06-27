@@ -15,8 +15,11 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
   if (!idResult.success) return NextResponse.json({ error: 'Invalid id' }, { status: 400 });
 
   const id = idResult.data;
-  await prisma.challengeSubmission.deleteMany({ where: { promptId: id } });
-  await prisma.vote.deleteMany({ where: { promptId: id } });
-  await prisma.prompt.delete({ where: { id } }).catch(() => null);
+  await prisma.$transaction(async (tx) => {
+    await tx.challengeSubmission.deleteMany({ where: { promptId: id } });
+    await tx.vote.deleteMany({ where: { promptId: id } });
+    await tx.favorite.deleteMany({ where: { promptId: id } });
+    await tx.prompt.delete({ where: { id } }).catch(() => null);
+  });
   return new NextResponse(null, { status: 204 });
 }

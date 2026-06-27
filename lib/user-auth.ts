@@ -56,24 +56,17 @@ export async function verifyUserCookie(cookieValue: string | undefined): Promise
 
   const expectedSig = await hmac(userIdStr);
 
-  // Timing-safe comparison
+  // Constant-time comparison for equal-length hex signatures.
   const a = new TextEncoder().encode(receivedSig);
   const b = new TextEncoder().encode(expectedSig);
   if (a.length !== b.length) return null;
 
-  const match = await crypto.subtle.verify(
-    'HMAC',
-    await crypto.subtle.importKey(
-      'raw', new TextEncoder().encode(process.env.USER_SECRET),
-      { name: 'HMAC', hash: 'SHA-256' },
-      false,
-      ['verify'],
-    ),
-    new Uint8Array(b.buffer),
-    new TextEncoder().encode(userIdStr),
-  );
+  let diff = 0;
+  for (let i = 0; i < a.length; i += 1) {
+    diff |= a[i] ^ b[i];
+  }
 
-  return match ? userId : null;
+  return diff === 0 ? userId : null;
 }
 
 /**
@@ -108,18 +101,18 @@ export async function resolveUserId(
   bodyUserId: number,
 ): Promise<number | { error: string; status: number }> {
   if (!process.env.USER_SECRET) {
-    // Auth disabled — trust the body (backward-compatible dev mode)
+    // Auth disabled: trust the body (backward-compatible dev mode)
     return bodyUserId;
   }
 
   const sessionUserId = await verifyUserCookie(cookieHeader);
 
   if (!sessionUserId) {
-    return { error: 'Not authenticated — please select a user', status: 401 };
+    return { error: 'Not authenticated - please select a user', status: 401 };
   }
 
   if (sessionUserId !== bodyUserId) {
-    return { error: 'Forbidden — userId does not match your session', status: 403 };
+    return { error: 'Forbidden - userId does not match your session', status: 403 };
   }
 
   return sessionUserId;

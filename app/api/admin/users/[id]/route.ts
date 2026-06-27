@@ -38,11 +38,24 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
   if (!idResult.success) return NextResponse.json({ error: 'Invalid id' }, { status: 400 });
 
   const id = idResult.data;
-  // Delete in dependency order (no Usage model – usageCount is a field on Prompt)
-  const userPromptIds = (await prisma.prompt.findMany({ where: { authorId: id }, select: { id: true } })).map((p) => p.id);
-  await prisma.challengeSubmission.deleteMany({ where: { OR: [{ userId: id }, { promptId: { in: userPromptIds } }] } });
-  await prisma.vote.deleteMany({ where: { OR: [{ userId: id }, { promptId: { in: userPromptIds } }] } });
-  await prisma.prompt.deleteMany({ where: { authorId: id } });
-  await prisma.user.delete({ where: { id } }).catch(() => null);
+  await prisma.$transaction(async (tx) => {
+    // Delete in dependency order (no Usage model; usageCount is a field on Prompt).
+    const userPromptIds = (await tx.prompt.findMany({
+      where: { authorId: id },
+      select: { id: true },
+    })).map((p) => p.id);
+
+    await tx.challengeSubmission.deleteMany({
+      where: { OR: [{ userId: id }, { promptId: { in: userPromptIds } }] },
+    });
+    await tx.vote.deleteMany({
+      where: { OR: [{ userId: id }, { promptId: { in: userPromptIds } }] },
+    });
+    await tx.favorite.deleteMany({
+      where: { OR: [{ userId: id }, { promptId: { in: userPromptIds } }] },
+    });
+    await tx.prompt.deleteMany({ where: { authorId: id } });
+    await tx.user.delete({ where: { id } }).catch(() => null);
+  });
   return new NextResponse(null, { status: 204 });
 }
