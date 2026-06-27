@@ -100,11 +100,12 @@ export default function DashboardPage() {
     Promise.all([
       fetch('/api/users').then((r) => r.json()),
       fetch('/api/challenges').then((r) => r.json()),
-      fetch(`/api/prompts${uidNum ? `?userId=${uidNum}` : ''}`).then((r) => r.json()),
-    ]).then(([users, challengeData, promptData]: [UserWithStats[], WeeklyChallengeData[], PromptWithDetails[]]) => {
+      fetch('/api/prompts?take=100').then((r) => r.json()),
+    ]).then(([users, challengeData, promptData]: any[]) => {
       setAllUsers(users);
       setChallenges(Array.isArray(challengeData) ? challengeData : []);
-      setAllPrompts(Array.isArray(promptData) ? promptData : []);
+      const prompts = promptData?.items ?? (Array.isArray(promptData) ? promptData : []);
+      setAllPrompts(Array.isArray(prompts) ? prompts : []);
 
       const found = uidNum ? users.find((u) => u.id === uidNum) : null;
       const user  = found ?? users[0] ?? null;

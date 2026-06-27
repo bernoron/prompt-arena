@@ -205,4 +205,4 @@ Für Produktivbetrieb empfiehlt sich PostgreSQL (nur `schema.prisma` anpassen).
 
 
 ---
-*Automatisch generiert am 27.06.2026, 23:14 · [Quellcode](https://github.com/your-org/prompt-arena)*
+*Automatisch generiert am 27.06.2026, 23:16 · [Quellcode](https://github.com/your-org/prompt-arena)*
