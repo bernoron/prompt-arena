@@ -47,6 +47,18 @@
   - **Referenz**: BAC-02-001
   - **Testbar durch**: E2E
 
+- [x] **AC-02-010**: `GET /api/categories` gibt alle aktiven Prompt-Kategorien als `PromptCategoryInfo[]` sortiert nach `order` zurück; mit Cache-Control-Header; verwendet von Library-Filter und Submit-Formular.
+  - **Referenz**: BAC-02-003
+  - **Testbar durch**: E2E
+
+- [x] **AC-02-011**: `GET /api/prompts/trending` gibt bis zu 10 Prompts zurück — Top-5 nach `usageCount DESC` und Top-5 nach `createdAt DESC`, dedupliziert, angereichert mit `avgRating` via `vote.groupBy`; Cache-Control `s-maxage=20`.
+  - **Referenz**: BAC-02-002
+  - **Testbar durch**: E2E
+
+- [x] **AC-02-012**: Die `/library`-Seite rendert alle Prompts mit Filter nach Kategorie, Schwierigkeitsgrad, Volltextsuche und Sortierung; unterstützt Cursor-basierte Pagination; öffnet `PromptModal` bei Klick auf Card.
+  - **Referenz**: BAC-02-002, BAC-02-003, BAC-02-004, BAC-02-005
+  - **Testbar durch**: E2E, Manual
+
 ---
 
 ## API-Vertrag

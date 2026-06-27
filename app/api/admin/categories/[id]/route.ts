@@ -16,6 +16,7 @@ const PatchSchema = z.object({
   order: z.number().int().min(0).optional(),
 });
 
+// @spec AC-07-010
 export async function PATCH(
   req: NextRequest,
   { params }: { params: { id: string } },

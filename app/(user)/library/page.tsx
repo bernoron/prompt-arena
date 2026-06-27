@@ -323,6 +323,7 @@ function LibraryPageInner() {
   );
 }
 
+// @spec AC-02-012
 export default function LibraryPage() {
   return (
     <Suspense>

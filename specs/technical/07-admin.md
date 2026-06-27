@@ -43,6 +43,14 @@
   - **Referenz**: BAC-07-003 (Abgrenzung vom User-Bereich)
   - **Testbar durch**: E2E, Manual
 
+- [x] **AC-07-009**: `GET /api/admin/categories` listet alle Kategorien; `POST /api/admin/categories` erstellt eine neue Kategorie mit `slug`, `label`, `icon`, `color`, `order`; beide Routen durch Admin-Middleware geschützt.
+  - **Referenz**: BAC-07-004
+  - **Testbar durch**: E2E
+
+- [x] **AC-07-010**: `PATCH /api/admin/categories/[id]` aktualisiert eine Kategorie; `DELETE /api/admin/categories/[id]` löscht sie nur wenn keine Prompts darauf referenzieren (sonst 409); beide durch Admin-Middleware geschützt.
+  - **Referenz**: BAC-07-004
+  - **Testbar durch**: E2E
+
 ---
 
 ## API-Vertrag

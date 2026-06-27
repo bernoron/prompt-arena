@@ -52,7 +52,7 @@ async function fetchPrompts(orderBy: Prisma.PromptOrderByWithRelationInput[]) {
   });
 }
 
-// @spec AC-02-006
+// @spec AC-02-011
 export async function GET(req: NextRequest) {
   if (!readLimiter.check(getClientIp(req))) {
     return NextResponse.json({ error: 'Too many requests' }, { status: 429 });

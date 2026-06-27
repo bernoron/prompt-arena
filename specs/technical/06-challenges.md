@@ -35,6 +35,10 @@
   - **Referenz**: BAC-06-004
   - **Testbar durch**: E2E
 
+- [ ] **AC-06-007**: `POST /api/admin/challenges/[id]/winner` mit `{ userId }` vergibt `POINTS.CHALLENGE_WIN` (100) an den angegebenen User; Challenge wird als abgeschlossen markiert.
+  - **Referenz**: BAC-06-005
+  - **Testbar durch**: E2E
+
 ---
 
 ## API-Vertrag

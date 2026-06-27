@@ -9,6 +9,7 @@ import { prisma } from '@/lib/prisma';
 import { verifyUserCookie, USER_COOKIE } from '@/lib/user-auth';
 import { readLimiter, getClientIp } from '@/lib/rate-limit';
 
+// @spec AC-01-009
 export async function GET(req: NextRequest) {
   if (!readLimiter.check(getClientIp(req))) {
     return NextResponse.json({ error: 'Too many requests' }, { status: 429 });

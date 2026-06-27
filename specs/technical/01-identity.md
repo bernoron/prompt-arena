@@ -35,6 +35,18 @@
   - **Referenz**: BAC-01-004
   - **Testbar durch**: Unit
 
+- [x] **AC-01-007**: `POST /api/auth/login` mit `{ userId }` setzt HMAC-SHA256-signierten HttpOnly-Cookie `user_session`; validiert dass der User in der DB existiert; rate-limited.
+  - **Referenz**: BAC-01-002
+  - **Testbar durch**: E2E
+
+- [x] **AC-01-008**: `POST /api/auth/logout` löscht Cookie `user_session` (`Max-Age=0`) und gibt `{ ok: true }` zurück.
+  - **Referenz**: BAC-01-002
+  - **Testbar durch**: E2E
+
+- [x] **AC-01-009**: `GET /api/auth/me` liest `user_session`-Cookie, verifiziert HMAC-Signatur und gibt den zugehörigen User zurück; 401 wenn kein gültiger Cookie vorhanden.
+  - **Referenz**: BAC-01-002
+  - **Testbar durch**: E2E
+
 ---
 
 ## API-Vertrag

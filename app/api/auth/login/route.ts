@@ -13,6 +13,7 @@ import { writeLimiter, getClientIp } from '@/lib/rate-limit';
 import { PathId } from '@/lib/validation';
 import { logger } from '@/lib/logger';
 
+// @spec AC-01-007
 export async function POST(req: NextRequest) {
   if (!writeLimiter.check(getClientIp(req))) {
     return NextResponse.json({ error: 'Too many requests' }, { status: 429 });

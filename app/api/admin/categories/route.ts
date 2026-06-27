@@ -17,6 +17,7 @@ const CategorySchema = z.object({
   order: z.number().int().min(0).optional(),
 });
 
+// @spec AC-07-009
 export async function GET(req: NextRequest) {
   if (!readLimiter.check(getClientIp(req))) {
     return NextResponse.json({ error: 'Too many requests' }, { status: 429 });

@@ -83,7 +83,7 @@ function computeDiff(
 
 // ─── Dashboard page ───────────────────────────────────────────────────────────
 
-// @spec AC-04-004
+// @spec AC-04-004, AC-04-005
 export default function DashboardPage() {
   const [challenges,     setChallenges]     = useState<WeeklyChallengeData[]>([]);
   const [currentUser,    setCurrentUser]    = useState<UserWithStats | null>(null);
