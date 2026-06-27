@@ -42,12 +42,20 @@ export const DEPARTMENTS = [
  * - `border`       – Tailwind border class
  * - `accentBorder` – top-border colour used on PromptCards
  */
-export const CATEGORY_CONFIG = {
+export interface CategoryVisualConfig {
+  icon: string;
+  bg: string;
+  text: string;
+  border: string;
+  accentBorder: string;
+}
+
+export const CATEGORY_CONFIG: Record<string, CategoryVisualConfig> = {
   Writing:  { icon: '✍️', bg: 'bg-teal-50',   text: 'text-teal-700',   border: 'border-teal-200',   accentBorder: 'border-t-teal-400'   },
   Email:    { icon: '📧', bg: 'bg-indigo-50', text: 'text-indigo-700', border: 'border-indigo-200', accentBorder: 'border-t-indigo-400' },
   Analysis: { icon: '📊', bg: 'bg-orange-50', text: 'text-orange-700', border: 'border-orange-200', accentBorder: 'border-t-orange-400' },
   Excel:    { icon: '📈', bg: 'bg-green-50',  text: 'text-green-700',  border: 'border-green-200',  accentBorder: 'border-t-green-400'  },
-} as const;
+};
 
 // ─── Rarity ──────────────────────────────────────────────────────────────────
 

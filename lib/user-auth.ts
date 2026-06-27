@@ -4,11 +4,12 @@
  * Strategy (mirrors admin-auth.ts but for end-users):
  *   - On user selection via UserPicker, POST /api/auth/login sets a signed
  *     HttpOnly cookie containing the userId.
- *   - Cookie value: `{userId}.{HMAC-SHA256(userId + ':' + USER_SECRET)}`
+ *   - Cookie value: `{userId}.{HMAC-SHA256(userId, key=USER_SECRET)}`
  *   - Write API routes call getUserIdFromCookie() to verify the session and
  *     obtain the authoritative userId — the body's userId is then validated
  *     against it, preventing impersonation.
- *   - USER_SECRET must be set in .env; a missing secret disables session auth.
+ *   - USER_SECRET must be set in production. Local development can fall back
+ *     to trusting the body userId for backward compatibility.
  */
 
 import { cookies } from 'next/headers';
@@ -41,7 +42,7 @@ export async function signUserId(userId: number): Promise<string> {
 
 /**
  * Verify a cookie value and return the userId, or null if invalid.
- * Returns null when USER_SECRET is not configured (auth disabled).
+ * Returns null when USER_SECRET is not configured.
  */
 export async function verifyUserCookie(cookieValue: string | undefined): Promise<number | null> {
   if (!process.env.USER_SECRET || !cookieValue) return null;
@@ -89,8 +90,11 @@ export async function getSessionUserId(): Promise<number | null> {
  *   - The cookie's userId must match bodyUserId (prevents impersonation).
  *   - Returns { error: Response } if either check fails.
  *
- * When USER_SECRET is NOT configured (auth disabled / dev mode):
+ * When USER_SECRET is NOT configured in development:
  *   - Falls back to bodyUserId from the request body (legacy behaviour).
+ *
+ * When USER_SECRET is NOT configured in production:
+ *   - Returns 503 instead of trusting the request body.
  *
  * @param cookieHeader - The raw value of the user_session cookie.
  * @param bodyUserId   - The userId from the validated request body.
@@ -101,6 +105,9 @@ export async function resolveUserId(
   bodyUserId: number,
 ): Promise<number | { error: string; status: number }> {
   if (!process.env.USER_SECRET) {
+    if (process.env.NODE_ENV === 'production') {
+      return { error: 'User authentication is not configured on this server', status: 503 };
+    }
     // Auth disabled: trust the body (backward-compatible dev mode)
     return bodyUserId;
   }

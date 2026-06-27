@@ -67,6 +67,7 @@ export default function FavoritesPage() {
   };
 
   const handleUsed = async (promptId: number) => {
+    if (!currentUserId) return;
     setPrompts((prev) => prev.map((p) =>
       p.id === promptId ? { ...p, usageCount: p.usageCount + 1 } : p,
     ));
@@ -74,7 +75,7 @@ export default function FavoritesPage() {
     fetch('/api/usage', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ promptId }),
+      body: JSON.stringify({ promptId, userId: currentUserId }),
     }).then(() => {
       fetchFavorites();
       checkLevelUp().then((newLevel) => { if (newLevel) setLevelUpName(newLevel); });

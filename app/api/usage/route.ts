@@ -5,7 +5,7 @@
  * Increments the prompt's usageCount and awards PROMPT_USED points
  * to the prompt's author (not the user pressing the button).
  *
- * Body: { promptId: number }
+ * Body: { promptId: number, userId: number }
  */
 
 import { NextRequest, NextResponse } from 'next/server';
@@ -14,6 +14,7 @@ import { awardPoints } from '@/lib/db-helpers';
 import { POINTS } from '@/lib/points';
 import { UsageSchema, validationError } from '@/lib/validation';
 import { writeLimiter, getClientIp } from '@/lib/rate-limit';
+import { resolveUserId, USER_COOKIE } from '@/lib/user-auth';
 import { logger, serializeError } from '@/lib/logger';
 
 // @spec AC-04-008
@@ -34,6 +35,12 @@ export async function POST(req: NextRequest) {
   const { promptId } = result.data;
   const reqId = req.headers.get('x-request-id') ?? undefined;
 
+  const resolved = await resolveUserId(req.cookies.get(USER_COOKIE)?.value, result.data.userId);
+  if (typeof resolved === 'object' && 'error' in resolved) {
+    return NextResponse.json({ error: resolved.error }, { status: resolved.status });
+  }
+  const userId = resolved;
+
   try {
     // Wrap both operations in a single transaction so usageCount increment
     // and points award are atomic — no partial updates on failure.
@@ -47,10 +54,10 @@ export async function POST(req: NextRequest) {
       return updated;
     });
 
-    logger.info('prompt used', { promptId, authorId: prompt.authorId, usageCount: prompt.usageCount, reqId });
+    logger.info('prompt used', { promptId, userId, authorId: prompt.authorId, usageCount: prompt.usageCount, reqId });
     return NextResponse.json({ usageCount: prompt.usageCount });
   } catch (err) {
-    logger.error('usage record failed', { promptId, reqId, ...serializeError(err) });
+    logger.error('usage record failed', { promptId, userId, reqId, ...serializeError(err) });
     return NextResponse.json({ error: 'Failed to record usage' }, { status: 500 });
   }
 }

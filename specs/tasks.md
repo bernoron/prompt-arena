@@ -136,7 +136,7 @@
 
 ## Open Improvements
 
-- [ ] PERF-001: GET /api/prompts – votes groupBy instead of include (Performance)
+- [x] PERF-001: GET /api/prompts – votes groupBy instead of include (Performance)
 - [ ] PERF-002: awardPoints – Update level only on level change
 - [ ] TEST-003: Write E2E tests for Learning Path (/learn)
 - [ ] TEST-004: Cover FAVORITE_PROMPT in points.test.ts

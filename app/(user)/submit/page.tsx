@@ -4,15 +4,9 @@ import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import CategoryBadge from '@/components/CategoryBadge';
 import DifficultyBadge from '@/components/DifficultyBadge';
-import type { Category, Difficulty, WeeklyChallengeData, UserWithStats } from '@/lib/types';
+import type { Category, Difficulty, PromptCategoryInfo, WeeklyChallengeData, UserWithStats } from '@/lib/types';
 import { POINTS } from '@/lib/points';
 
-const CATEGORIES: { value: Category; icon: string }[] = [
-  { value: 'Writing',  icon: '✍️' },
-  { value: 'Email',    icon: '📧' },
-  { value: 'Analysis', icon: '📊' },
-  { value: 'Excel',    icon: '📈' },
-];
 const DIFFICULTIES: Difficulty[] = ['Einstieg', 'Fortgeschritten'];
 
 function LivePreviewCard({ title, titleEn, content, category, difficulty, authorName, authorColor }: {
@@ -54,6 +48,7 @@ function LivePreviewCard({ title, titleEn, content, category, difficulty, author
 export default function SubmitPage() {
   const router = useRouter();
   const [challenge, setChallenge] = useState<WeeklyChallengeData | null>(null);
+  const [categories, setCategories] = useState<PromptCategoryInfo[]>([]);
   const [currentUser, setCurrentUser] = useState<UserWithStats | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [linkChallenge, setLinkChallenge] = useState(false);
@@ -75,6 +70,10 @@ export default function SubmitPage() {
 
   useEffect(() => {
     fetch('/api/challenges').then((r) => r.json()).then(setChallenge);
+    fetch('/api/categories')
+      .then((r) => r.json())
+      .then((data) => setCategories(Array.isArray(data) ? data : []))
+      .catch(() => setCategories([]));
     loadUser();
     window.addEventListener('userChanged', loadUser);
     return () => window.removeEventListener('userChanged', loadUser);
@@ -148,15 +147,15 @@ export default function SubmitPage() {
               Kategorie <span className="text-red-400 font-normal">*</span>
             </label>
             <div className="flex flex-wrap gap-2">
-              {CATEGORIES.map(({ value: cat, icon }) => (
-                <button key={cat} type="button" onClick={() => setField('category', cat)}
+              {categories.map(({ slug, label, icon }) => (
+                <button key={slug} type="button" onClick={() => setField('category', slug)}
                   className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-semibold border-2 transition-all ${
-                    form.category === cat
+                    form.category === slug
                       ? 'border-emerald-500 text-white shadow-sm'
                       : 'border-slate-200 text-slate-600 bg-slate-50 hover:border-slate-300 hover:bg-white'
                   }`}
-                  style={form.category === cat ? { background: 'linear-gradient(135deg, #059669, #0891b2)' } : {}}>
-                  <span>{icon}</span> {cat}
+                  style={form.category === slug ? { background: 'linear-gradient(135deg, #059669, #0891b2)' } : {}}>
+                  <span>{icon}</span> {label}
                 </button>
               ))}
             </div>

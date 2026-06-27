@@ -27,7 +27,6 @@ export const PathId = z
 
 // ─── Allowed enum values ──────────────────────────────────────────────────────
 
-const CATEGORIES = ['Writing', 'Email', 'Analysis', 'Excel'] as const;
 const DIFFICULTIES = ['Einstieg', 'Fortgeschritten'] as const;
 
 // ─── Users ────────────────────────────────────────────────────────────────────
@@ -55,7 +54,7 @@ export const CreatePromptSchema = z.object({
   titleEn:     z.string().trim().max(120).optional(),
   content:     z.string().trim().min(10).max(4000),
   contentEn:   z.string().trim().max(4000).optional(),
-  category:    z.enum(CATEGORIES),
+  category:    z.string().trim().min(1).max(40).regex(/^[a-zA-Z0-9_-]+$/, 'Invalid category'),
   difficulty:  z.enum(DIFFICULTIES),
   authorId:    PositiveInt,
   challengeId: PositiveInt.optional(),
@@ -80,6 +79,7 @@ export const VoteSchema = z.object({
  */
 export const UsageSchema = z.object({
   promptId: PositiveInt,
+  userId:   PositiveInt,
 });
 
 // ─── Favorites ────────────────────────────────────────────────────────────────

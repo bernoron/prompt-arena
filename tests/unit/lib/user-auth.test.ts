@@ -1,15 +1,13 @@
-import { describe, it, expect, afterEach } from 'vitest';
+import { describe, it, expect, afterEach, vi } from 'vitest';
 import { signUserId, verifyUserCookie, resolveUserId } from '../../../lib/user-auth';
 
-const originalUserSecret = process.env.USER_SECRET;
-
 afterEach(() => {
-  process.env.USER_SECRET = originalUserSecret;
+  vi.unstubAllEnvs();
 });
 
 describe('user session cookies', () => {
   it('verifies a signed user id when USER_SECRET is configured', async () => {
-    process.env.USER_SECRET = 'a-test-secret-with-at-least-32-chars';
+    vi.stubEnv('USER_SECRET', 'a-test-secret-with-at-least-32-chars');
 
     const cookie = await signUserId(42);
 
@@ -17,7 +15,7 @@ describe('user session cookies', () => {
   });
 
   it('rejects tampered cookie signatures', async () => {
-    process.env.USER_SECRET = 'a-test-secret-with-at-least-32-chars';
+    vi.stubEnv('USER_SECRET', 'a-test-secret-with-at-least-32-chars');
 
     const cookie = await signUserId(42);
     const tampered = cookie.replace(/.$/, (char) => (char === '0' ? '1' : '0'));
@@ -26,7 +24,7 @@ describe('user session cookies', () => {
   });
 
   it('rejects cookies when USER_SECRET is missing', async () => {
-    process.env.USER_SECRET = '';
+    vi.stubEnv('USER_SECRET', '');
 
     await expect(verifyUserCookie('42.signature')).resolves.toBeNull();
   });
@@ -34,7 +32,7 @@ describe('user session cookies', () => {
 
 describe('resolveUserId', () => {
   it('requires the cookie user to match the body user when auth is enabled', async () => {
-    process.env.USER_SECRET = 'a-test-secret-with-at-least-32-chars';
+    vi.stubEnv('USER_SECRET', 'a-test-secret-with-at-least-32-chars');
     const cookie = await signUserId(42);
 
     await expect(resolveUserId(cookie, 42)).resolves.toBe(42);
@@ -45,8 +43,19 @@ describe('resolveUserId', () => {
   });
 
   it('falls back to the body user in dev mode without USER_SECRET', async () => {
-    process.env.USER_SECRET = '';
+    vi.stubEnv('USER_SECRET', '');
+    vi.stubEnv('NODE_ENV', 'development');
 
     await expect(resolveUserId(undefined, 7)).resolves.toBe(7);
+  });
+
+  it('rejects body fallback in production without USER_SECRET', async () => {
+    vi.stubEnv('USER_SECRET', '');
+    vi.stubEnv('NODE_ENV', 'production');
+
+    await expect(resolveUserId(undefined, 7)).resolves.toEqual({
+      error: 'User authentication is not configured on this server',
+      status: 503,
+    });
   });
 });

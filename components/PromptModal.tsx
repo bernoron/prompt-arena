@@ -49,7 +49,7 @@ export default function PromptModal({
   };
 
   const handleUsed = async () => {
-    if (usedDone) return;
+    if (!currentUserId || usedDone) return;
     await onUsed(prompt.id);
     setUsedDone(true);
   };
@@ -177,7 +177,8 @@ export default function PromptModal({
               }`}>
               {copied ? '✓ Kopiert!' : '📋 Kopieren'}
             </button>
-            <button onClick={handleUsed} disabled={usedDone}
+            <button onClick={handleUsed} disabled={!currentUserId || usedDone}
+              title={currentUserId ? undefined : 'Bitte Benutzer auswählen'}
               className={`flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold transition-all ${
                 usedDone
                   ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'

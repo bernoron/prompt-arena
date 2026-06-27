@@ -132,7 +132,16 @@ test.describe('PromptArena spec contracts', () => {
     const favorites = await favoritesRes.json() as Array<{ id: number; userFavorite: boolean }>;
     expect(favorites.some((p) => p.id === prompt.id && p.userFavorite)).toBe(true);
 
-    const usageRes = await request.post('/api/usage', { data: { promptId: prompt.id } });
+    const usageMismatchRes = await request.post('/api/usage', {
+      headers: { Cookie: cookie },
+      data: { promptId: prompt.id, userId: user.id + 99999 },
+    });
+    expect(usageMismatchRes.status()).toBe(403);
+
+    const usageRes = await request.post('/api/usage', {
+      headers: { Cookie: cookie },
+      data: { promptId: prompt.id, userId: user.id },
+    });
     expect(usageRes.status()).toBe(200);
     const usage = await usageRes.json() as { usageCount: number };
     expect(usage.usageCount).toBeGreaterThanOrEqual(1);

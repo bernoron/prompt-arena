@@ -7,8 +7,18 @@
 
 // ─── Domain Enumerations ─────────────────────────────────────────────────────
 
-/** The four prompt categories available in the application. */
-export type Category = 'Writing' | 'Email' | 'Analysis' | 'Excel';
+/** Prompt category slug. Categories are managed in the PromptCategory table. */
+export type Category = string;
+
+/** A prompt category as returned by GET /api/categories. */
+export interface PromptCategoryInfo {
+  id: number;
+  slug: string;
+  label: string;
+  icon: string;
+  color: string;
+  order: number;
+}
 
 /** Prompt complexity levels selectable during submission. */
 export type Difficulty = 'Einstieg' | 'Fortgeschritten';

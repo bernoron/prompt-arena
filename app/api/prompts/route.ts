@@ -13,7 +13,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { awardPoints, calcAvgRating } from '@/lib/db-helpers';
+import { awardPoints } from '@/lib/db-helpers';
 import { POINTS } from '@/lib/points';
 import { CreatePromptSchema, PathId, validationError } from '@/lib/validation';
 import { readLimiter, writeLimiter, getClientIp } from '@/lib/rate-limit';
@@ -38,9 +38,22 @@ export async function GET(req: NextRequest) {
   const cursorRaw = searchParams.get('cursor');
   const takeRaw   = searchParams.get('take');
 
-  // Clamp page size: default 20, max 50 (search results always capped at 50)
-  const take = Math.min(parseInt(takeRaw ?? '20', 10) || 20, search ? 50 : 50);
-  const cursor = cursorRaw ? parseInt(cursorRaw, 10) : undefined;
+  if (!['newest', 'most-used'].includes(sortBy)) {
+    return NextResponse.json({ error: 'Invalid sortBy' }, { status: 400 });
+  }
+
+  // Clamp page size: default 20, min 1, max 50.
+  const parsedTake = Number.parseInt(takeRaw ?? '20', 10);
+  const take = Math.min(Math.max(Number.isFinite(parsedTake) ? parsedTake : 20, 1), 50);
+
+  let cursor: number | undefined;
+  if (cursorRaw) {
+    const parsedCursor = Number.parseInt(cursorRaw, 10);
+    if (!Number.isFinite(parsedCursor) || parsedCursor <= 0) {
+      return NextResponse.json({ error: 'Invalid cursor' }, { status: 400 });
+    }
+    cursor = parsedCursor;
+  }
 
   // Validate optional userId query param
   let parsedUserId: number | null = null;
@@ -66,9 +79,10 @@ export async function GET(req: NextRequest) {
       },
       include: {
         author: { select: { id: true, name: true, avatarColor: true, department: true } },
-        votes: { select: { value: true, userId: true } }, // @fix N+1: load only needed fields
       },
-      orderBy: sortBy === 'most-used' ? { usageCount: 'desc' } : { createdAt: 'desc' },
+      orderBy: sortBy === 'most-used'
+        ? [{ usageCount: 'desc' }, { id: 'desc' }]
+        : [{ createdAt: 'desc' }, { id: 'desc' }],
       take: take + 1, // fetch one extra to determine if there's a next page
       ...(cursor ? { cursor: { id: cursor }, skip: 1 } : {}),
     });
@@ -78,25 +92,55 @@ export async function GET(req: NextRequest) {
     const page = hasNextPage ? prompts.slice(0, take) : prompts;
     const nextCursor = hasNextPage ? page[page.length - 1]?.id : null;
 
+    const promptIds = page.map((p) => p.id);
+    const ratingRows = promptIds.length
+      ? await prisma.vote.groupBy({
+          by: ['promptId'],
+          where: { promptId: { in: promptIds } },
+          _avg: { value: true },
+          _count: { value: true },
+        })
+      : [];
+    const ratingMap = new Map(
+      ratingRows.map((row) => [
+        row.promptId,
+        {
+          avgRating: row._avg.value ? Math.round(row._avg.value * 10) / 10 : 0,
+          voteCount: row._count.value,
+        },
+      ]),
+    );
+
+    const userVoteMap = parsedUserId && promptIds.length
+      ? new Map(
+          (await prisma.vote.findMany({
+            where: { userId: parsedUserId, promptId: { in: promptIds } },
+            select: { promptId: true, value: true },
+          })).map((v) => [v.promptId, v.value]),
+        )
+      : new Map<number, number>();
+
     // Pre-fetch the user's favorites set for O(1) lookup per prompt
     const favSet = parsedUserId
       ? new Set(
           (await prisma.favorite.findMany({
-            where: { userId: parsedUserId, isActive: true },
+            where: { userId: parsedUserId, isActive: true, promptId: { in: promptIds } },
             select: { promptId: true },
           })).map((f) => f.promptId)
         )
       : new Set<number>();
 
-    const items = page.map((p) => ({
-      ...p,
-      votes:        undefined, // Remove raw vote rows from the response
-      avgRating:    calcAvgRating(p.votes),
-      voteCount:    p.votes.length,
-      userVote:     parsedUserId ? (p.votes.find((v) => v.userId === parsedUserId)?.value ?? null) : null,
-      userFavorite: parsedUserId ? favSet.has(p.id) : undefined,
-      createdAt:    p.createdAt.toISOString(),
-    }));
+    const items = page.map((p) => {
+      const rating = ratingMap.get(p.id) ?? { avgRating: 0, voteCount: 0 };
+      return {
+        ...p,
+        avgRating:    rating.avgRating,
+        voteCount:    rating.voteCount,
+        userVote:     parsedUserId ? (userVoteMap.get(p.id) ?? null) : null,
+        userFavorite: parsedUserId ? favSet.has(p.id) : undefined,
+        createdAt:    p.createdAt.toISOString(),
+      };
+    });
 
     // Only cache when response is not user-specific (no userVote personalisation)
     const cacheHeaders: HeadersInit = parsedUserId
@@ -148,6 +192,14 @@ export async function POST(req: NextRequest) {
       if (!challenge.isActive) {
         return NextResponse.json({ error: 'Challenge is no longer active' }, { status: 400 });
       }
+    }
+
+    const categoryExists = await prisma.promptCategory.findUnique({
+      where: { slug: category },
+      select: { id: true },
+    });
+    if (!categoryExists) {
+      return NextResponse.json({ error: 'Category not found' }, { status: 400 });
     }
 
     const prompt = await prisma.prompt.create({
