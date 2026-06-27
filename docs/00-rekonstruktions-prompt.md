@@ -337,6 +337,7 @@ API-ROUTEN (app/api/)
 - GET /api/learn/[moduleSlug]/[lessonSlug]
 - GET /api/prompts
 - POST /api/prompts
+- GET /api/prompts/trending
 - POST /api/usage
 - GET /api/users
 - POST /api/users
@@ -471,4 +472,4 @@ SETUP-REIHENFOLGE
 
 
 ---
-*Automatisch generiert am 27.06.2026, 23:16 · [Quellcode](https://github.com/your-org/prompt-arena)*
+*Automatisch generiert am 27.06.2026, 23:30 · [Quellcode](https://github.com/your-org/prompt-arena)*

@@ -184,6 +184,13 @@ GET /api/learn/[moduleSlug]/[lessonSlug]?userId=<id> Returns lesson content, com
 
 ---
 
+### `GET /api/prompts/trending`
+
+GET /api/prompts/trending Returns two lists for the Dashboard Trending widget: - hot: top 5 prompts by usageCount (most-used) - newest: top 5 prompts by createdAt (most-recent) Both lists include computed avgRating. Not user-specific (no userId param) so the response is publicly cacheable.
+
+
+---
+
 ### `POST /api/usage`
 
 
@@ -224,4 +231,4 @@ Alle Timestamps werden als **ISO 8601** Strings zurückgegeben, z.B. `"2024-03-1
 
 
 ---
-*Automatisch generiert am 27.06.2026, 23:16 · [Quellcode](https://github.com/your-org/prompt-arena)*
+*Automatisch generiert am 27.06.2026, 23:30 · [Quellcode](https://github.com/your-org/prompt-arena)*

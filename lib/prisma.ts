@@ -29,10 +29,31 @@ const prismaLog: ('query' | 'info' | 'warn' | 'error')[] =
     ? ['query', 'info', 'warn', 'error']
     : ['warn', 'error'];
 
+function createPrismaClient() {
+  const client = new PrismaClient({ log: prismaLog });
+
+  // Enable WAL mode for SQLite to prevent database corruption under concurrent
+  // access and survive process restarts cleanly.
+  if (process.env.DATABASE_URL?.startsWith('file:')) {
+    client.$connect().then(() =>
+      client.$executeRawUnsafe('PRAGMA journal_mode=WAL;').catch(() => {})
+    );
+  }
+
+  return client;
+}
+
 export const prisma =
-  globalForPrisma.prisma ??
-  new PrismaClient({ log: prismaLog });
+  globalForPrisma.prisma ?? createPrismaClient();
 
 if (process.env.NODE_ENV !== 'production') {
   globalForPrisma.prisma = prisma;
+}
+
+// Graceful shutdown: close Prisma connection on process exit
+if (typeof process !== 'undefined') {
+  const disconnect = () => { prisma.$disconnect().catch(() => {}); };
+  process.once('beforeExit', disconnect);
+  process.once('SIGINT',     disconnect);
+  process.once('SIGTERM',    disconnect);
 }

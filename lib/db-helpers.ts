@@ -50,10 +50,13 @@ export async function awardPoints(
       data:  { totalPoints: { increment: points } },
     });
     const newLevel = getLevel(user.totalPoints);
-    await tx.user.update({
-      where: { id: userId },
-      data:  { level: newLevel },
-    });
+    // Only write level to DB when it actually changed (PERF-002)
+    if (user.level !== newLevel) {
+      await tx.user.update({
+        where: { id: userId },
+        data:  { level: newLevel },
+      });
+    }
     return { ...user, level: newLevel };
   };
 

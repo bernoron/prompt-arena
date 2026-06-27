@@ -56,16 +56,27 @@ export default function PromptModal({
 
   const handleFavorite = async () => {
     if (!currentUserId) return;
-    setIsFav((prev) => !prev);
-    await onFavorite(prompt.id);
+    const prev = isFav;
+    setIsFav(!prev);
+    try {
+      await onFavorite(prompt.id);
+    } catch {
+      setIsFav(prev); // revert on failure
+    }
   };
 
   const handleVote = async (value: number) => {
     if (!currentUserId || isVoting) return;
+    const prevVote = userVote;
     setIsVoting(true);
     setUserVote(value);
-    await onVote(prompt.id, value);
-    setIsVoting(false);
+    try {
+      await onVote(prompt.id, value);
+    } catch {
+      setUserVote(prevVote); // revert on failure
+    } finally {
+      setIsVoting(false);
+    }
   };
 
   return (

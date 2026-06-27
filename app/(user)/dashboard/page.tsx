@@ -8,7 +8,7 @@ import SinceLastVisit from '@/components/dashboard/SinceLastVisit';
 import TrendingPrompts from '@/components/dashboard/TrendingPrompts';
 import ImprovementCard from '@/components/dashboard/ImprovementCard';
 import NextLessonWidget from '@/components/dashboard/NextLessonWidget';
-import type { WeeklyChallengeData, UserWithStats, LevelName, PromptWithDetails, RankedUser, RankDiff, LearningModuleWithProgress } from '@/lib/types';
+import type { WeeklyChallengeData, UserWithStats, LevelName, PromptWithDetails, RankedUser, RankDiff, LearningModuleWithProgress, PromptPage } from '@/lib/types';
 import { getLevelProgress, POINTS } from '@/lib/points';
 import { LEVEL_CONFIG, POINTS_GUIDE } from '@/lib/constants';
 
@@ -92,20 +92,22 @@ export default function DashboardPage() {
   const [rankDiff,       setRankDiff]       = useState<RankDiff | null>(null);
   const [learnModules,   setLearnModules]   = useState<LearningModuleWithProgress[]>([]);
   const [loading,        setLoading]        = useState(true);
+  const [apiError,       setApiError]       = useState<string | null>(null);
 
   const loadData = useCallback(() => {
     const uid    = localStorage.getItem('promptarena_user_id');
     const uidNum = uid ? parseInt(uid) : null;
 
+    setApiError(null);
+
     Promise.all([
-      fetch('/api/users').then((r) => r.json()),
-      fetch('/api/challenges').then((r) => r.json()),
-      fetch('/api/prompts?take=100').then((r) => r.json()),
-    ]).then(([users, challengeData, promptData]: any[]) => {
-      setAllUsers(users);
+      fetch('/api/users').then((r) => { if (!r.ok) throw new Error('users'); return r.json(); }) as Promise<UserWithStats[]>,
+      fetch('/api/challenges').then((r) => { if (!r.ok) throw new Error('challenges'); return r.json(); }) as Promise<WeeklyChallengeData[]>,
+      fetch('/api/prompts/trending').then((r) => { if (!r.ok) throw new Error('trending'); return r.json(); }) as Promise<PromptWithDetails[]>,
+    ]).then(([users, challengeData, trendingData]) => {
+      setAllUsers(Array.isArray(users) ? users : []);
       setChallenges(Array.isArray(challengeData) ? challengeData : []);
-      const prompts = promptData?.items ?? (Array.isArray(promptData) ? promptData : []);
-      setAllPrompts(Array.isArray(prompts) ? prompts : []);
+      setAllPrompts(Array.isArray(trendingData) ? trendingData : []);
 
       const found = uidNum ? users.find((u) => u.id === uidNum) : null;
       const user  = found ?? users[0] ?? null;
@@ -139,6 +141,9 @@ export default function DashboardPage() {
         .then((r) => r.json())
         .then((learnData) => setLearnModules(Array.isArray(learnData) ? learnData : []))
         .catch(() => setLearnModules([]));
+    }).catch(() => {
+      setApiError('Dashboard-Daten konnten nicht geladen werden. Bitte die Seite neu laden.');
+      setLoading(false);
     });
   }, []);
 
@@ -182,6 +187,17 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-6">
+
+      {/* ── API error banner ─────────────────────────────────────────────── */}
+      {apiError && (
+        <div role="alert" className="flex items-center gap-3 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800">
+          <span aria-hidden>⚠️</span>
+          <span className="flex-1">{apiError}</span>
+          <button onClick={loadData} className="font-semibold underline underline-offset-2 hover:text-rose-900">
+            Neu laden
+          </button>
+        </div>
+      )}
 
       {/* ── Hero ─────────────────────────────────────────────────────────── */}
       <div className="rounded-2xl p-6 text-white relative overflow-hidden"

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { getLevel, getLevelProgress } from '../../../lib/points';
+import { getLevel, getLevelProgress, POINTS } from '../../../lib/points';
 
 describe('getLevel()', () => {
   it('returns Prompt-Lehrling for 0 pts', () => expect(getLevel(0)).toBe('Prompt-Lehrling'));
@@ -18,4 +18,14 @@ describe('getLevelProgress()', () => {
   it('has correct current level at 150 pts', () => expect(getLevelProgress(150).level).toBe('Prompt-Handwerker'));
   it('returns null nextLevel at max level (600+ pts)', () => expect(getLevelProgress(600).nextLevel).toBeNull());
   it('returns nextLevel at non-max level', () => expect(getLevelProgress(0).nextLevel).toBe('Prompt-Handwerker'));
+});
+
+describe('POINTS constants', () => {
+  it('FAVORITE_PROMPT is 10', () => expect(POINTS.FAVORITE_PROMPT).toBe(10));
+  it('SUBMIT_PROMPT is 20',   () => expect(POINTS.SUBMIT_PROMPT).toBe(20));
+  it('PROMPT_USED is 5',      () => expect(POINTS.PROMPT_USED).toBe(5));
+  it('VOTE_ON_PROMPT is 3',   () => expect(POINTS.VOTE_ON_PROMPT).toBe(3));
+  it('CHALLENGE_SUBMIT is 30', () => expect(POINTS.CHALLENGE_SUBMIT).toBe(30));
+  it('CHALLENGE_WIN is 100',  () => expect(POINTS.CHALLENGE_WIN).toBe(100));
+  it('COMPLETE_LESSON is 15', () => expect(POINTS.COMPLETE_LESSON).toBe(15));
 });

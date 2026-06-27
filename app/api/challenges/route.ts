@@ -23,12 +23,15 @@ export async function GET(req: NextRequest) {
       include: { _count: { select: { submissions: true } } },
     });
 
-    return NextResponse.json(challenges.map((c) => ({
-      ...c,
-      submissionCount: c._count.submissions,
-      startDate: c.startDate.toISOString(),
-      endDate:   c.endDate.toISOString(),
-    })));
+    return NextResponse.json(
+      challenges.map((c) => ({
+        ...c,
+        submissionCount: c._count.submissions,
+        startDate: c.startDate.toISOString(),
+        endDate:   c.endDate.toISOString(),
+      })),
+      { headers: { 'Cache-Control': 'public, s-maxage=30, stale-while-revalidate=60' } },
+    );
   } catch {
     return NextResponse.json({ error: 'Failed to fetch challenges' }, { status: 500 });
   }

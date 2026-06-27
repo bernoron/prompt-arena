@@ -80,6 +80,13 @@ export interface PromptWithDetails {
   userFavorite?: boolean;      // Only present when a userId query param is sent
 }
 
+/** Paginated response shape from GET /api/prompts. */
+export interface PromptPage {
+  items: PromptWithDetails[];
+  nextCursor: number | null;
+  hasNextPage: boolean;
+}
+
 // ─── Dashboard-specific types ────────────────────────────────────────────────
 
 /** Minimal user shape used for rank-change comparisons in the dashboard. */

@@ -21,9 +21,9 @@ Alle Variablen in `.env` definieren. Vorlage: `.env.example` (liegt im Repositor
 
 | Variable | Standard | Beschreibung |
 |---|---|---|
-| `DATABASE_URL` | `file:./dev.db` | Database |
-| `ADMIN_SECRET` | `` | Admin authentication (for /admin panel) Set in GitHub Secrets as ADMIN_SECRET |
-| `USER_SECRET` | `` | User session signing (for cookie-based auth) Must be at least 32 characters long for HMAC-SHA256 Set in GitHub Secrets as USER_SECRET |
+| `DATABASE_URL` | `file:./dev.db` | Database SQLite (default for local development): |
+| `ADMIN_SECRET` | `` | Admin authentication (for /admin panel) Set any strong password here |
+| `USER_SECRET` | `` | User session signing (for cookie-based auth) REQUIRED in production |
 
 > **Wichtig:** `.env` ist in `.gitignore` – niemals committen.
 
@@ -196,4 +196,4 @@ Empfohlene externe Uptime-Monitore (alle mit Gratis-Tier verfügbar): **UptimeRo
 
 
 ---
-*Automatisch generiert am 27.06.2026, 23:16 · [Quellcode](https://github.com/your-org/prompt-arena)*
+*Automatisch generiert am 27.06.2026, 23:30 · [Quellcode](https://github.com/your-org/prompt-arena)*

@@ -21,12 +21,19 @@ export async function hashSecret(secret: string): Promise<string> {
     .join('');
 }
 
-/** Returns true when the cookie value matches SHA-256(ADMIN_SECRET). */
+/** Returns true when the cookie value matches SHA-256(ADMIN_SECRET). Uses constant-time comparison. */
 export async function isAdminAuthorised(cookieValue: string | undefined): Promise<boolean> {
   const secret = process.env.ADMIN_SECRET;
   if (!secret || !cookieValue) return false;
   const expected = await hashSecret(secret);
-  return cookieValue === expected;
+
+  // Constant-time comparison to prevent timing attacks
+  const a = new TextEncoder().encode(cookieValue);
+  const b = new TextEncoder().encode(expected);
+  if (a.length !== b.length) return false;
+  let diff = 0;
+  for (let i = 0; i < a.length; i++) diff |= a[i] ^ b[i];
+  return diff === 0;
 }
 
 export const ADMIN_COOKIE = 'admin_session';
