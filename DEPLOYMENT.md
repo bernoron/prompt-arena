@@ -230,3 +230,39 @@ keine Secrets im Image (`.dockerignore`).
   Auswählen einer fremden Identität (per Design für ein internes Gamification-Tool).
 - `POST /api/usage` kann pro Aufruf Punkte vergeben; bei Missbrauchsverdacht
   später eine „einmal pro User"-Regel als Change Request ergänzen.
+
+### Leak-Audit – Ergebnis
+
+Gezielte Prüfung auf Daten-/Secret-Lecks. **Keine kritischen Lecks gefunden.**
+
+Verifiziert *sauber*:
+- **Keine Secrets in der Git-History** (alle Treffer sind Platzhalter/Doku); weder
+  `.env` noch `*.db` wurden je committet. Datenmodell enthält **keine** Passwörter,
+  E-Mails oder Tokens – nur Name, Abteilung, Punkte.
+- **Keine `NEXT_PUBLIC_`-Variablen** → es gelangt keine Server-Konfiguration in den
+  Browser. Alle `ADMIN_SECRET`/`USER_SECRET`-Zugriffe liegen in Server-Modulen.
+- **Keine Browser-Source-Maps** im Build, **kein `public/`-Verzeichnis**, keine
+  hartkodierten Keys/Tokens im Code.
+- Admin-Endpunkte sind durch die Middleware geschützt; `/api/health` und Fehlerpfade
+  geben **keine internen Details/Stacktraces** an Clients zurück.
+- `Cache-Control: public` steht **nur** auf nicht-personalisierten Antworten
+  (Leaderboard, Trending, Kategorien); nutzer-spezifische Antworten (Favoriten,
+  personalisierte Prompts) werden **nicht** gecacht.
+- CSP `connect-src 'self'` begrenzt Daten-Exfiltration auf dieselbe Origin.
+- Behoben in diesem Audit: `x-powered-by` deaktiviert (Fingerprinting),
+  `productionBrowserSourceMaps: false` explizit gesetzt.
+
+⚠️ **Wichtig bei Nicht-Docker-Builds:** `next build` mit `output: standalone` kopiert
+eine vorhandene `.env` nach `.next/standalone/.env`. Wer **ohne** Docker deployt
+(z.B. `.next/standalone/` manuell auf einen Server kopiert), würde damit
+Produktions-Secrets mitschleppen. Der Docker-Weg in dieser Anleitung ist sicher
+(`.dockerignore` schliesst `.env` **und** `.next` aus, der Build läuft frisch im
+Image). Für manuelle Builds: Secrets ausschliesslich über echte Umgebungsvariablen
+setzen und `.next/standalone/.env` vor dem Ausliefern löschen.
+
+**Privacy-Hinweis (per Design, kein Secret-Leak):** Da „Login" passwortlos ist und
+`GET /api/favorites?userId=` / `GET /api/prompts?userId=` die `userId` als Parameter
+akzeptieren, kann jeder die Favoriten/Bewertungen eines beliebigen (öffentlich
+sichtbaren) Users abfragen. Für ein internes Tool akzeptiert; soll das vertraulich
+sein, ist eine session-gebundene Zugriffskontrolle nötig (Change Request, da es den
+dokumentierten API-Vertrag AC-05-004 ändert).

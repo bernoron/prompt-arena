@@ -33,10 +33,13 @@ function createPrismaClient() {
   const client = new PrismaClient({ log: prismaLog });
 
   // Enable WAL mode for SQLite to prevent database corruption under concurrent
-  // access and survive process restarts cleanly.
+  // access and survive process restarts cleanly. PRAGMA journal_mode returns a
+  // row, so it must use $queryRawUnsafe — $executeRawUnsafe rejects result rows
+  // ("Execute returned results, which is not allowed in SQLite") and the PRAGMA
+  // would silently never take effect.
   if (process.env.DATABASE_URL?.startsWith('file:')) {
     client.$connect().then(() =>
-      client.$executeRawUnsafe('PRAGMA journal_mode=WAL;').catch(() => {})
+      client.$queryRawUnsafe('PRAGMA journal_mode=WAL;').catch(() => {})
     );
   }
 

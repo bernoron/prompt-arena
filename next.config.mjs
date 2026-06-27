@@ -36,6 +36,12 @@ const cspDirectives = [
 const nextConfig = {
   output: 'standalone',
 
+  // Don't advertise the framework/version (reduces fingerprinting).
+  poweredByHeader: false,
+
+  // Never emit browser source maps in production (would expose app source).
+  productionBrowserSourceMaps: false,
+
   // Run instrumentation.ts once on server startup (env/secret validation).
   experimental: {
     instrumentationHook: true,
