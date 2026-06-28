@@ -17,7 +17,7 @@
   - **Referenz**: BAC-12-003
   - **Testbar durch**: Unit-Test
 
-- [ ] **AC-12-002**: Prisma-Schema: `User.emailHash String? @unique` (HMAC-Blind-Index für Uniqueness-Check) und `User.emailEncrypted String?` (AES-Ciphertext). `User.department` behält `String @default("")` — wird nicht mehr bei Registrierung gesetzt, bleibt für Bestandsdaten erhalten.
+- [x] **AC-12-002**: Prisma-Schema: `User.emailHash String? @unique` (HMAC-Blind-Index für Uniqueness-Check) und `User.emailEncrypted String?` (AES-Ciphertext). `User.department` behält `String @default("")` — wird nicht mehr bei Registrierung gesetzt, bleibt für Bestandsdaten erhalten.
   - **Referenz**: BAC-12-001, BAC-12-003, BAC-12-004
   - **Testbar durch**: Migration + DB-Inspect
 
@@ -41,19 +41,19 @@
   - **Referenz**: BAC-12-005
   - **Testbar durch**: E2E / Manual
 
-- [ ] **AC-12-007**: Admin-Nutzerübersicht (`app/admin/(panel)/users/page.tsx`) zeigt E-Mail-Spalte. Leere E-Mail (`null`) erscheint als `—`.
+- [x] **AC-12-007**: Admin-Nutzerübersicht (`app/admin/(panel)/users/page.tsx`) zeigt E-Mail-Spalte. Leere E-Mail (`null`) erscheint als `—`.
   - **Referenz**: BAC-12-005
   - **Testbar durch**: Manual
 
 ### Konfiguration
 
-- [ ] **AC-12-008**: `.env.example` enthält `EMAIL_SECRET="<32-char-min-random-string>"`. Fehlt `EMAIL_SECRET` in der Produktionsumgebung, gibt `POST /api/auth/register` HTTP 503 zurück. In Dev ohne `EMAIL_SECRET` wird ein Fallback-Dev-Key genutzt (analog zu `USER_SECRET`-Verhalten im Dev-Mode).
+- [x] **AC-12-008**: `.env.example` enthält `EMAIL_SECRET="<32-char-min-random-string>"`. Fehlt `EMAIL_SECRET` in der Produktionsumgebung, gibt `POST /api/auth/register` HTTP 503 zurück. In Dev ohne `EMAIL_SECRET` wird ein Fallback-Dev-Key genutzt (analog zu `USER_SECRET`-Verhalten im Dev-Mode).
   - **Referenz**: BAC-12-003
   - **Testbar durch**: Unit-Test / Manual
 
 ### Tests
 
-- [ ] **AC-12-009**: `tests/unit/lib/email-crypto.test.ts` — prüft: encrypt→decrypt roundtrip, zwei Verschlüsselungen derselben E-Mail produzieren unterschiedliche Ciphertexte (random IV), hashEmail ist deterministisch, Manipulation des Ciphertexts wirft Fehler.
+- [x] **AC-12-009**: `tests/unit/lib/email-crypto.test.ts` — prüft: encrypt→decrypt roundtrip, zwei Verschlüsselungen derselben E-Mail produzieren unterschiedliche Ciphertexte (random IV), hashEmail ist deterministisch, Manipulation des Ciphertexts wirft Fehler.
   - **Referenz**: BAC-12-003
   - **Testbar durch**: Unit-Test
 

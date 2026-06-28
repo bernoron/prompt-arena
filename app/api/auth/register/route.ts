@@ -6,7 +6,7 @@
  * Creates a new user account and sets a signed session cookie (auto-login).
  * Email is stored encrypted (AES-256-GCM); uniqueness is checked via HMAC blind index.
  *
- * @spec AC-12-004
+ * @spec AC-12-004, AC-12-008
  */
 import { NextRequest, NextResponse } from 'next/server';
 import { Prisma } from '@prisma/client';

@@ -12,7 +12,7 @@
  * KEY SIZE: EMAIL_SECRET must be at least 32 characters; we derive a fixed-size
  * key via SHA-256 to avoid padding surprises with arbitrary-length secrets.
  *
- * @spec AC-12-001
+ * @spec AC-12-001, AC-12-002, AC-12-009
  */
 
 import { createHmac, createCipheriv, createDecipheriv, randomBytes, createHash } from 'crypto';

@@ -1,4 +1,4 @@
-// @spec AC-12-001, AC-12-002
+// @spec AC-12-001, AC-12-002, AC-12-009
 import { describe, it, expect, afterEach, vi } from 'vitest';
 import { encryptEmail, decryptEmail, hashEmail } from '../../../lib/email-crypto';
 

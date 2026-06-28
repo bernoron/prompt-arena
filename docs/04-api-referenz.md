@@ -146,7 +146,7 @@ GET /api/auth/me Returns the currently authenticated user from the session cooki
 
 ### `POST /api/auth/register`
 
-POST /api/auth/register Body: { name: string, email: string, password: string } Creates a new user account and sets a signed session cookie (auto-login). Email is stored encrypted (AES-256-GCM); uniqueness is checked via HMAC blind index. @spec AC-12-004
+POST /api/auth/register Body: { name: string, email: string, password: string } Creates a new user account and sets a signed session cookie (auto-login). Email is stored encrypted (AES-256-GCM); uniqueness is checked via HMAC blind index. @spec AC-12-004, AC-12-008
 
 
 ---
@@ -297,4 +297,4 @@ Alle Timestamps werden als **ISO 8601** Strings zurückgegeben, z.B. `"2024-03-1
 
 
 ---
-*Automatisch generiert am 28.06.2026, 12:23 · [Quellcode](https://github.com/your-org/prompt-arena)*
+*Automatisch generiert am 28.06.2026, 12:26 · [Quellcode](https://github.com/your-org/prompt-arena)*

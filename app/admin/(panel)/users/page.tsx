@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 
-// @spec AC-12-006
+// @spec AC-12-006, AC-12-007
 interface User {
   id: number;
   name: string;

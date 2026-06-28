@@ -43,6 +43,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// @spec AC-12-002
 model User {
   id           Int      @id @default(autoincrement())
   name           String
@@ -548,4 +549,4 @@ SETUP-REIHENFOLGE
 
 
 ---
-*Automatisch generiert am 28.06.2026, 12:23 · [Quellcode](https://github.com/your-org/prompt-arena)*
+*Automatisch generiert am 28.06.2026, 12:26 · [Quellcode](https://github.com/your-org/prompt-arena)*
