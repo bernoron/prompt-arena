@@ -8,8 +8,12 @@ import { awardPoints } from '@/lib/db-helpers';
 import { POINTS } from '@/lib/points';
 import { PathId } from '@/lib/validation';
 import { writeLimiter, getClientIp } from '@/lib/rate-limit';
+import { requireAdmin } from '@/lib/route-auth';
 
 export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
+  const auth = await requireAdmin(req);
+  if (auth) return auth;
+
   if (!writeLimiter.check(getClientIp(req)))
     return NextResponse.json({ error: 'Too many requests' }, { status: 429 });
 
@@ -38,6 +42,9 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
 }
 
 export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
+  const auth = await requireAdmin(req);
+  if (auth) return auth;
+
   if (!writeLimiter.check(getClientIp(req)))
     return NextResponse.json({ error: 'Too many requests' }, { status: 429 });
 

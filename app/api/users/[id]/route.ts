@@ -30,11 +30,30 @@ export async function GET(
 
   try {
     const user = await prisma.user.findUnique({
-      where:   { id },
-      include: {
+      where: { id },
+      select: {
+        id: true,
+        name: true,
+        department: true,
+        avatarColor: true,
+        totalPoints: true,
+        level: true,
+        createdAt: true,
         prompts: {
           orderBy: { usageCount: 'desc' },
-          include: { votes: true },
+          select: {
+            id: true,
+            title: true,
+            titleEn: true,
+            content: true,
+            contentEn: true,
+            category: true,
+            difficulty: true,
+            authorId: true,
+            usageCount: true,
+            createdAt: true,
+            votes: { select: { value: true } },
+          },
         },
       },
     });
@@ -55,7 +74,12 @@ export async function GET(
     }));
 
     return NextResponse.json({
-      ...user,
+      id: user.id,
+      name: user.name,
+      department: user.department,
+      avatarColor: user.avatarColor,
+      totalPoints: user.totalPoints,
+      level: user.level,
       rank,
       prompts,
       createdAt: user.createdAt.toISOString(),

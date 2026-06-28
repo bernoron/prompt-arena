@@ -6,6 +6,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { z } from 'zod';
 import { writeLimiter, getClientIp } from '@/lib/rate-limit';
+import { requireAdmin } from '@/lib/route-auth';
 
 const CreateChallengeSchema = z.object({
   title:       z.string().trim().min(3).max(120),
@@ -15,7 +16,10 @@ const CreateChallengeSchema = z.object({
 });
 
 // @spec AC-06-004, AC-06-005, AC-06-006, AC-07-006
-export async function GET() {
+export async function GET(req: NextRequest) {
+  const auth = await requireAdmin(req);
+  if (auth) return auth;
+
   const challenges = await prisma.weeklyChallenge.findMany({
     orderBy: { startDate: 'desc' },
     include: { _count: { select: { submissions: true } } },
@@ -29,6 +33,9 @@ export async function GET() {
 }
 
 export async function POST(req: NextRequest) {
+  const auth = await requireAdmin(req);
+  if (auth) return auth;
+
   if (!writeLimiter.check(getClientIp(req)))
     return NextResponse.json({ error: 'Too many requests' }, { status: 429 });
 

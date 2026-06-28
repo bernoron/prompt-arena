@@ -8,6 +8,7 @@ import { prisma } from '@/lib/prisma';
 import { LessonFeedbackSchema, PathId, validationError } from '@/lib/validation';
 import { writeLimiter, readLimiter, getClientIp } from '@/lib/rate-limit';
 import { resolveUserId, USER_COOKIE } from '@/lib/user-auth';
+import { requireUser } from '@/lib/route-auth';
 import { logger, serializeError } from '@/lib/logger';
 
 // @spec AC-11-008
@@ -24,6 +25,9 @@ export async function GET(req: NextRequest) {
   if (!userIdResult.success || !lessonIdResult.success) {
     return NextResponse.json({ error: 'userId and lessonId are required' }, { status: 400 });
   }
+
+  const auth = await requireUser(req, userIdResult.data);
+  if ('response' in auth) return auth.response;
 
   try {
     const feedback = await prisma.lessonFeedback.findUnique({

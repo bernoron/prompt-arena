@@ -6,6 +6,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { SuggestionStatusSchema, PathId, validationError } from '@/lib/validation';
 import { writeLimiter, getClientIp } from '@/lib/rate-limit';
+import { requireAdmin } from '@/lib/route-auth';
 import { logger, serializeError } from '@/lib/logger';
 
 // @spec AC-11-016
@@ -13,6 +14,9 @@ export async function PATCH(
   req: NextRequest,
   { params }: { params: { id: string } },
 ) {
+  const auth = await requireAdmin(req);
+  if (auth) return auth;
+
   const ip = getClientIp(req);
   if (!writeLimiter.check(ip)) {
     return NextResponse.json({ error: 'Too many requests' }, { status: 429 });

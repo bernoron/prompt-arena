@@ -7,10 +7,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { readLimiter, getClientIp } from '@/lib/rate-limit';
+import { requireAdmin } from '@/lib/route-auth';
 import { logger } from '@/lib/logger';
 
 // @spec AC-07-004
 export async function GET(req: NextRequest) {
+  const auth = await requireAdmin(req);
+  if (auth) return auth;
+
   // Rate-limit the heavy aggregation queries
   if (!readLimiter.check(getClientIp(req))) {
     logger.warn('rate limit hit', { route: 'GET /api/admin/stats', ip: getClientIp(req) });

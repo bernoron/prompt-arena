@@ -74,7 +74,9 @@ test.describe('BAC-11 feedback system', () => {
   test('lesson feedback: submit thumbs-up, then update with text', async ({ request }) => {
     const { id: userId, cookie } = await createAndLoginUser(request);
 
-    const learnRes = await request.get(`/api/learn?userId=${userId}`);
+    const learnRes = await request.get(`/api/learn?userId=${userId}`, {
+      headers: { Cookie: cookie },
+    });
     expect(learnRes.status()).toBe(200);
     const modules = await learnRes.json() as Array<{ lessons: Array<{ id: number }> }>;
     const lessonId = modules[0]?.lessons[0]?.id;
@@ -88,7 +90,9 @@ test.describe('BAC-11 feedback system', () => {
     const { id } = await postRes.json() as { ok: boolean; id: number };
     expect(id).toBeGreaterThan(0);
 
-    const getRes = await request.get(`/api/feedback/lesson?userId=${userId}&lessonId=${lessonId}`);
+    const getRes = await request.get(`/api/feedback/lesson?userId=${userId}&lessonId=${lessonId}`, {
+      headers: { Cookie: cookie },
+    });
     expect(getRes.status()).toBe(200);
     const fb = await getRes.json() as { id: number; helpful: boolean; text: string | null };
     expect(fb.helpful).toBe(true);
@@ -100,7 +104,9 @@ test.describe('BAC-11 feedback system', () => {
     });
     expect(putRes.status()).toBe(200);
 
-    const getRes2 = await request.get(`/api/feedback/lesson?userId=${userId}&lessonId=${lessonId}`);
+    const getRes2 = await request.get(`/api/feedback/lesson?userId=${userId}&lessonId=${lessonId}`, {
+      headers: { Cookie: cookie },
+    });
     const fb2 = await getRes2.json() as { helpful: boolean; text: string };
     expect(fb2.text).toBe('Very clear and useful!');
   });
@@ -108,7 +114,9 @@ test.describe('BAC-11 feedback system', () => {
   test('lesson feedback: re-voting overwrites, does not create duplicates', async ({ request }) => {
     const { id: userId, cookie } = await createAndLoginUser(request);
 
-    const learnRes = await request.get(`/api/learn?userId=${userId}`);
+    const learnRes = await request.get(`/api/learn?userId=${userId}`, {
+      headers: { Cookie: cookie },
+    });
     const modules = await learnRes.json() as Array<{ lessons: Array<{ id: number }> }>;
     const lessonId = modules[0]?.lessons[0]?.id;
 
@@ -122,7 +130,9 @@ test.describe('BAC-11 feedback system', () => {
     });
     expect(res2.status()).toBe(200);
 
-    const getRes = await request.get(`/api/feedback/lesson?userId=${userId}&lessonId=${lessonId}`);
+    const getRes = await request.get(`/api/feedback/lesson?userId=${userId}&lessonId=${lessonId}`, {
+      headers: { Cookie: cookie },
+    });
     const fb = await getRes.json() as { helpful: boolean };
     expect(fb.helpful).toBe(false);
   });

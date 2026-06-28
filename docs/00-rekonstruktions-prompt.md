@@ -60,6 +60,7 @@ model User {
   votes                Vote[]
   challengeSubmissions ChallengeSubmission[]
   favorites            Favorite[]
+  usageEvents          UsageEvent[]
   lessonProgress       LessonProgress[]
   feedbacks            Feedback[]
   lessonFeedbacks      LessonFeedback[]
@@ -141,6 +142,7 @@ model Prompt {
   votes                Vote[]
   challengeSubmissions ChallengeSubmission[]
   favorites            Favorite[]
+  usageEvents          UsageEvent[]
 
   @@index([authorId])
   @@index([category])
@@ -176,6 +178,19 @@ model Favorite {
   @@unique([promptId, userId])
   @@index([userId])
   @@index([userId, isActive])
+}
+
+model UsageEvent {
+  id        Int      @id @default(autoincrement())
+  promptId  Int
+  userId    Int
+  createdAt DateTime @default(now())
+
+  prompt Prompt @relation(fields: [promptId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([promptId, userId])
+  @@index([userId])
 }
 
 model WeeklyChallenge {
@@ -335,7 +350,6 @@ KOMPONENTEN (components/)
 - PromptModal.tsx
 - TopicSuggestionModal.tsx
 - UserMenu.tsx
-- UserPicker.tsx
 - WeeklyChallengeCard.tsx
 
 Navigation:
@@ -549,4 +563,4 @@ SETUP-REIHENFOLGE
 
 
 ---
-*Automatisch generiert am 28.06.2026, 14:48 · [Quellcode](https://github.com/your-org/prompt-arena)*
+*Automatisch generiert am 28.06.2026, 21:15 · [Quellcode](https://github.com/your-org/prompt-arena)*

@@ -8,6 +8,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { writeLimiter, getClientIp } from '@/lib/rate-limit';
 import { z } from 'zod';
+import { requireAdmin } from '@/lib/route-auth';
 
 const PatchSchema = z.object({
   label: z.string().trim().min(1).max(60).optional(),
@@ -21,6 +22,9 @@ export async function PATCH(
   req: NextRequest,
   { params }: { params: { id: string } },
 ) {
+  const auth = await requireAdmin(req);
+  if (auth) return auth;
+
   if (!writeLimiter.check(getClientIp(req))) {
     return NextResponse.json({ error: 'Too many requests' }, { status: 429 });
   }
@@ -47,6 +51,9 @@ export async function DELETE(
   req: NextRequest,
   { params }: { params: { id: string } },
 ) {
+  const auth = await requireAdmin(req);
+  if (auth) return auth;
+
   if (!writeLimiter.check(getClientIp(req))) {
     return NextResponse.json({ error: 'Too many requests' }, { status: 429 });
   }

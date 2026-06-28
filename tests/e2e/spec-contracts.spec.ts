@@ -60,6 +60,13 @@ test.describe('PromptArena spec contracts', () => {
     await expect(meRes.json()).resolves.toMatchObject({
       user: { id: user.id, name: user.name },
     });
+
+    const profileRes = await request.get(`/api/users/${user.id}`);
+    expect(profileRes.status()).toBe(200);
+    const profile = await profileRes.json() as Record<string, unknown>;
+    expect(profile).not.toHaveProperty('passwordHash');
+    expect(profile).not.toHaveProperty('emailHash');
+    expect(profile).not.toHaveProperty('emailEncrypted');
   });
 
   test('BAC-02 prompt library: prompts are paginated, searchable, categorized, and personalized', async ({ request }) => {
@@ -71,7 +78,9 @@ test.describe('PromptArena spec contracts', () => {
     const categories = await categoriesRes.json() as Array<{ slug: string; label: string }>;
     expect(categories.map((c) => c.slug)).toEqual(expect.arrayContaining(['Writing', 'Email', 'Analysis', 'Excel']));
 
-    const listRes = await request.get('/api/prompts?take=5&userId=' + user.id);
+    const listRes = await request.get('/api/prompts?take=5&userId=' + user.id, {
+      headers: { Cookie: cookie },
+    });
     expect(listRes.status()).toBe(200);
     const list = await listRes.json() as { items: Array<{ id: number; userVote: number | null; userFavorite?: boolean }>; hasNextPage: boolean };
     expect(Array.isArray(list.items)).toBe(true);
@@ -83,6 +92,12 @@ test.describe('PromptArena spec contracts', () => {
     const searchRes = await request.get('/api/prompts?search=Prompt&take=10');
     expect(searchRes.status()).toBe(200);
     await expect(searchRes.json()).resolves.toHaveProperty('items');
+
+    const otherUser = await createAndLoginUser(request);
+    const mismatchRes = await request.get('/api/prompts?take=5&userId=' + otherUser.id, {
+      headers: { Cookie: cookie },
+    });
+    expect(mismatchRes.status()).toBe(403);
   });
 
   test('BAC-02/03/05/06: authenticated users can submit, vote, favorite, and record usage', async ({ request }) => {
@@ -136,7 +151,9 @@ test.describe('PromptArena spec contracts', () => {
     expect(favoriteRes.status()).toBe(200);
     await expect(favoriteRes.json()).resolves.toEqual({ favorited: true });
 
-    const favoritesRes = await request.get('/api/favorites?userId=' + user.id);
+    const favoritesRes = await request.get('/api/favorites?userId=' + user.id, {
+      headers: { Cookie: cookie },
+    });
     expect(favoritesRes.status()).toBe(200);
     const favorites = await favoritesRes.json() as Array<{ id: number; userFavorite: boolean }>;
     expect(favorites.some((p) => p.id === prompt.id && p.userFavorite)).toBe(true);
@@ -152,8 +169,19 @@ test.describe('PromptArena spec contracts', () => {
       data: { promptId: prompt.id, userId: user.id },
     });
     expect(usageRes.status()).toBe(200);
-    const usage = await usageRes.json() as { usageCount: number };
+    const usage = await usageRes.json() as { usageCount: number; alreadyRecorded: boolean };
     expect(usage.usageCount).toBeGreaterThanOrEqual(1);
+    expect(usage.alreadyRecorded).toBe(false);
+
+    const usageAgainRes = await request.post('/api/usage', {
+      headers: { Cookie: cookie },
+      data: { promptId: prompt.id, userId: user.id },
+    });
+    expect(usageAgainRes.status()).toBe(200);
+    await expect(usageAgainRes.json()).resolves.toMatchObject({
+      usageCount: usage.usageCount,
+      alreadyRecorded: true,
+    });
   });
 
   test('BAC-07 admin: protected endpoints reject anonymous users and accept admin login', async ({ request }) => {

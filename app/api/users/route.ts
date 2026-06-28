@@ -1,18 +1,11 @@
 /**
- * GET  /api/users   – List all users ordered by points (for Leaderboard / UserPicker)
- * POST /api/users   – Register a new user (self-registration)
- *
- * POST body: { name: string, department: string }
+ * GET  /api/users   - List all users ordered by points.
+ * POST /api/users   - Legacy self-registration endpoint (disabled).
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { Prisma } from '@prisma/client';
 import { prisma } from '@/lib/prisma';
-import { AVATAR_COLORS } from '@/lib/constants';
-import { CreateUserSchema, validationError } from '@/lib/validation';
 import { readLimiter, writeLimiter, getClientIp } from '@/lib/rate-limit';
-
-// ─── GET /api/users ───────────────────────────────────────────────────────────
 
 // @spec AC-01-002
 export async function GET(req: NextRequest) {
@@ -23,12 +16,18 @@ export async function GET(req: NextRequest) {
   try {
     const users = await prisma.user.findMany({
       orderBy: { totalPoints: 'desc' },
-      // Never expose credential or PII columns on a public endpoint
+      // Never expose credential or PII columns on a public endpoint.
       select: {
-        id: true, name: true, department: true, avatarColor: true,
-        totalPoints: true, level: true, createdAt: true,
+        id: true,
+        name: true,
+        department: true,
+        avatarColor: true,
+        totalPoints: true,
+        level: true,
+        createdAt: true,
       },
     });
+
     return NextResponse.json(users, {
       headers: { 'Cache-Control': 'public, s-maxage=20, stale-while-revalidate=60' },
     });
@@ -37,44 +36,14 @@ export async function GET(req: NextRequest) {
   }
 }
 
-// ─── POST /api/users ──────────────────────────────────────────────────────────
-
 // @spec AC-01-001
 export async function POST(req: NextRequest) {
   if (!writeLimiter.check(getClientIp(req))) {
     return NextResponse.json({ error: 'Too many requests' }, { status: 429 });
   }
 
-  const body = await req.json().catch(() => null);
-  const result = CreateUserSchema.safeParse(body);
-  if (!result.success) {
-    const { status, body: errBody } = validationError(result.error);
-    return NextResponse.json(errBody, { status });
-  }
-
-  const { name, department } = result.data;
-
-  try {
-    // Assign avatar colour round-robin based on current user count
-    const count = await prisma.user.count();
-    const avatarColor = AVATAR_COLORS[count % AVATAR_COLORS.length];
-
-    const user = await prisma.user.create({
-      data: {
-        name,
-        department,
-        avatarColor,
-        totalPoints: 0,
-        level:       'Prompt-Lehrling',
-      },
-    });
-
-    return NextResponse.json(user, { status: 201 });
-  } catch (err) {
-    // Unique-name constraint (schema: @@unique([name])) → 409, not a generic 500.
-    if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2002') {
-      return NextResponse.json({ error: 'Dieser Name ist bereits vergeben' }, { status: 409 });
-    }
-    return NextResponse.json({ error: 'Registrierung fehlgeschlagen' }, { status: 500 });
-  }
+  return NextResponse.json(
+    { error: 'Legacy registration is disabled. Use /api/auth/register.' },
+    { status: 410 },
+  );
 }

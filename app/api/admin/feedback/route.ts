@@ -9,10 +9,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { readLimiter, getClientIp } from '@/lib/rate-limit';
+import { requireAdmin } from '@/lib/route-auth';
 import { logger, serializeError } from '@/lib/logger';
 
 // @spec AC-11-013, AC-11-014
 export async function GET(req: NextRequest) {
+  const auth = await requireAdmin(req);
+  if (auth) return auth;
+
   const ip = getClientIp(req);
   if (!readLimiter.check(ip)) {
     return NextResponse.json({ error: 'Too many requests' }, { status: 429 });

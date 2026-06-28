@@ -2,13 +2,14 @@
  * POST /api/usage
  *
  * Records that the current user copied and used a prompt.
- * Increments the prompt's usageCount and awards PROMPT_USED points
- * to the prompt's author (not the user pressing the button).
+ * The first use per user/prompt increments usageCount and awards PROMPT_USED
+ * points to the prompt author. Repeated uses by the same user are idempotent.
  *
  * Body: { promptId: number, userId: number }
  */
 
 import { NextRequest, NextResponse } from 'next/server';
+import { Prisma } from '@prisma/client';
 import { prisma } from '@/lib/prisma';
 import { awardPoints } from '@/lib/db-helpers';
 import { POINTS } from '@/lib/points';
@@ -42,21 +43,46 @@ export async function POST(req: NextRequest) {
   const userId = resolved;
 
   try {
-    // Wrap both operations in a single transaction so usageCount increment
-    // and points award are atomic — no partial updates on failure.
     const prompt = await prisma.$transaction(async (tx) => {
+      await tx.usageEvent.create({
+        data: { promptId, userId },
+      });
+
       const updated = await tx.prompt.update({
         where: { id: promptId },
-        data:  { usageCount: { increment: 1 } },
+        data: { usageCount: { increment: 1 } },
       });
-      // Reward the author, not the user who clicked the button
+
       await awardPoints(updated.authorId, POINTS.PROMPT_USED, tx);
       return updated;
     });
 
-    logger.info('prompt used', { promptId, userId, authorId: prompt.authorId, usageCount: prompt.usageCount, reqId });
-    return NextResponse.json({ usageCount: prompt.usageCount });
+    logger.info('prompt used', {
+      promptId,
+      userId,
+      authorId: prompt.authorId,
+      usageCount: prompt.usageCount,
+      reqId,
+    });
+    return NextResponse.json({ usageCount: prompt.usageCount, alreadyRecorded: false });
   } catch (err) {
+    if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2002') {
+      const prompt = await prisma.prompt.findUnique({
+        where: { id: promptId },
+        select: { usageCount: true },
+      });
+      if (!prompt) {
+        return NextResponse.json({ error: 'Prompt not found' }, { status: 404 });
+      }
+
+      logger.debug('usage already recorded', { promptId, userId, reqId });
+      return NextResponse.json({ usageCount: prompt.usageCount, alreadyRecorded: true });
+    }
+
+    if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2003') {
+      return NextResponse.json({ error: 'Prompt not found' }, { status: 404 });
+    }
+
     logger.error('usage record failed', { promptId, userId, reqId, ...serializeError(err) });
     return NextResponse.json({ error: 'Failed to record usage' }, { status: 500 });
   }

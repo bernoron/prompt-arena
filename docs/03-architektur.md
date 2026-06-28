@@ -62,7 +62,6 @@ integrierten API-Layer. Frontend und Backend laufen als einziger Prozess.
 - **PromptModal**
 - **TopicSuggestionModal**
 - **UserMenu**
-- **UserPicker**
 - **WeeklyChallengeCard**
 
 ### Komponentenprinzipien
@@ -144,4 +143,4 @@ Der `useCurrentUser`-Hook abstrahiert dieses Pattern in allen Client-Komponenten
 
 
 ---
-*Automatisch generiert am 28.06.2026, 14:48 · [Quellcode](https://github.com/your-org/prompt-arena)*
+*Automatisch generiert am 28.06.2026, 21:15 · [Quellcode](https://github.com/your-org/prompt-arena)*
