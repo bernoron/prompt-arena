@@ -31,7 +31,7 @@ export const USER_COOKIE_OPTS = {
  */
 export async function getSessionUserId(): Promise<number | null> {
   const cookieStore = cookies();
-  const value = cookieStore.get('user_session')?.value;
+  const value = cookieStore.get(USER_COOKIE)?.value;
   return verifyUserCookie(value);
 }
 

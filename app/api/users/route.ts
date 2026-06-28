@@ -23,6 +23,11 @@ export async function GET(req: NextRequest) {
   try {
     const users = await prisma.user.findMany({
       orderBy: { totalPoints: 'desc' },
+      // Never expose credential or PII columns on a public endpoint
+      select: {
+        id: true, name: true, department: true, avatarColor: true,
+        totalPoints: true, level: true, createdAt: true,
+      },
     });
     return NextResponse.json(users, {
       headers: { 'Cache-Control': 'public, s-maxage=20, stale-while-revalidate=60' },

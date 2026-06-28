@@ -108,7 +108,7 @@ GET /api/admin/stats  – Aggregate statistics for the admin dashboard Protected
 
 ### `GET /api/admin/users`
 
-GET /api/admin/users Returns all users with decrypted email addresses. Admin-only endpoint (protected by middleware). @spec AC-12-006
+GET /api/admin/users Returns all users with decrypted email addresses. Protected by the middleware admin guard AND a secondary in-handler check (defence in depth — middleware can be bypassed by misconfiguration). @spec AC-12-006
 
 
 ---
@@ -297,4 +297,4 @@ Alle Timestamps werden als **ISO 8601** Strings zurückgegeben, z.B. `"2024-03-1
 
 
 ---
-*Automatisch generiert am 28.06.2026, 11:08 · [Quellcode](https://github.com/your-org/prompt-arena)*
+*Automatisch generiert am 28.06.2026, 12:21 · [Quellcode](https://github.com/your-org/prompt-arena)*

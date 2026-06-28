@@ -14,6 +14,7 @@ import { LoginSchema, validationError } from '@/lib/validation';
 import { logger } from '@/lib/logger';
 
 // @spec AC-01-007
+// Note: Feature 12 login behaviour (passwordHash verification, null-hash edge case) — no dedicated AC-12 criterion defined
 export async function POST(req: NextRequest) {
   if (!writeLimiter.check(getClientIp(req))) {
     return NextResponse.json({ error: 'Too many requests' }, { status: 429 });
