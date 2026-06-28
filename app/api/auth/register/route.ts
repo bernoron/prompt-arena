@@ -15,13 +15,13 @@ import { signUserId, USER_COOKIE } from '@/lib/user-session';
 import { USER_COOKIE_OPTS } from '@/lib/user-auth';
 import { hashPassword } from '@/lib/password';
 import { encryptEmail, hashEmail, isEmailSecretConfigured } from '@/lib/email-crypto';
-import { writeLimiter, getClientIp } from '@/lib/rate-limit';
+import { authLimiter, getClientIp } from '@/lib/rate-limit';
 import { RegisterSchema, validationError } from '@/lib/validation';
 import { AVATAR_COLORS } from '@/lib/constants';
 import { logger } from '@/lib/logger';
 
 export async function POST(req: NextRequest) {
-  if (!writeLimiter.check(getClientIp(req))) {
+  if (!authLimiter.check(`register:${getClientIp(req)}`)) {
     return NextResponse.json({ error: 'Too many requests' }, { status: 429 });
   }
 

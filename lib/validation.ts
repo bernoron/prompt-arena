@@ -50,7 +50,8 @@ export const LoginSchema = z.object({
 
 /** POST /api/auth/register — @spec AC-12-003 */
 export const RegisterSchema = z.object({
-  name:     z.string().trim().min(2).max(80),
+  // Reject HTML/script characters to prevent stored-XSS via the name field
+  name:     z.string().trim().min(2).max(80).regex(/^[^<>"';&`]+$/, 'Name enthält unerlaubte Zeichen'),
   email:    z.string().trim().email().max(254),
   password: z.string().min(8).max(100),
 });

@@ -10,7 +10,7 @@ import { prisma } from '@/lib/prisma';
 import { signUserId, USER_COOKIE } from '@/lib/user-session';
 import { hashPassword, verifyPassword } from '@/lib/password';
 import { USER_COOKIE_OPTS } from '@/lib/user-auth';
-import { writeLimiter, getClientIp } from '@/lib/rate-limit';
+import { authLimiter, getClientIp } from '@/lib/rate-limit';
 import { LoginSchema, validationError } from '@/lib/validation';
 import { logger } from '@/lib/logger';
 
@@ -21,7 +21,7 @@ const DUMMY_HASH_PROMISE = hashPassword('__sentinel__');
 // @spec AC-01-007
 // Note: Feature 12 login behaviour (passwordHash verification, null-hash edge case) — no dedicated AC-12 criterion defined
 export async function POST(req: NextRequest) {
-  if (!writeLimiter.check(getClientIp(req))) {
+  if (!authLimiter.check(`login:${getClientIp(req)}`)) {
     return NextResponse.json({ error: 'Too many requests' }, { status: 429 });
   }
 

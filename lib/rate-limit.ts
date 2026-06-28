@@ -66,6 +66,12 @@ export const writeLimiter = createRateLimiter({ windowMs: 60_000, max: 30 });
 /** Reads (GET): 120 requests per minute per IP. */
 export const readLimiter = createRateLimiter({ windowMs: 60_000, max: 120 });
 
+/**
+ * Auth endpoints (login / register): 10 attempts per 15 minutes per IP.
+ * Stricter than writeLimiter to resist credential stuffing and registration abuse.
+ */
+export const authLimiter = createRateLimiter({ windowMs: 15 * 60_000, max: 10 });
+
 // ─── Helper ───────────────────────────────────────────────────────────────────
 
 /**
