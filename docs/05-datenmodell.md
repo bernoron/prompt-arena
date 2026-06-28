@@ -23,9 +23,11 @@ WeeklyChallenge 1──n ChallengeSubmission
 |---|---|---|---|
 | `id` | `Int` | Pflicht | @id @default(autoincrement()) |
 | `name` | `String` | Pflicht |  |
-| `department` | `String` | Pflicht |  |
+| `department` | `String` | Pflicht | @default("") |
 | `avatarColor` | `String` | Pflicht |  |
 | `passwordHash` | `String` | Optional |  |
+| `emailHash` | `String` | Optional | @unique |
+| `emailEncrypted` | `String` | Optional |  |
 | `totalPoints` | `Int` | Pflicht | @default(0) |
 | `level` | `String` | Pflicht | @default("Prompt-Lehrling") |
 | `createdAt` | `DateTime` | Pflicht | @default(now()) |
@@ -256,4 +258,4 @@ Für Produktivbetrieb empfiehlt sich PostgreSQL (nur `schema.prisma` anpassen).
 
 
 ---
-*Automatisch generiert am 28.06.2026, 10:57 · [Quellcode](https://github.com/your-org/prompt-arena)*
+*Automatisch generiert am 28.06.2026, 11:08 · [Quellcode](https://github.com/your-org/prompt-arena)*

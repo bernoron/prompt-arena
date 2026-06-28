@@ -45,11 +45,13 @@ datasource db {
 
 model User {
   id           Int      @id @default(autoincrement())
-  name         String
-  department   String
-  avatarColor  String
-  passwordHash String?
-  totalPoints  Int      @default(0)
+  name           String
+  department     String   @default("")
+  avatarColor    String
+  passwordHash   String?
+  emailHash      String?  @unique
+  emailEncrypted String?
+  totalPoints    Int      @default(0)
   level        String   @default("Prompt-Lehrling")
   createdAt    DateTime @default(now())
 
@@ -389,6 +391,7 @@ API-ROUTEN (app/api/)
 - POST /api/admin/logout
 - DELETE /api/admin/prompts/[id]
 - GET /api/admin/stats
+- GET /api/admin/users
 - PATCH /api/admin/users/[id]
 - DELETE /api/admin/users/[id]
 - POST /api/auth/login
@@ -545,4 +548,4 @@ SETUP-REIHENFOLGE
 
 
 ---
-*Automatisch generiert am 28.06.2026, 10:57 · [Quellcode](https://github.com/your-org/prompt-arena)*
+*Automatisch generiert am 28.06.2026, 11:08 · [Quellcode](https://github.com/your-org/prompt-arena)*

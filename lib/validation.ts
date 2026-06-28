@@ -48,13 +48,11 @@ export const LoginSchema = z.object({
   password: z.string().min(1).max(100),
 });
 
-/** POST /api/auth/register */
+/** POST /api/auth/register — @spec AC-12-003 */
 export const RegisterSchema = z.object({
-  name:       z.string().trim().min(2).max(80),
-  department: z.enum([...DEPARTMENTS, '__other__'] as [string, ...string[]]).or(
-    z.string().trim().min(2).max(50),
-  ),
-  password:   z.string().min(8).max(100),
+  name:     z.string().trim().min(2).max(80),
+  email:    z.string().trim().email().max(254),
+  password: z.string().min(8).max(100),
 });
 
 // ─── Prompts ──────────────────────────────────────────────────────────────────

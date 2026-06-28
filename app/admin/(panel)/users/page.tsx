@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 
+// @spec AC-12-006
 interface User {
   id: number;
   name: string;
@@ -10,6 +11,7 @@ interface User {
   totalPoints: number;
   level: string;
   createdAt: string;
+  emailDecrypted: string | null;
 }
 
 export default function AdminUsers() {
@@ -22,7 +24,7 @@ export default function AdminUsers() {
 
   const load = () => {
     setLoading(true);
-    fetch('/api/users').then((r) => r.json()).then((d) => {
+    fetch('/api/admin/users').then((r) => r.json()).then((d) => {
       setUsers(Array.isArray(d) ? d : []);
       setLoading(false);
     });
@@ -52,7 +54,7 @@ export default function AdminUsers() {
 
   const filtered = users.filter((u) =>
     u.name.toLowerCase().includes(search.toLowerCase()) ||
-    u.department.toLowerCase().includes(search.toLowerCase())
+    (u.emailDecrypted ?? '').toLowerCase().includes(search.toLowerCase())
   );
 
   return (
@@ -69,8 +71,8 @@ export default function AdminUsers() {
 
       <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
         <div className="px-5 py-3 border-b border-slate-100 grid grid-cols-12 gap-3 text-xs font-bold text-slate-400 uppercase tracking-wider">
-          <span className="col-span-4">Name</span>
-          <span className="col-span-2">Abteilung</span>
+          <span className="col-span-3">Name</span>
+          <span className="col-span-3">E-Mail</span>
           <span className="col-span-2">Level</span>
           <span className="col-span-2 text-right">Punkte</span>
           <span className="col-span-2 text-right">Aktionen</span>
@@ -87,7 +89,7 @@ export default function AdminUsers() {
             {filtered.map((u) => (
               <div key={u.id} className="px-5 py-3 grid grid-cols-12 gap-3 items-center hover:bg-slate-50 transition-colors">
                 {/* Name */}
-                <div className="col-span-4 flex items-center gap-2.5 min-w-0">
+                <div className="col-span-3 flex items-center gap-2.5 min-w-0">
                   <span className="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0 shadow-sm"
                     style={{ backgroundColor: u.avatarColor }}>
                     {u.name.split(' ').map((n) => n[0]).join('')}
@@ -98,8 +100,10 @@ export default function AdminUsers() {
                   </div>
                 </div>
 
-                {/* Dept */}
-                <span className="col-span-2 text-sm text-slate-500 truncate">{u.department}</span>
+                {/* Email */}
+                <span className="col-span-3 text-xs text-slate-500 truncate">
+                  {u.emailDecrypted ?? <span className="text-slate-300">—</span>}
+                </span>
 
                 {/* Level */}
                 <span className="col-span-2 text-xs font-semibold text-slate-600 truncate">{u.level}</span>

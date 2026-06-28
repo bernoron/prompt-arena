@@ -1,14 +1,18 @@
 /**
  * POST /api/auth/register
  *
- * Body: { name: string, department: string, password: string }
+ * Body: { name: string, email: string, password: string }
  *
  * Creates a new user account and sets a signed session cookie (auto-login).
+ * Email is stored encrypted (AES-256-GCM); uniqueness is checked via HMAC blind index.
+ *
+ * @spec AC-12-004
  */
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { signUserId, USER_COOKIE } from '@/lib/user-session';
 import { hashPassword } from '@/lib/password';
+import { encryptEmail, hashEmail, isEmailSecretConfigured } from '@/lib/email-crypto';
 import { writeLimiter, getClientIp } from '@/lib/rate-limit';
 import { RegisterSchema, validationError } from '@/lib/validation';
 import { AVATAR_COLORS } from '@/lib/constants';
@@ -17,6 +21,14 @@ import { logger } from '@/lib/logger';
 export async function POST(req: NextRequest) {
   if (!writeLimiter.check(getClientIp(req))) {
     return NextResponse.json({ error: 'Too many requests' }, { status: 429 });
+  }
+
+  if (process.env.NODE_ENV === 'production' && !isEmailSecretConfigured()) {
+    logger.error('EMAIL_SECRET is not set — registration disabled');
+    return NextResponse.json(
+      { error: 'E-Mail-Verschlüsselung ist nicht konfiguriert.' },
+      { status: 503 },
+    );
   }
 
   let body: unknown;
@@ -30,27 +42,34 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(errBody, { status });
   }
 
-  const { name, department: rawDept, password } = parsed.data;
-  const department = rawDept === '__other__' ? '' : rawDept;
+  const { name, email, password } = parsed.data;
 
-  // Check if name already taken (User.name has a unique index)
-  const existing = await prisma.user.findUnique({
-    where: { name },
-    select: { id: true },
-  });
-  if (existing) {
+  // Check name uniqueness
+  const nameExists = await prisma.user.findUnique({ where: { name }, select: { id: true } });
+  if (nameExists) {
     return NextResponse.json(
       { error: 'Dieser Benutzername ist bereits vergeben.' },
       { status: 409 },
     );
   }
 
-  const count        = await prisma.user.count();
-  const avatarColor  = AVATAR_COLORS[count % AVATAR_COLORS.length];
-  const passwordHash = await hashPassword(password);
+  // Check email uniqueness via HMAC blind index — @spec AC-12-004
+  const emailHash = hashEmail(email);
+  const emailExists = await prisma.user.findUnique({ where: { emailHash }, select: { id: true } });
+  if (emailExists) {
+    return NextResponse.json(
+      { error: 'Diese E-Mail-Adresse ist bereits registriert.' },
+      { status: 409 },
+    );
+  }
+
+  const count          = await prisma.user.count();
+  const avatarColor    = AVATAR_COLORS[count % AVATAR_COLORS.length];
+  const passwordHash   = await hashPassword(password);
+  const emailEncrypted = encryptEmail(email);
 
   const user = await prisma.user.create({
-    data: { name, department, avatarColor, passwordHash },
+    data: { name, avatarColor, passwordHash, emailHash, emailEncrypted },
     select: { id: true, name: true, avatarColor: true },
   });
 

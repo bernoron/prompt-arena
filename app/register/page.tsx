@@ -1,24 +1,24 @@
 'use client';
 
+/**
+ * Public registration page.
+ * Fields: name, email, password, confirm password.
+ * No department field (irrelevant for public users).
+ *
+ * @spec AC-12-005
+ */
+
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { DEPARTMENTS } from '@/lib/constants';
 import { USER_ID_KEY } from '@/lib/constants';
 
 export default function RegisterPage() {
   const router = useRouter();
-  const [form, setForm] = useState({
-    name:       '',
-    department: '',
-    customDept: '',
-    password:   '',
-    confirm:    '',
-  });
+  const [form, setForm] = useState({ name: '', email: '', password: '', confirm: '' });
   const [error, setError]     = useState('');
   const [loading, setLoading] = useState(false);
 
-  const department = form.department === '__other__' ? form.customDept.trim() : form.department;
   const passwordMatch = form.password === form.confirm;
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -32,9 +32,9 @@ export default function RegisterPage() {
       method:  'POST',
       headers: { 'Content-Type': 'application/json' },
       body:    JSON.stringify({
-        name:       form.name.trim(),
-        department: form.department === '__other__' ? form.customDept.trim() : form.department,
-        password:   form.password,
+        name:     form.name.trim(),
+        email:    form.email.trim(),
+        password: form.password,
       }),
     });
 
@@ -78,9 +78,7 @@ export default function RegisterPage() {
           <form onSubmit={handleSubmit} className="space-y-4">
             {/* Name */}
             <div>
-              <label className="block text-sm font-semibold text-slate-700 mb-1.5">
-                Name
-              </label>
+              <label className="block text-sm font-semibold text-slate-700 mb-1.5">Name</label>
               <input
                 type="text"
                 value={form.name}
@@ -93,34 +91,18 @@ export default function RegisterPage() {
               />
             </div>
 
-            {/* Department */}
+            {/* Email */}
             <div>
-              <label className="block text-sm font-semibold text-slate-700 mb-1.5">
-                Abteilung
-              </label>
-              <select
-                value={form.department}
-                onChange={(e) => setForm((f) => ({ ...f, department: e.target.value }))}
+              <label className="block text-sm font-semibold text-slate-700 mb-1.5">E-Mail</label>
+              <input
+                type="email"
+                value={form.email}
+                onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
+                placeholder="deine@email.ch"
+                autoComplete="email"
                 required
-                className={`${inputCls} bg-white`}
-              >
-                <option value="">Abteilung wählen…</option>
-                {DEPARTMENTS.map((d) => (
-                  <option key={d} value={d}>{d}</option>
-                ))}
-                <option value="__other__">Andere…</option>
-              </select>
-              {form.department === '__other__' && (
-                <input
-                  type="text"
-                  value={form.customDept}
-                  onChange={(e) => setForm((f) => ({ ...f, customDept: e.target.value }))}
-                  placeholder="Abteilungsname eingeben"
-                  required
-                  autoFocus
-                  className={`${inputCls} mt-2`}
-                />
-              )}
+                className={inputCls}
+              />
             </div>
 
             {/* Password */}
@@ -167,7 +149,7 @@ export default function RegisterPage() {
 
             <button
               type="submit"
-              disabled={loading || !form.name || !department || !form.password || !form.confirm || !passwordMatch}
+              disabled={loading || !form.name || !form.email || !form.password || !form.confirm || !passwordMatch}
               className="w-full py-2.5 rounded-xl text-white font-bold text-sm transition-all hover:opacity-90 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed shadow-lg mt-2"
               style={{ background: 'linear-gradient(135deg, #059669, #0891b2)' }}
             >

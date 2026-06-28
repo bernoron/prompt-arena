@@ -9,8 +9,9 @@ async function createAndLoginUser(request: APIRequestContext): Promise<{ id: num
   const suffix = `${Date.now()}-${Math.random().toString(16).slice(2)}`;
   const name   = `FB User ${suffix}`;
 
+  const email  = `fb-${suffix}@test.example`;
   const regRes = await request.post('/api/auth/register', {
-    data: { name, department: 'IT', password: TEST_PASSWORD },
+    data: { name, email, password: TEST_PASSWORD },
   });
   expect(regRes.status()).toBe(201);
   const { userId } = await regRes.json() as { userId: number };

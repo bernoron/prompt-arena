@@ -24,6 +24,7 @@ Alle Variablen in `.env` definieren. Vorlage: `.env.example` (liegt im Repositor
 | `DATABASE_URL` | `file:./dev.db` | Database SQLite (default for local development): |
 | `ADMIN_SECRET` | `` | Admin authentication (for /admin panel) Set any strong password here |
 | `USER_SECRET` | `` | User session signing (for cookie-based auth) REQUIRED in production |
+| `EMAIL_SECRET` | `` | Email encryption key (for AES-256-GCM email storage) REQUIRED in production |
 
 > **Wichtig:** `.env` ist in `.gitignore` – niemals committen.
 
@@ -153,6 +154,7 @@ Vorhandene Migrationen:
 - `20260501120000_add_prompt_category`
 - `20260628062941_add_feedback_models`
 - `20260628084928_add_password_hash`
+- `20260628090125_add_email_fields`
 
 ### Backup (SQLite)
 
@@ -198,4 +200,4 @@ Empfohlene externe Uptime-Monitore (alle mit Gratis-Tier verfügbar): **UptimeRo
 
 
 ---
-*Automatisch generiert am 28.06.2026, 10:57 · [Quellcode](https://github.com/your-org/prompt-arena)*
+*Automatisch generiert am 28.06.2026, 11:08 · [Quellcode](https://github.com/your-org/prompt-arena)*
