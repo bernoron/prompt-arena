@@ -33,6 +33,9 @@ WeeklyChallenge 1──n ChallengeSubmission
 | `challengeSubmissions` | `ChallengeSubmission[]` | Pflicht |  |
 | `favorites` | `Favorite[]` | Pflicht |  |
 | `lessonProgress` | `LessonProgress[]` | Pflicht |  |
+| `feedbacks` | `Feedback[]` | Pflicht |  |
+| `lessonFeedbacks` | `LessonFeedback[]` | Pflicht |  |
+| `topicSuggestions` | `TopicSuggestion[]` | Pflicht |  |
 
 ---
 
@@ -63,6 +66,7 @@ WeeklyChallenge 1──n ChallengeSubmission
 | `points` | `Int` | Pflicht | @default(15) |
 | `module` | `LearningModule` | Pflicht | @relation(fields: [moduleId], references: [id], onDelete: Cascade) |
 | `progress` | `LessonProgress[]` | Pflicht |  |
+| `lessonFeedbacks` | `LessonFeedback[]` | Pflicht |  |
 
 ---
 
@@ -173,6 +177,52 @@ WeeklyChallenge 1──n ChallengeSubmission
 
 ---
 
+### Feedback
+
+| Feld | Typ | Pflicht | Hinweise |
+|---|---|---|---|
+| `id` | `Int` | Pflicht | @id @default(autoincrement()) |
+| `userId` | `Int` | Pflicht |  |
+| `category` | `String` | Pflicht | BUG | IMPROVEMENT | IDEA | PRAISE |
+| `text` | `String` | Pflicht |  |
+| `contextType` | `String` | Pflicht | @default("GENERAL") GENERAL | LESSON | PROMPT |
+| `contextId` | `Int` | Optional | lessonId or promptId |
+| `contextPath` | `String` | Optional | window.location.pathname |
+| `status` | `String` | Pflicht | @default("OPEN") OPEN | DONE |
+| `createdAt` | `DateTime` | Pflicht | @default(now()) |
+| `user` | `User` | Pflicht | @relation(fields: [userId], references: [id], onDelete: Cascade) |
+
+---
+
+### LessonFeedback
+
+| Feld | Typ | Pflicht | Hinweise |
+|---|---|---|---|
+| `id` | `Int` | Pflicht | @id @default(autoincrement()) |
+| `userId` | `Int` | Pflicht |  |
+| `lessonId` | `Int` | Pflicht |  |
+| `helpful` | `Boolean` | Pflicht |  |
+| `text` | `String` | Optional |  |
+| `createdAt` | `DateTime` | Pflicht | @default(now()) |
+| `user` | `User` | Pflicht | @relation(fields: [userId], references: [id], onDelete: Cascade) |
+| `lesson` | `Lesson` | Pflicht | @relation(fields: [lessonId], references: [id], onDelete: Cascade) |
+
+---
+
+### TopicSuggestion
+
+| Feld | Typ | Pflicht | Hinweise |
+|---|---|---|---|
+| `id` | `Int` | Pflicht | @id @default(autoincrement()) |
+| `userId` | `Int` | Pflicht |  |
+| `title` | `String` | Pflicht |  |
+| `description` | `String` | Optional |  |
+| `status` | `String` | Pflicht | @default("OPEN") OPEN | PLANNED | DONE | REJECTED |
+| `createdAt` | `DateTime` | Pflicht | @default(now()) |
+| `user` | `User` | Pflicht | @relation(fields: [userId], references: [id], onDelete: Cascade) |
+
+---
+
 ## Gamification-Werte (aus lib/points.ts)
 
 ### Punkte pro Aktion
@@ -205,4 +255,4 @@ Für Produktivbetrieb empfiehlt sich PostgreSQL (nur `schema.prisma` anpassen).
 
 
 ---
-*Automatisch generiert am 28.06.2026, 00:17 · [Quellcode](https://github.com/your-org/prompt-arena)*
+*Automatisch generiert am 28.06.2026, 08:36 · [Quellcode](https://github.com/your-org/prompt-arena)*

@@ -101,6 +101,46 @@ export const CompleteLessonSchema = z.object({
   userId: PositiveInt,
 });
 
+// ─── Feedback ─────────────────────────────────────────────────────────────────
+
+// @spec AC-11-003
+export const FeedbackSchema = z.object({
+  userId:      PositiveInt,
+  category:    z.enum(['BUG', 'IMPROVEMENT', 'IDEA', 'PRAISE']),
+  text:        z.string().trim().min(1).max(500),
+  contextType: z.enum(['GENERAL', 'LESSON', 'PROMPT']).default('GENERAL'),
+  contextId:   PositiveInt.optional(),
+  contextPath: z.string().max(200).optional(),
+});
+
+// @spec AC-11-007
+export const LessonFeedbackSchema = z.object({
+  userId:   PositiveInt,
+  lessonId: PositiveInt,
+  helpful:  z.boolean(),
+  text:     z.string().trim().max(500).optional(),
+});
+
+export const LessonFeedbackUpdateSchema = z.object({
+  helpful: z.boolean().optional(),
+  text:    z.string().trim().max(500).optional(),
+});
+
+// @spec AC-11-011
+export const TopicSuggestionSchema = z.object({
+  userId:      PositiveInt,
+  title:       z.string().trim().min(3).max(200),
+  description: z.string().trim().max(500).optional(),
+});
+
+export const AdminFeedbackStatusSchema = z.object({
+  status: z.enum(['OPEN', 'DONE']),
+});
+
+export const SuggestionStatusSchema = z.object({
+  status: z.enum(['OPEN', 'PLANNED', 'DONE', 'REJECTED']),
+});
+
 // ─── Helper ───────────────────────────────────────────────────────────────────
 
 /**

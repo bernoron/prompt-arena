@@ -4,6 +4,8 @@ import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import ContentBlockRenderer from '@/components/learn/ContentBlock';
 import LessonNav from '@/components/learn/LessonNav';
+import LessonFeedback from '@/components/LessonFeedback';
+import TopicSuggestionModal from '@/components/TopicSuggestionModal';
 import { triggerFloat } from '@/components/FloatingPoints';
 import type { LessonDetail } from '@/lib/types';
 import { USER_ID_KEY } from '@/lib/constants';
@@ -15,10 +17,11 @@ export default function LessonPage({
 }: {
   params: { moduleSlug: string; lessonSlug: string };
 }) {
-  const [lesson, setLesson]           = useState<LessonDetail | null>(null);
-  const [loading, setLoading]         = useState(true);
-  const [completing, setCompleting]   = useState(false);
-  const [userId, setUserId]           = useState<number>(0);
+  const [lesson, setLesson]               = useState<LessonDetail | null>(null);
+  const [loading, setLoading]             = useState(true);
+  const [completing, setCompleting]       = useState(false);
+  const [userId, setUserId]               = useState<number>(0);
+  const [showSuggest, setShowSuggest]     = useState(false);
 
   useEffect(() => {
     const uid = Number(localStorage.getItem(USER_ID_KEY) ?? '0');
@@ -136,8 +139,29 @@ export default function LessonPage({
         )}
       </div>
 
+      {/* Lesson Feedback */}
+      {/* @spec AC-11-006 */}
+      <LessonFeedback lessonId={lesson.id} userId={userId > 0 ? userId : null} />
+
+      {/* Topic Suggestion */}
+      {/* @spec AC-11-010 */}
+      {userId > 0 && (
+        <div className="mt-6 text-center">
+          <button
+            onClick={() => setShowSuggest(true)}
+            className="text-sm text-gray-400 hover:text-emerald-600 underline underline-offset-2 transition-colors"
+          >
+            💡 Thema vorschlagen
+          </button>
+        </div>
+      )}
+
       {/* Prev / Next Navigation */}
       <LessonNav prev={lesson.prev} next={lesson.next} moduleSlug={params.moduleSlug} />
+
+      {showSuggest && userId > 0 && (
+        <TopicSuggestionModal userId={userId} onClose={() => setShowSuggest(false)} />
+      )}
     </main>
   );
 }

@@ -151,6 +151,7 @@ Vorhandene Migrationen:
 - `20260418200230_add_learning_path`
 - `20260430100000_user_unique_name_favorite_soft_delete`
 - `20260501120000_add_prompt_category`
+- `20260628062941_add_feedback_models`
 
 ### Backup (SQLite)
 
@@ -196,4 +197,4 @@ Empfohlene externe Uptime-Monitore (alle mit Gratis-Tier verfügbar): **UptimeRo
 
 
 ---
-*Automatisch generiert am 28.06.2026, 00:17 · [Quellcode](https://github.com/your-org/prompt-arena)*
+*Automatisch generiert am 28.06.2026, 08:36 · [Quellcode](https://github.com/your-org/prompt-arena)*

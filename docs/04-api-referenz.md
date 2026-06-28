@@ -57,6 +57,41 @@ PATCH  /api/admin/categories/[id]  – Update a category DELETE /api/admin/categ
 
 ---
 
+### `GET /api/admin/feedback`
+
+GET /api/admin/feedback – List all feedback entries (admin only) Query params: contextType – filter by GENERAL | LESSON | PROMPT status      – filter by OPEN | DONE
+
+
+---
+
+### `GET /api/admin/feedback/suggestions`
+
+GET /api/admin/feedback/suggestions – List all topic suggestions (admin only)
+
+
+---
+
+### `PATCH /api/admin/feedback/suggestions/[id]`
+
+PATCH /api/admin/feedback/suggestions/[id] – Update suggestion status
+
+
+---
+
+### `PATCH /api/admin/feedback/[id]`
+
+PATCH  /api/admin/feedback/[id] – Mark feedback as done DELETE /api/admin/feedback/[id] – Delete feedback entry
+
+
+---
+
+### `DELETE /api/admin/feedback/[id]`
+
+PATCH  /api/admin/feedback/[id] – Mark feedback as done DELETE /api/admin/feedback/[id] – Delete feedback entry
+
+
+---
+
 ### `POST /api/admin/login`
 
 
@@ -128,6 +163,41 @@ GET /api/categories Returns all active prompt categories ordered by display orde
 ---
 
 ### `POST /api/favorites`
+
+
+---
+
+### `GET /api/feedback/lesson`
+
+GET  /api/feedback/lesson?userId=&lessonId= – Get own lesson feedback POST /api/feedback/lesson                   – Submit lesson helpful vote
+
+
+---
+
+### `POST /api/feedback/lesson`
+
+GET  /api/feedback/lesson?userId=&lessonId= – Get own lesson feedback POST /api/feedback/lesson                   – Submit lesson helpful vote
+
+
+---
+
+### `PUT /api/feedback/lesson/[id]`
+
+PUT /api/feedback/lesson/[id] – Update own lesson feedback (helpful + optional text)
+
+
+---
+
+### `POST /api/feedback`
+
+POST /api/feedback – Submit general or context-aware feedback
+
+
+---
+
+### `POST /api/feedback/suggestions`
+
+POST /api/feedback/suggestions – Submit a topic suggestion
 
 
 ---
@@ -231,4 +301,4 @@ Alle Timestamps werden als **ISO 8601** Strings zurückgegeben, z.B. `"2024-03-1
 
 
 ---
-*Automatisch generiert am 28.06.2026, 00:17 · [Quellcode](https://github.com/your-org/prompt-arena)*
+*Automatisch generiert am 28.06.2026, 08:36 · [Quellcode](https://github.com/your-org/prompt-arena)*

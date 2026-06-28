@@ -4,10 +4,12 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 
 const adminLinks = [
-  { href: '/admin',            label: 'Übersicht',   icon: '📊' },
-  { href: '/admin/challenges', label: 'Challenges',  icon: '🏆' },
-  { href: '/admin/users',      label: 'Nutzer',      icon: '👥' },
-  { href: '/admin/prompts',    label: 'Prompts',     icon: '📝' },
+  { href: '/admin',                     label: 'Übersicht',     icon: '📊' },
+  { href: '/admin/challenges',          label: 'Challenges',    icon: '🏆' },
+  { href: '/admin/users',               label: 'Nutzer',        icon: '👥' },
+  { href: '/admin/prompts',             label: 'Prompts',       icon: '📝' },
+  { href: '/admin/feedback',            label: 'Feedback',      icon: '💬' },
+  { href: '/admin/feedback/suggestions', label: 'Vorschläge',   icon: '💡' },
 ];
 
 // @spec AC-07-008

@@ -57,6 +57,9 @@ model User {
   challengeSubmissions ChallengeSubmission[]
   favorites            Favorite[]
   lessonProgress       LessonProgress[]
+  feedbacks            Feedback[]
+  lessonFeedbacks      LessonFeedback[]
+  topicSuggestions     TopicSuggestion[]
 
   @@unique([name])
   @@index([totalPoints])
@@ -83,8 +86,9 @@ model Lesson {
   order    Int
   points   Int     @default(15)
 
-  module   LearningModule  @relation(fields: [moduleId], references: [id], onDelete: Cascade)
-  progress LessonProgress[]
+  module          LearningModule   @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  progress        LessonProgress[]
+  lessonFeedbacks LessonFeedback[]
 
   @@unique([moduleId, slug])
   @@index([moduleId])
@@ -197,6 +201,56 @@ model ChallengeSubmission {
   @@index([promptId])
 }
 
+// ─── Feedback ─────────────────────────────────────────────────────────────────
+
+model Feedback {
+  id          Int      @id @default(autoincrement())
+  userId      Int
+  category    String   // BUG | IMPROVEMENT | IDEA | PRAISE
+  text        String
+  contextType String   @default("GENERAL") // GENERAL | LESSON | PROMPT
+  contextId   Int?     // lessonId or promptId
+  contextPath String?  // window.location.pathname
+  status      String   @default("OPEN")    // OPEN | DONE
+  createdAt   DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([contextType])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model LessonFeedback {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  lessonId  Int
+  helpful   Boolean
+  text      String?
+  createdAt DateTime @default(now())
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lesson Lesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, lessonId])
+  @@index([lessonId])
+}
+
+model TopicSuggestion {
+  id          Int      @id @default(autoincrement())
+  userId      Int
+  title       String
+  description String?
+  status      String   @default("OPEN") // OPEN | PLANNED | DONE | REJECTED
+  createdAt   DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([status])
+}
+
 
 ════════════════════════════════════════════════════════════
 GAMIFICATION-LOGIK
@@ -264,12 +318,16 @@ KOMPONENTEN (components/)
 ════════════════════════════════════════════════════════════
 - CategoryBadge.tsx
 - DifficultyBadge.tsx
+- FeedbackButton.tsx
+- FeedbackModal.tsx
 - FloatingPoints.tsx
+- LessonFeedback.tsx
 - LevelBadge.tsx
 - LevelUpModal.tsx
 - Navigation.tsx
 - PromptCard.tsx
 - PromptModal.tsx
+- TopicSuggestionModal.tsx
 - UserPicker.tsx
 - WeeklyChallengeCard.tsx
 
@@ -318,6 +376,11 @@ API-ROUTEN (app/api/)
 - POST /api/admin/challenges
 - PATCH /api/admin/challenges/[id]
 - DELETE /api/admin/challenges/[id]
+- GET /api/admin/feedback
+- GET /api/admin/feedback/suggestions
+- PATCH /api/admin/feedback/suggestions/[id]
+- PATCH /api/admin/feedback/[id]
+- DELETE /api/admin/feedback/[id]
 - POST /api/admin/login
 - POST /api/admin/logout
 - DELETE /api/admin/prompts/[id]
@@ -331,6 +394,11 @@ API-ROUTEN (app/api/)
 - GET /api/challenges
 - GET /api/favorites
 - POST /api/favorites
+- GET /api/feedback/lesson
+- POST /api/feedback/lesson
+- PUT /api/feedback/lesson/[id]
+- POST /api/feedback
+- POST /api/feedback/suggestions
 - GET /api/health
 - GET /api/learn
 - POST /api/learn/[moduleSlug]/[lessonSlug]/complete
@@ -472,4 +540,4 @@ SETUP-REIHENFOLGE
 
 
 ---
-*Automatisch generiert am 28.06.2026, 00:17 · [Quellcode](https://github.com/your-org/prompt-arena)*
+*Automatisch generiert am 28.06.2026, 08:36 · [Quellcode](https://github.com/your-org/prompt-arena)*

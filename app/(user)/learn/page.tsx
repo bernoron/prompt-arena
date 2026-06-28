@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import ProgressRing from '@/components/learn/ProgressRing';
+import TopicSuggestionModal from '@/components/TopicSuggestionModal';
 import type { LearningModuleWithProgress } from '@/lib/types';
 import { USER_ID_KEY } from '@/lib/constants';
 import { POINTS } from '@/lib/points';
@@ -11,10 +12,13 @@ import { POINTS } from '@/lib/points';
 export default function LearnPage() {
   const [modules, setModules] = useState<LearningModuleWithProgress[]>([]);
   const [loading, setLoading] = useState(true);
+  const [userId, setUserId] = useState<number>(0);
+  const [showSuggest, setShowSuggest] = useState(false);
 
   useEffect(() => {
-    const userId = localStorage.getItem(USER_ID_KEY) ?? '0';
-    fetch(`/api/learn?userId=${userId}`)
+    const uid = Number(localStorage.getItem(USER_ID_KEY) ?? '0');
+    setUserId(uid);
+    fetch(`/api/learn?userId=${uid}`)
       .then((r) => r.json())
       .then((data) => { setModules(data); setLoading(false); })
       .catch(() => setLoading(false));
@@ -128,6 +132,19 @@ export default function LearnPage() {
         </div>
       )}
 
+      {/* Topic suggestion */}
+      {/* @spec AC-11-010 */}
+      {userId > 0 && (
+        <div className="text-center">
+          <button
+            onClick={() => setShowSuggest(true)}
+            className="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-emerald-600 border border-gray-200 hover:border-emerald-300 px-4 py-2 rounded-xl transition-colors"
+          >
+            💡 Thema vorschlagen
+          </button>
+        </div>
+      )}
+
       {/* Info box */}
       <div className="bg-slate-50 rounded-2xl border border-slate-200 p-6">
         <h3 className="font-bold text-slate-800 mb-3">🎯 Wie funktioniert der Lernpfad?</h3>
@@ -146,6 +163,9 @@ export default function LearnPage() {
           </div>
         </div>
       </div>
+      {showSuggest && userId > 0 && (
+        <TopicSuggestionModal userId={userId} onClose={() => setShowSuggest(false)} />
+      )}
     </main>
   );
 }

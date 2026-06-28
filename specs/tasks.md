@@ -134,6 +134,27 @@
 
 ---
 
+## Feature 11 – Nutzer-Feedback (11-feedback.md)
+
+- [x] AC-11-001: FeedbackButton in user layout (floating, nur wenn eingeloggt)
+- [x] AC-11-002: FeedbackModal mit 4 Kategorie-Icons (BUG / IMPROVEMENT / IDEA / PRAISE)
+- [x] AC-11-003: Zod FeedbackSchema + POST /api/feedback (400 bei fehlendem category/text)
+- [x] AC-11-004: POST /api/feedback speichert + Toast-Bestätigung
+- [x] AC-11-005: contextPath (window.location.pathname) automatisch mitgesendet
+- [x] AC-11-006: LessonFeedback-Komponente am Ende jeder Lernlektion (👍/👎)
+- [x] AC-11-007: POST /api/feedback/lesson — ein Klick reicht, optionales Textfeld danach
+- [x] AC-11-008: GET /api/feedback/lesson + PUT /api/feedback/lesson/[id] — eigene Bewertung laden/ändern
+- [x] AC-11-009: Lektions-Feedback im Admin mit Modul+Lektionsname aufgelöst
+- [x] AC-11-010: „Thema vorschlagen"-Button auf /learn und am Lektionsende
+- [x] AC-11-011: TopicSuggestionModal + POST /api/feedback/suggestions
+- [x] AC-11-012: GET /api/admin/feedback/suggestions + Admin-Tab „Themenvorschläge"
+- [x] AC-11-013: Admin-Feedback-Seite mit Tabelle (Kategorie, Text, Nutzer, Datum, Kontext)
+- [x] AC-11-014: Filter nach Kontext-Typ + Sortierung nach Datum
+- [x] AC-11-015: PATCH /api/admin/feedback/[id] (erledigt) + DELETE
+- [x] AC-11-016: PATCH /api/admin/feedback/suggestions/[id] (Status-Dropdown)
+
+---
+
 ## Open Improvements
 
 - [x] PERF-001: GET /api/prompts – votes groupBy instead of include (Performance)
