@@ -15,7 +15,7 @@
 
 import { cookies } from 'next/headers';
 export { USER_COOKIE, signUserId, verifyUserCookie } from './user-session';
-import { verifyUserCookie } from './user-session';
+import { USER_COOKIE, verifyUserCookie } from './user-session';
 
 export const USER_COOKIE_OPTS = {
   httpOnly: true,
