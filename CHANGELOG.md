@@ -1,5 +1,18 @@
 # Changelog
 
+## [7.1.0](https://github.com/bernoron/prompt-arena/compare/v7.0.0...v7.1.0) (2026-06-28)
+
+
+### Features
+
+* **seed+admin:** system user prompts, hidden admin URL, remove admin nav link ([a35a5ce](https://github.com/bernoron/prompt-arena/commit/a35a5ce7ade49c289f151e0aa375c664c47f893e))
+
+
+### Bug Fixes
+
+* **ci:** bypass rate limiter in CI (GitHub Actions sets CI=true) ([47d2127](https://github.com/bernoron/prompt-arena/commit/47d2127e2b5751af0a189ec79075826415e8b47e))
+* **ci:** ESLint errors + add EMAIL_SECRET to E2E CI job ([bb22963](https://github.com/bernoron/prompt-arena/commit/bb22963ad0d5a94acdfbfdae237cf4545ad41999))
+
 ## [7.0.0](https://github.com/bernoron/prompt-arena/compare/v6.0.0...v7.0.0) (2026-06-28)
 
 
