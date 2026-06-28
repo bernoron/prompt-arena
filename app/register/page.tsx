@@ -76,16 +76,18 @@ export default function RegisterPage() {
         {/* Card */}
         <div className="bg-white rounded-2xl shadow-2xl p-6">
           <form onSubmit={handleSubmit} className="space-y-4">
-            {/* Name */}
+            {/* Alias */}
             <div>
-              <label className="block text-sm font-semibold text-slate-700 mb-1.5">Name</label>
+              <label className="block text-sm font-semibold text-slate-700 mb-1.5">
+                Alias <span className="text-slate-400 font-normal text-xs">(dein Anzeigename)</span>
+              </label>
               <input
                 type="text"
                 value={form.name}
                 onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
-                placeholder="Vor- und Nachname"
+                placeholder="z. B. TechNinja42"
                 autoFocus
-                autoComplete="name"
+                autoComplete="nickname"
                 required
                 className={inputCls}
               />

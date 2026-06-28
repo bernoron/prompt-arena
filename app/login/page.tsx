@@ -7,7 +7,7 @@ import { USER_ID_KEY } from '@/lib/constants';
 
 export default function LoginPage() {
   const router = useRouter();
-  const [form, setForm]     = useState({ name: '', password: '' });
+  const [form, setForm]     = useState({ email: '', password: '' });
   const [error, setError]   = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -62,15 +62,15 @@ export default function LoginPage() {
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label className="block text-sm font-semibold text-slate-700 mb-1.5">
-                Benutzername
+                E-Mail
               </label>
               <input
-                type="text"
-                value={form.name}
-                onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
-                placeholder="Dein Name"
+                type="email"
+                value={form.email}
+                onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
+                placeholder="deine@email.ch"
                 autoFocus
-                autoComplete="username"
+                autoComplete="email"
                 required
                 className={inputCls}
               />
@@ -99,7 +99,7 @@ export default function LoginPage() {
 
             <button
               type="submit"
-              disabled={loading || !form.name || !form.password}
+              disabled={loading || !form.email || !form.password}
               className="w-full py-2.5 rounded-xl text-white font-bold text-sm transition-all hover:opacity-90 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed shadow-lg mt-2"
               style={{ background: 'linear-gradient(135deg, #059669, #0891b2)' }}
             >

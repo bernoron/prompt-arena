@@ -125,7 +125,7 @@ GET /api/admin/users Returns all users with decrypted email addresses. Protected
 
 ### `POST /api/auth/login`
 
-POST /api/auth/login Body: { name: string, password: string } Verifies the user's password and sets a signed HttpOnly `user_session` cookie.
+POST /api/auth/login Body: { email: string, password: string } Verifies the user's password and sets a signed HttpOnly `user_session` cookie. Email lookup uses the HMAC-SHA256 blind index so plaintext is never queried.
 
 
 ---
@@ -297,4 +297,4 @@ Alle Timestamps werden als **ISO 8601** Strings zurückgegeben, z.B. `"2024-03-1
 
 
 ---
-*Automatisch generiert am 28.06.2026, 12:34 · [Quellcode](https://github.com/your-org/prompt-arena)*
+*Automatisch generiert am 28.06.2026, 12:44 · [Quellcode](https://github.com/your-org/prompt-arena)*

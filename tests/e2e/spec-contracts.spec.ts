@@ -1,24 +1,26 @@
 import { test, expect, type APIRequestContext } from '@playwright/test';
 
 const ADMIN_PASSWORD = process.env.ADMIN_SECRET ?? 'admin1234';
+const TEST_PASSWORD   = 'Spec1234!';
 
-async function createUser(request: APIRequestContext) {
+async function createAndLoginUser(request: APIRequestContext) {
   const suffix = `${Date.now()}-${Math.random().toString(16).slice(2)}`;
-  const res = await request.post('/api/users', {
-    data: { name: `Spec User ${suffix}`, department: 'IT' },
+  const name   = `Spec User ${suffix}`;
+  const email  = `spec-${suffix}@test.example`;
+
+  const regRes = await request.post('/api/auth/register', {
+    data: { name, email, password: TEST_PASSWORD },
   });
+  expect(regRes.status()).toBe(201);
+  const user = await regRes.json() as { userId: number; name: string; avatarColor: string };
 
-  expect(res.status()).toBe(201);
-  return await res.json() as { id: number; name: string; department: string; avatarColor: string };
-}
+  const loginRes = await request.post('/api/auth/login', {
+    data: { email, password: TEST_PASSWORD },
+  });
+  expect(loginRes.status()).toBe(200);
+  const cookie = cookieHeader(loginRes);
 
-async function loginUser(
-  request: APIRequestContext,
-  userId: number,
-) {
-  const res = await request.post('/api/auth/login', { data: { userId } });
-  expect(res.status()).toBe(200);
-  return cookieHeader(res);
+  return { id: user.userId, name: user.name, avatarColor: user.avatarColor, cookie };
 }
 
 async function loginAdmin(request: APIRequestContext) {
@@ -38,11 +40,10 @@ function cookieHeader(response: { headers(): Record<string, string> }) {
 
 test.describe('PromptArena spec contracts', () => {
   test('BAC-01 identity: users can register, are listed, and get a signed session', async ({ request }) => {
-    const user = await createUser(request);
+    const user = await createAndLoginUser(request);
 
     expect(user.id).toBeGreaterThan(0);
     expect(user.name).toMatch(/^Spec User/);
-    expect(user.department).toBe('IT');
     expect(user.avatarColor).toBeTruthy();
 
     const listRes = await request.get('/api/users');
@@ -54,9 +55,7 @@ test.describe('PromptArena spec contracts', () => {
       expect(users[i - 1].totalPoints).toBeGreaterThanOrEqual(users[i].totalPoints);
     }
 
-    const cookie = await loginUser(request, user.id);
-
-    const meRes = await request.get('/api/auth/me', { headers: { Cookie: cookie } });
+    const meRes = await request.get('/api/auth/me', { headers: { Cookie: user.cookie } });
     expect(meRes.status()).toBe(200);
     await expect(meRes.json()).resolves.toMatchObject({
       user: { id: user.id, name: user.name },
@@ -64,8 +63,8 @@ test.describe('PromptArena spec contracts', () => {
   });
 
   test('BAC-02 prompt library: prompts are paginated, searchable, categorized, and personalized', async ({ request }) => {
-    const user = await createUser(request);
-    const cookie = await loginUser(request, user.id);
+    const user = await createAndLoginUser(request);
+    const cookie = user.cookie;
 
     const categoriesRes = await request.get('/api/categories');
     expect(categoriesRes.status()).toBe(200);
@@ -87,8 +86,8 @@ test.describe('PromptArena spec contracts', () => {
   });
 
   test('BAC-02/03/05/06: authenticated users can submit, vote, favorite, and record usage', async ({ request }) => {
-    const user = await createUser(request);
-    const cookie = await loginUser(request, user.id);
+    const user = await createAndLoginUser(request);
+    const cookie = user.cookie;
 
     const title = `Spec Prompt ${Date.now()}`;
     const createRes = await request.post('/api/prompts', {
@@ -115,8 +114,8 @@ test.describe('PromptArena spec contracts', () => {
     expect(selfVoteRes.status()).toBe(403);
 
     // A different user can vote legitimately (200).
-    const voter = await createUser(request);
-    const voterCookie = await loginUser(request, voter.id);
+    const voter = await createAndLoginUser(request);
+    const voterCookie = voter.cookie;
     const voteRes = await request.post('/api/votes', {
       headers: { Cookie: voterCookie },
       data: { promptId: prompt.id, userId: voter.id, value: 5 },
@@ -182,8 +181,8 @@ test.describe('PromptArena spec contracts', () => {
   });
 
   test('BAC-08 learning: modules and lessons are readable and completion is idempotent', async ({ request }) => {
-    const user = await createUser(request);
-    const cookie = await loginUser(request, user.id);
+    const user = await createAndLoginUser(request);
+    const cookie = user.cookie;
 
     const modulesRes = await request.get('/api/learn');
     expect(modulesRes.status()).toBe(200);

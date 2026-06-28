@@ -1,14 +1,16 @@
 /**
  * POST /api/auth/login
  *
- * Body: { name: string, password: string }
+ * Body: { email: string, password: string }
  *
  * Verifies the user's password and sets a signed HttpOnly `user_session` cookie.
+ * Email lookup uses the HMAC-SHA256 blind index so plaintext is never queried.
  */
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { signUserId, USER_COOKIE } from '@/lib/user-session';
 import { hashPassword, verifyPassword } from '@/lib/password';
+import { hashEmail } from '@/lib/email-crypto';
 import { USER_COOKIE_OPTS } from '@/lib/user-auth';
 import { authLimiter, getClientIp } from '@/lib/rate-limit';
 import { LoginSchema, validationError } from '@/lib/validation';
@@ -36,10 +38,11 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(errBody, { status });
   }
 
-  const { name, password } = parsed.data;
+  const { email, password } = parsed.data;
 
+  const emailHash = hashEmail(email);
   const user = await prisma.user.findUnique({
-    where: { name },
+    where: { emailHash },
     select: { id: true, name: true, avatarColor: true, passwordHash: true },
   });
 
@@ -52,7 +55,7 @@ export async function POST(req: NextRequest) {
 
   if (!user || !passwordOk) {
     return NextResponse.json(
-      { error: 'Ungültiger Benutzername oder Passwort' },
+      { error: 'Ungültige E-Mail oder Passwort' },
       { status: 401 },
     );
   }

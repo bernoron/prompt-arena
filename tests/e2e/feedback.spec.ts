@@ -17,7 +17,7 @@ async function createAndLoginUser(request: APIRequestContext): Promise<{ id: num
   const { userId } = await regRes.json() as { userId: number };
 
   const loginRes = await request.post('/api/auth/login', {
-    data: { name, password: TEST_PASSWORD },
+    data: { email, password: TEST_PASSWORD },
   });
   expect(loginRes.status()).toBe(200);
   const setCookie = loginRes.headers()['set-cookie'];
