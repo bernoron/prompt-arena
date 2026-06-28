@@ -108,7 +108,7 @@ export default function SubmitPage() {
     <div>
       {/* Header */}
       <div className="mb-6">
-        <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">Prompt einreichen</h1>
+        <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">Prompt einreichen</h1>
         <p className="text-slate-500 mt-1">
           Teile deinen besten KI-Prompt mit dem Team und erhalte{' '}
           <span className="font-bold text-emerald-600">+{POINTS.SUBMIT_PROMPT} Punkte</span>.

@@ -88,7 +88,7 @@ export default function PromptModal({
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden">
 
         {/* Header */}
-        <div className="flex items-start justify-between p-6 border-b border-slate-100">
+        <div className="flex items-start justify-between p-4 sm:p-6 border-b border-slate-100">
           <div className="flex-1 pr-4">
             <div className="flex flex-wrap gap-2 mb-2">
               <CategoryBadge category={prompt.category as Category} />
@@ -104,7 +104,7 @@ export default function PromptModal({
         </div>
 
         {/* Body */}
-        <div className="flex-1 overflow-y-auto p-6">
+        <div className="flex-1 overflow-y-auto p-4 sm:p-6">
           {hasSeparateEn && (
             <div className="flex gap-1 mb-4 bg-slate-100 rounded-xl p-1 w-fit">
               {(['de', 'en'] as const).map((lang) => (
@@ -125,7 +125,7 @@ export default function PromptModal({
         </div>
 
         {/* Footer */}
-        <div className="p-6 border-t border-slate-100 space-y-4">
+        <div className="p-4 sm:p-6 border-t border-slate-100 space-y-3 sm:space-y-4">
           {/* Author + stats */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2.5">
@@ -146,7 +146,7 @@ export default function PromptModal({
 
           {/* Star rating */}
           {currentUserId && (
-            <div className="flex items-center gap-3 bg-slate-50 rounded-xl px-4 py-2.5">
+            <div className="flex items-center gap-2 sm:gap-3 bg-slate-50 rounded-xl px-3 sm:px-4 py-2.5">
               <span className="text-sm text-slate-500 font-medium">Bewerten:</span>
               <div className="flex gap-1">
                 {[1, 2, 3, 4, 5].map((s) => (
@@ -173,7 +173,7 @@ export default function PromptModal({
           <div className="flex gap-3">
             <button onClick={handleFavorite} disabled={!currentUserId}
               title={currentUserId ? (isFav ? 'Aus Favoriten entfernen' : 'Zu Favoriten hinzufügen') : 'Bitte Benutzer auswählen'}
-              className={`flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all border ${
+              className={`flex-1 flex items-center justify-center gap-1.5 px-3 sm:px-4 py-2.5 rounded-xl text-sm font-semibold transition-all border ${
                 isFav
                   ? 'bg-amber-50 text-amber-600 border-amber-300 hover:bg-amber-100'
                   : 'bg-white text-slate-500 border-slate-200 hover:bg-slate-50 hover:text-amber-500'

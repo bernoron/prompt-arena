@@ -29,15 +29,15 @@ export default function LearnPage() {
   const overallPct      = totalLessons > 0 ? Math.round((totalCompleted / totalLessons) * 100) : 0;
 
   return (
-    <main className="max-w-5xl mx-auto px-4 sm:px-6 py-8 space-y-8">
+    <div className="max-w-5xl mx-auto space-y-6">
 
       {/* Hero */}
       <div className="rounded-2xl overflow-hidden"
         style={{ background: 'linear-gradient(135deg, #0F172A 0%, #1e3a5f 100%)' }}>
-        <div className="px-8 py-10">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
+        <div className="px-4 sm:px-8 py-6 sm:py-10">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-6">
             <div>
-              <h1 className="text-3xl font-extrabold text-white mb-2">
+              <h1 className="text-2xl sm:text-3xl font-extrabold text-white mb-2">
                 🧠 Prompting lernen
               </h1>
               <p className="text-slate-300 text-base max-w-lg">
@@ -148,7 +148,7 @@ export default function LearnPage() {
       {/* Info box */}
       <div className="bg-slate-50 rounded-2xl border border-slate-200 p-6">
         <h3 className="font-bold text-slate-800 mb-3">🎯 Wie funktioniert der Lernpfad?</h3>
-        <div className="grid sm:grid-cols-3 gap-4 text-sm text-slate-600">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-sm text-slate-600">
           <div className="flex gap-2">
             <span className="text-lg flex-shrink-0">📖</span>
             <div><p className="font-semibold text-slate-700">Theorie & Beispiele</p><p>Jede Lektion erklärt ein Konzept mit konkreten Gut/Schlecht-Vergleichen.</p></div>
@@ -166,6 +166,6 @@ export default function LearnPage() {
       {showSuggest && userId > 0 && (
         <TopicSuggestionModal userId={userId} onClose={() => setShowSuggest(false)} />
       )}
-    </main>
+    </div>
   );
 }

@@ -73,40 +73,40 @@ export default function Navigation() {
         </div>
       </div>
 
-      {/* Mobile nav */}
-      <nav className="flex md:hidden border-t border-white/10 overflow-x-auto">
+      {/* Mobile nav – 4-column grid, all items visible without scrolling */}
+      <nav className="grid grid-cols-4 md:hidden border-t border-white/10">
         {navLinks.map((link) => {
           const active = pathname === link.href;
           return (
             <Link
               key={link.href}
               href={link.href}
-              className={`flex-shrink-0 px-4 py-3 text-xs font-medium border-b-2 transition-colors ${
-                active
-                  ? 'border-emerald-400 text-emerald-400'
-                  : 'border-transparent text-slate-400'
+              className={`flex flex-col items-center gap-0.5 py-2 text-xs font-medium transition-colors ${
+                active ? 'text-emerald-400 bg-emerald-500/10' : 'text-slate-400'
               }`}
             >
-              <span className="mr-1">{link.icon}</span>{link.label}
+              <span className="text-base leading-none">{link.icon}</span>
+              <span>{link.label}</span>
             </Link>
           );
         })}
         <Link
           href="/submit"
-          className="flex-shrink-0 px-4 py-3 text-xs font-semibold border-b-2 border-transparent text-emerald-400"
+          className={`flex flex-col items-center gap-0.5 py-2 text-xs font-semibold transition-colors ${
+            pathname === '/submit' ? 'text-emerald-400 bg-emerald-500/10' : 'text-emerald-400'
+          }`}
         >
-          + Einreichen
+          <span className="text-base leading-none">✨</span>
+          <span>Einreichen</span>
         </Link>
         <Link
           href="/admin"
-          className={`flex-shrink-0 px-4 py-3 text-xs font-medium border-b-2 transition-colors ${
-            pathname.startsWith('/admin')
-              ? 'border-amber-400 text-amber-400'
-              : 'border-transparent text-slate-500'
+          className={`flex flex-col items-center gap-0.5 py-2 text-xs font-medium transition-colors ${
+            pathname.startsWith('/admin') ? 'text-amber-400 bg-amber-500/10' : 'text-slate-500'
           }`}
-          title="Admin"
         >
-          ⚙️
+          <span className="text-base leading-none">⚙️</span>
+          <span>Admin</span>
         </Link>
       </nav>
     </header>

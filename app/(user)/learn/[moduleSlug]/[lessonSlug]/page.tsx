@@ -55,7 +55,7 @@ export default function LessonPage({
 
   if (loading) {
     return (
-      <main className="max-w-3xl mx-auto px-4 py-8 space-y-4">
+      <div className="max-w-3xl mx-auto space-y-4">
         <div className="h-6 w-48 bg-slate-100 rounded animate-pulse" />
         <div className="h-10 w-3/4 bg-slate-100 rounded-xl animate-pulse" />
         <div className="space-y-3">
@@ -63,23 +63,23 @@ export default function LessonPage({
             <div key={i} className="h-24 bg-slate-100 rounded-xl animate-pulse" />
           ))}
         </div>
-      </main>
+      </div>
     );
   }
 
   if (!lesson) {
     return (
-      <main className="max-w-3xl mx-auto px-4 py-8 text-center">
+      <div className="max-w-3xl mx-auto text-center">
         <p className="text-slate-500">Lektion nicht gefunden.</p>
         <Link href="/learn" className="text-emerald-600 font-semibold hover:underline mt-4 block">
           ← Zurück zum Lernpfad
         </Link>
-      </main>
+      </div>
     );
   }
 
   return (
-    <main className="max-w-3xl mx-auto px-4 sm:px-6 py-8">
+    <div className="max-w-3xl mx-auto">
       {/* Breadcrumb */}
       <nav className="flex items-center gap-2 text-sm text-slate-400 mb-6">
         <Link href="/learn" className="hover:text-slate-600 transition-colors">Lernen</Link>
@@ -162,6 +162,6 @@ export default function LessonPage({
       {showSuggest && userId > 0 && (
         <TopicSuggestionModal userId={userId} onClose={() => setShowSuggest(false)} />
       )}
-    </main>
+    </div>
   );
 }

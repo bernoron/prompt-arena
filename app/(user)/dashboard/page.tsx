@@ -209,19 +209,19 @@ export default function DashboardPage() {
         <div className="relative flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
             <p className="text-slate-400 text-xs font-bold uppercase tracking-widest mb-1">Dashboard</p>
-            <h1 className="text-3xl font-extrabold tracking-tight">
+            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
               {currentUser ? `Hallo, ${currentUser.name.split(' ')[0]}! ${levelConf?.icon ?? '👋'}` : 'Hallo 👋'}
             </h1>
             <p className="text-slate-400 mt-1.5 text-sm">{motivLine}</p>
           </div>
           {currentUser && (
-            <div className="flex gap-3 flex-shrink-0">
+            <div className="flex gap-2 w-full sm:w-auto sm:flex-shrink-0">
               <Link href="/submit"
-                className="bg-emerald-500 hover:bg-emerald-400 text-white font-bold text-sm px-5 py-2.5 rounded-xl transition-all hover:scale-105 shadow-lg whitespace-nowrap">
-                + Prompt einreichen
+                className="flex-1 sm:flex-none text-center bg-emerald-500 hover:bg-emerald-400 text-white font-bold text-sm px-4 py-2.5 rounded-xl transition-all hover:scale-105 shadow-lg">
+                + Einreichen
               </Link>
               <Link href="/library"
-                className="bg-white/10 hover:bg-white/20 text-white font-semibold text-sm px-4 py-2.5 rounded-xl transition-all whitespace-nowrap">
+                className="flex-1 sm:flex-none text-center bg-white/10 hover:bg-white/20 text-white font-semibold text-sm px-4 py-2.5 rounded-xl transition-all">
                 Bibliothek →
               </Link>
             </div>
@@ -318,18 +318,18 @@ export default function DashboardPage() {
           {/* My top prompts */}
           {myPrompts.length > 0 && (
             <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-              <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
+              <div className="px-4 sm:px-6 py-3 sm:py-4 border-b border-slate-100 flex items-center justify-between">
                 <div>
                   <h3 className="font-bold text-slate-800">Meine Top-Prompts 🚀</h3>
                   <p className="text-xs text-slate-400 mt-0.5">Wie oft werden deine Prompts genutzt</p>
                 </div>
                 <Link href="/library" className="text-xs text-emerald-600 font-semibold hover:underline">
-                  Alle anzeigen →
+                  Alle →
                 </Link>
               </div>
               <div className="divide-y divide-slate-50">
                 {topPrompts.map((p) => (
-                  <div key={p.id} className="px-6 py-4 hover:bg-slate-50 transition-colors">
+                  <div key={p.id} className="px-4 sm:px-6 py-3 hover:bg-slate-50 transition-colors">
                     <div className="flex items-start justify-between gap-4">
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-semibold text-slate-800 truncate">{p.title}</p>

@@ -87,47 +87,52 @@ export default function ProfilePage() {
   return (
     <div>
       {/* Profile hero */}
-      <div className="rounded-2xl mb-6 p-6 text-white relative overflow-hidden"
+      <div className="rounded-2xl mb-4 sm:mb-6 p-4 sm:p-6 text-white relative overflow-hidden"
         style={{ background: 'linear-gradient(135deg, #0F172A 0%, #1E293B 60%, #064E3B 100%)' }}>
         <div className="absolute top-0 right-0 w-48 h-48 opacity-10 rounded-full"
           style={{ background: 'radial-gradient(circle, #059669, transparent)', transform: 'translate(30%,-30%)' }} />
-        <div className="flex items-start gap-5 flex-wrap relative">
-          <span className="w-20 h-20 rounded-2xl flex items-center justify-center text-white text-3xl font-extrabold flex-shrink-0 shadow-xl"
-            style={{ backgroundColor: profile.avatarColor }}>
-            {profile.name.split(' ').map(n => n[0]).join('')}
-          </span>
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-3 flex-wrap mb-1">
-              <h1 className="text-2xl font-extrabold text-white">{profile.name}</h1>
-              <LevelBadge level={profile.level as LevelName} />
-            </div>
-            <p className="text-slate-400 text-sm">{profile.department} · Rang #{profile.rank}</p>
-            <div className="mt-4 max-w-sm">
-              <div className="flex justify-between text-xs mb-1.5">
-                <span className="text-slate-400">{progress.level}</span>
-                <span className="font-bold text-white">{profile.totalPoints} Pts</span>
+        <div className="relative space-y-4">
+          {/* Avatar + Name row */}
+          <div className="flex items-center gap-4">
+            <span className="w-14 h-14 sm:w-20 sm:h-20 rounded-xl sm:rounded-2xl flex items-center justify-center text-white text-2xl sm:text-3xl font-extrabold flex-shrink-0 shadow-xl"
+              style={{ backgroundColor: profile.avatarColor }}>
+              {profile.name.split(' ').map(n => n[0]).join('')}
+            </span>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2 flex-wrap mb-1">
+                <h1 className="text-xl sm:text-2xl font-extrabold text-white leading-tight">{profile.name}</h1>
+                <LevelBadge level={profile.level as LevelName} />
               </div>
-              <div className="w-full bg-white/20 rounded-full h-2.5">
-                <div className="h-2.5 rounded-full transition-all"
-                  style={{ width: `${Math.min(progress.percentage, 100)}%`, background: 'linear-gradient(90deg, #34D399, #22D3EE)' }} />
-              </div>
-              {progress.nextLevel ? (
-                <p className="text-xs text-slate-400 mt-1.5">
-                  Noch <span className="text-emerald-400 font-semibold">{progress.max - progress.current} Pts</span> bis {progress.nextLevel}
-                </p>
-              ) : (
-                <p className="text-xs text-emerald-400 mt-1.5 font-semibold">✓ Maximales Level erreicht!</p>
-              )}
+              <p className="text-slate-400 text-sm">{profile.department} · Rang #{profile.rank}</p>
             </div>
           </div>
-          <div className="flex gap-3 ml-auto">
+          {/* XP bar */}
+          <div>
+            <div className="flex justify-between text-xs mb-1.5">
+              <span className="text-slate-400">{progress.level}</span>
+              <span className="font-bold text-white">{profile.totalPoints} Pts</span>
+            </div>
+            <div className="w-full bg-white/20 rounded-full h-2.5">
+              <div className="h-2.5 rounded-full transition-all"
+                style={{ width: `${Math.min(progress.percentage, 100)}%`, background: 'linear-gradient(90deg, #34D399, #22D3EE)' }} />
+            </div>
+            {progress.nextLevel ? (
+              <p className="text-xs text-slate-400 mt-1.5">
+                Noch <span className="text-emerald-400 font-semibold">{progress.max - progress.current} Pts</span> bis {progress.nextLevel}
+              </p>
+            ) : (
+              <p className="text-xs text-emerald-400 mt-1.5 font-semibold">✓ Maximales Level erreicht!</p>
+            )}
+          </div>
+          {/* Stat boxes – full-width row on mobile */}
+          <div className="flex gap-2">
             {[
               { val: profile.totalPoints, label: 'Punkte' },
               { val: profile.prompts.length, label: 'Prompts' },
               { val: `#${profile.rank}`, label: 'Rang' },
             ].map(({ val, label }) => (
-              <div key={label} className="text-center bg-white/10 rounded-xl px-4 py-3 min-w-[68px]">
-                <p className="text-xl font-extrabold text-white">{val}</p>
+              <div key={label} className="flex-1 text-center bg-white/10 rounded-xl px-2 sm:px-4 py-2 sm:py-3">
+                <p className="text-lg sm:text-xl font-extrabold text-white">{val}</p>
                 <p className="text-xs text-slate-400 mt-0.5">{label}</p>
               </div>
             ))}

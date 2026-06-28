@@ -25,29 +25,29 @@ export default function ModulePage({ params }: { params: { moduleSlug: string } 
 
   if (loading) {
     return (
-      <main className="max-w-3xl mx-auto px-4 py-8">
+      <div className="max-w-3xl mx-auto">
         <div className="space-y-3">
           {[...Array(5)].map((_, i) => (
             <div key={i} className="h-16 bg-slate-100 rounded-xl animate-pulse" />
           ))}
         </div>
-      </main>
+      </div>
     );
   }
 
   if (!mod) {
     return (
-      <main className="max-w-3xl mx-auto px-4 py-8 text-center">
+      <div className="max-w-3xl mx-auto text-center">
         <p className="text-slate-500">Modul nicht gefunden.</p>
         <Link href="/learn" className="text-emerald-600 font-semibold hover:underline mt-4 block">
           ← Zurück zur Übersicht
         </Link>
-      </main>
+      </div>
     );
   }
 
   return (
-    <main className="max-w-3xl mx-auto px-4 sm:px-6 py-8 space-y-6">
+    <div className="max-w-3xl mx-auto space-y-5">
 
       {/* Breadcrumb */}
       <nav className="flex items-center gap-2 text-sm text-slate-400">
@@ -57,7 +57,7 @@ export default function ModulePage({ params }: { params: { moduleSlug: string } 
       </nav>
 
       {/* Module Header */}
-      <div className="bg-white rounded-2xl border border-slate-200 p-6">
+      <div className="bg-white rounded-2xl border border-slate-200 p-4 sm:p-6">
         <div className="flex items-start justify-between gap-4">
           <div className="flex items-center gap-3">
             <span className="text-4xl">{mod.icon}</span>
@@ -126,6 +126,6 @@ export default function ModulePage({ params }: { params: { moduleSlug: string } 
       <Link href="/learn" className="inline-flex items-center gap-1.5 text-sm text-slate-400 hover:text-slate-600 transition-colors">
         ← Zurück zur Übersicht
       </Link>
-    </main>
+    </div>
   );
 }

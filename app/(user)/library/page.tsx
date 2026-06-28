@@ -214,13 +214,13 @@ function LibraryPageInner() {
       {levelUpName && <LevelUpModal newLevel={levelUpName} onClose={() => setLevelUpName(null)} />}
 
       <div className="mb-6">
-        <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">Prompt-Bibliothek</h1>
+        <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">Prompt-Bibliothek</h1>
         <p className="text-slate-500 mt-1">Entdecke, nutze und bewerte die besten KI-Prompts deiner Kollegen.</p>
       </div>
 
       {/* Filters */}
-      <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 mb-6 flex flex-col sm:flex-row gap-3 items-start sm:items-center">
-        <div className="relative flex-1 max-w-sm">
+      <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 mb-6 flex flex-col gap-3">
+        <div className="relative w-full">
           <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">🔍</span>
           <input
             type="text"

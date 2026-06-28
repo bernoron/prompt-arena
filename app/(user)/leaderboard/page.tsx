@@ -61,12 +61,12 @@ export default function LeaderboardPage() {
   return (
     <div>
       {/* Header */}
-      <div className="rounded-2xl mb-6 p-6 text-white relative overflow-hidden"
+      <div className="rounded-2xl mb-4 sm:mb-6 p-4 sm:p-6 text-white relative overflow-hidden"
         style={{ background: 'linear-gradient(135deg, #0F172A 0%, #1E293B 60%, #4C1D95 100%)' }}>
         <div className="absolute top-0 right-0 w-64 h-64 opacity-10 rounded-full"
           style={{ background: 'radial-gradient(circle, #7C3AED, transparent)', transform: 'translate(30%,-30%)' }} />
         <p className="text-slate-400 text-sm font-medium uppercase tracking-widest mb-1">Leaderboard</p>
-        <h1 className="text-3xl font-extrabold tracking-tight">Rangliste</h1>
+        <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">Rangliste</h1>
         <p className="text-slate-400 mt-1 text-sm">Die besten Prompt-Schreiber des Unternehmens.</p>
       </div>
 
@@ -88,7 +88,7 @@ export default function LeaderboardPage() {
               <>
                 {/* Podium */}
                 {top1 && top2 && top3 && (
-                  <div className="px-6 pt-6 pb-4 flex items-end justify-center gap-3 border-b border-slate-100 bg-slate-50">
+                  <div className="px-3 sm:px-6 pt-4 sm:pt-6 pb-3 sm:pb-4 flex items-end justify-center gap-2 sm:gap-3 border-b border-slate-100 bg-slate-50">
                     {[
                       { user: top2, rank: 2, height: 64, emoji: '🥈', bg: 'bg-slate-200', textColor: 'text-slate-500' },
                       { user: top1, rank: 1, height: 96, emoji: '🥇', bg: 'bg-gradient-to-b from-amber-200 to-amber-300', textColor: 'text-amber-600', crown: true, ring: 'ring-4 ring-amber-400' },
@@ -120,7 +120,7 @@ export default function LeaderboardPage() {
                     const isMe = user.id === currentUserId;
                     return (
                       <div key={user.id}
-                        className={`flex items-center gap-4 px-6 py-3 transition-colors ${isMe ? 'bg-emerald-50' : 'hover:bg-slate-50'}`}>
+                        className={`flex items-center gap-2 sm:gap-4 px-3 sm:px-6 py-3 transition-colors ${isMe ? 'bg-emerald-50' : 'hover:bg-slate-50'}`}>
                         <span className="w-7 text-center text-sm font-extrabold text-slate-400">#{i + 4}</span>
                         <span className="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0 shadow-sm"
                           style={{ backgroundColor: user.avatarColor }}>
@@ -149,7 +149,7 @@ export default function LeaderboardPage() {
                   const myRank = users.findIndex(u => u.id === currentUserId) + 1;
                   if (!me) return null;
                   return (
-                    <div className="border-t-2 border-dashed border-slate-200 px-6 py-3 bg-emerald-50 flex items-center gap-4">
+                    <div className="border-t-2 border-dashed border-slate-200 px-3 sm:px-6 py-3 bg-emerald-50 flex items-center gap-2 sm:gap-4">
                       <span className="w-7 text-center text-sm font-extrabold text-slate-400">#{myRank}</span>
                       <span className="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold"
                         style={{ backgroundColor: me.avatarColor }}>
@@ -170,7 +170,7 @@ export default function LeaderboardPage() {
 
         {/* Right column */}
         <div className="space-y-5">
-          <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
+          <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 sm:p-6">
             <h2 className="font-bold text-slate-800 mb-4">🏢 Abteilungen</h2>
             <div className="space-y-4">
               {Object.entries(deptTotals)
@@ -182,7 +182,7 @@ export default function LeaderboardPage() {
           </div>
 
           {topPrompt && (
-            <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
+            <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 sm:p-6">
               <div className="flex items-center gap-2 mb-4">
                 <span className="text-xl">⭐</span>
                 <h2 className="font-bold text-slate-800">Prompt der Woche</h2>

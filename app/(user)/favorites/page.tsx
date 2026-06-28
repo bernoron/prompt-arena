@@ -123,7 +123,7 @@ export default function FavoritesPage() {
       {/* Header */}
       <div className="mb-6 flex items-center justify-between flex-wrap gap-3">
         <div>
-          <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">⭐ Meine Favoriten</h1>
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">⭐ Meine Favoriten</h1>
           <p className="text-slate-500 mt-1">Deine persönliche Sammlung der wichtigsten Prompts.</p>
         </div>
         <Link href="/library"

@@ -171,7 +171,7 @@ export default function UserPicker({ dark = false }: { dark?: boolean }) {
       </button>
 
       {open && (
-        <div className="absolute right-0 top-full mt-1 w-72 bg-white rounded-xl shadow-lg border border-gray-100 z-50 overflow-hidden">
+        <div className="absolute right-0 top-full mt-1 w-64 sm:w-72 max-w-[calc(100vw-2rem)] bg-white rounded-xl shadow-lg border border-gray-100 z-50 overflow-hidden">
           {showRegister ? (
             <RegisterForm
               onCreated={handleCreated}
