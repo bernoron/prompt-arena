@@ -22,8 +22,7 @@ const DEV_FALLBACK = 'dev-email-secret-NOT-FOR-PRODUCTION!';
 // a non-standard GHASH-based IV derivation in OpenSSL. Existing rows with 16-byte
 // IVs continue to decrypt correctly because decryptEmail reads the IV length from
 // the stored hex rather than this constant.
-const IV_BYTES     = 12;
-const KEY_BYTES    = 32; // AES-256
+const IV_BYTES = 12;
 
 function getKey(): Buffer {
   const secret = process.env.EMAIL_SECRET ?? DEV_FALLBACK;

@@ -1,7 +1,7 @@
 'use client';
 
 // @spec AC-11-013, AC-11-014, AC-11-015
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 
 interface FeedbackEntry {
@@ -35,18 +35,18 @@ export default function AdminFeedbackPage() {
   const [filter, setFilter] = useState<string>('ALL');
   const [deleting, setDeleting] = useState<number | null>(null);
 
-  useEffect(() => {
-    load();
-  }, [filter]);
-
-  async function load() {
+  const load = useCallback(async () => {
     setLoading(true);
     const qs = filter !== 'ALL' ? `?contextType=${filter}` : '';
     const res = await fetch(`/api/admin/feedback${qs}`);
     const data = await res.json();
     setEntries(data);
     setLoading(false);
-  }
+  }, [filter]);
+
+  useEffect(() => {
+    load();
+  }, [load]);
 
   async function markDone(id: number) {
     await fetch(`/api/admin/feedback/${id}`, {

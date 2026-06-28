@@ -59,6 +59,7 @@ jobs:
           DATABASE_URL: file:./dev.db
           ADMIN_SECRET: ci-admin-secret
           USER_SECRET: ci-user-secret-with-at-least-32-chars
+          EMAIL_SECRET: ci-email-secret-for-testing-32chars!!
           NODE_ENV: production
 
       - name: Install Playwright browsers
@@ -70,6 +71,7 @@ jobs:
           DATABASE_URL: file:./dev.db
           ADMIN_SECRET: ci-admin-secret
           USER_SECRET: ci-user-secret-with-at-least-32-chars
+          EMAIL_SECRET: ci-email-secret-for-testing-32chars!!
           NODE_ENV: production
           PLAYWRIGHT_BASE_URL: http://127.0.0.1:3000
 

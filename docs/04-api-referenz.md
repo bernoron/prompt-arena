@@ -108,8 +108,6 @@ GET /api/admin/stats  – Aggregate statistics for the admin dashboard Protected
 
 ### `GET /api/admin/users`
 
-GET /api/admin/users Returns all users with decrypted email addresses. Protected by the middleware admin guard AND a secondary in-handler check (defence in depth — middleware can be bypassed by misconfiguration). @spec AC-12-006
-
 
 ---
 
@@ -124,8 +122,6 @@ GET /api/admin/users Returns all users with decrypted email addresses. Protected
 ---
 
 ### `POST /api/auth/login`
-
-POST /api/auth/login Body: { email: string, password: string } Verifies the user's password and sets a signed HttpOnly `user_session` cookie. Email lookup uses the HMAC-SHA256 blind index so plaintext is never queried.
 
 
 ---
@@ -145,8 +141,6 @@ GET /api/auth/me Returns the currently authenticated user from the session cooki
 ---
 
 ### `POST /api/auth/register`
-
-POST /api/auth/register Body: { name: string, email: string, password: string } Creates a new user account and sets a signed session cookie (auto-login). Email is stored encrypted (AES-256-GCM); uniqueness is checked via HMAC blind index. @spec AC-12-004, AC-12-008
 
 
 ---
@@ -297,4 +291,4 @@ Alle Timestamps werden als **ISO 8601** Strings zurückgegeben, z.B. `"2024-03-1
 
 
 ---
-*Automatisch generiert am 28.06.2026, 12:44 · [Quellcode](https://github.com/your-org/prompt-arena)*
+*Automatisch generiert am 28.06.2026, 13:10 · [Quellcode](https://github.com/your-org/prompt-arena)*
