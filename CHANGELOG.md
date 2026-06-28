@@ -1,5 +1,33 @@
 # Changelog
 
+## [6.0.0](https://github.com/bernoron/prompt-arena/compare/v5.4.0...v6.0.0) (2026-06-28)
+
+
+### ⚠ BREAKING CHANGES
+
+* login identifier changed from username to email address. Includes Feature 12 (AES-256-GCM encrypted email at rest), security hardening (HSTS, auth rate-limiting, XSS validation), and user feedback system (Feature 11). All existing username-only accounts cannot log in and must re-register with an email address.
+
+### Features
+
+* **auth:** email-based login — alias replaces username as display name ([3882fc8](https://github.com/bernoron/prompt-arena/commit/3882fc8b7728f622ccec6204002e237e64cde93c))
+* **auth:** Feature 12 — encrypted email at registration ([21a9dad](https://github.com/bernoron/prompt-arena/commit/21a9dad65eedfd2d8384c84e9493bfdb8606b128))
+* **auth:** username+password login, self-registration, middleware route guard ([bc031b6](https://github.com/bernoron/prompt-arena/commit/bc031b625629d05e2355327a5a720f1af19efb75))
+* **mobile:** mobile-first refactoring across all user pages ([da5e173](https://github.com/bernoron/prompt-arena/commit/da5e17307d6bac7d05ee9a58cc2ef770c004096b))
+
+
+### Bug Fixes
+
+* **auth:** apply hook improvements + restore spec annotation ([8f082df](https://github.com/bernoron/prompt-arena/commit/8f082df6eb99f527fd75d00aef9c31b968ea7c61))
+* **auth:** defence-in-depth hardening + spec annotation ([c3afb98](https://github.com/bernoron/prompt-arena/commit/c3afb98b266fe62ed0389d0929427a653a732d9f))
+* **crypto:** correct AES-GCM IV to 12 bytes + fix USER_COOKIE import ([ea8f0e3](https://github.com/bernoron/prompt-arena/commit/ea8f0e3d1a47a567308c162fc0f9b79e982ccf85))
+* **security:** code review ultra — critical & high findings ([792026a](https://github.com/bernoron/prompt-arena/commit/792026a1b60e7ec836a1e3b73ffde679ac7a4861))
+* **security:** internet-exposure hardening ([0d5ab95](https://github.com/bernoron/prompt-arena/commit/0d5ab956f4f2625ae59f1d2203ad7ed8548da2c6))
+
+
+### Miscellaneous Chores
+
+* release v7.0.0 ([8b26cc8](https://github.com/bernoron/prompt-arena/commit/8b26cc83de4702575f256cd1e2bcdb74e7228a24))
+
 ## [5.4.0](https://github.com/bernoron/prompt-arena/compare/v5.3.1...v5.4.0) (2026-06-28)
 
 
