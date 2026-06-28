@@ -548,4 +548,4 @@ SETUP-REIHENFOLGE
 
 
 ---
-*Automatisch generiert am 28.06.2026, 12:21 · [Quellcode](https://github.com/your-org/prompt-arena)*
+*Automatisch generiert am 28.06.2026, 12:22 · [Quellcode](https://github.com/your-org/prompt-arena)*

@@ -8,10 +8,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { signUserId, USER_COOKIE } from '@/lib/user-session';
-import { verifyPassword } from '@/lib/password';
+import { hashPassword, verifyPassword } from '@/lib/password';
+import { USER_COOKIE_OPTS } from '@/lib/user-auth';
 import { writeLimiter, getClientIp } from '@/lib/rate-limit';
 import { LoginSchema, validationError } from '@/lib/validation';
 import { logger } from '@/lib/logger';
+
+// Pre-computed once per cold-start: ensures verifyPassword always does real scrypt work
+// even when the user does not exist, preventing timing-based user enumeration.
+const DUMMY_HASH_PROMISE = hashPassword('__sentinel__');
 
 // @spec AC-01-007
 // Note: Feature 12 login behaviour (passwordHash verification, null-hash edge case) — no dedicated AC-12 criterion defined
@@ -38,13 +43,12 @@ export async function POST(req: NextRequest) {
     select: { id: true, name: true, avatarColor: true, passwordHash: true },
   });
 
-  // Constant-time: always run verifyPassword even when user is not found,
-  // to prevent user-enumeration via timing.
-  const DUMMY_HASH = '$2a$10$dummy.hash.to.prevent.timing.enumeration.attack.XXXXXXX';
+  // Always run verifyPassword regardless of whether the user exists.
+  // DUMMY_HASH is a valid scrypt hash so the full derivation always runs,
+  // preventing user-enumeration via response-time differences.
+  const DUMMY_HASH = await DUMMY_HASH_PROMISE;
   const hashToCheck = user?.passwordHash ?? DUMMY_HASH;
-  const passwordOk  = user?.passwordHash
-    ? await verifyPassword(password, hashToCheck)
-    : false;
+  const passwordOk = await verifyPassword(password, hashToCheck);
 
   if (!user || !passwordOk) {
     return NextResponse.json(
@@ -56,18 +60,12 @@ export async function POST(req: NextRequest) {
   const cookieValue = await signUserId(user.id);
   const res = NextResponse.json({
     ok: true,
-    userId:     user.id,
-    name:       user.name,
+    userId:      user.id,
+    name:        user.name,
     avatarColor: user.avatarColor,
   });
 
-  res.cookies.set(USER_COOKIE, cookieValue, {
-    httpOnly: true,
-    secure:   process.env.NODE_ENV === 'production',
-    sameSite: 'strict',
-    maxAge:   60 * 60 * 24 * 30,
-    path:     '/',
-  });
+  res.cookies.set(USER_COOKIE, cookieValue, USER_COOKIE_OPTS);
 
   logger.info('user login', { userId: user.id, name: user.name });
   return res;

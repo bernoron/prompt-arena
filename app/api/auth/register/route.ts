@@ -9,8 +9,10 @@
  * @spec AC-12-004
  */
 import { NextRequest, NextResponse } from 'next/server';
+import { Prisma } from '@prisma/client';
 import { prisma } from '@/lib/prisma';
 import { signUserId, USER_COOKIE } from '@/lib/user-session';
+import { USER_COOKIE_OPTS } from '@/lib/user-auth';
 import { hashPassword } from '@/lib/password';
 import { encryptEmail, hashEmail, isEmailSecretConfigured } from '@/lib/email-crypto';
 import { writeLimiter, getClientIp } from '@/lib/rate-limit';
@@ -68,10 +70,23 @@ export async function POST(req: NextRequest) {
   const passwordHash   = await hashPassword(password);
   const emailEncrypted = encryptEmail(email);
 
-  const user = await prisma.user.create({
-    data: { name, avatarColor, passwordHash, emailHash, emailEncrypted },
-    select: { id: true, name: true, avatarColor: true },
-  });
+  let user: { id: number; name: string; avatarColor: string };
+  try {
+    user = await prisma.user.create({
+      data: { name, avatarColor, passwordHash, emailHash, emailEncrypted },
+      select: { id: true, name: true, avatarColor: true },
+    });
+  } catch (err) {
+    // Concurrent registration can slip through the pre-checks; the DB unique
+    // constraint is the authoritative guard — surface it as a 409, not a 500.
+    if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2002') {
+      return NextResponse.json(
+        { error: 'Dieser Benutzername oder diese E-Mail ist bereits vergeben.' },
+        { status: 409 },
+      );
+    }
+    throw err;
+  }
 
   const cookieValue = await signUserId(user.id);
   const res = NextResponse.json(
@@ -79,13 +94,7 @@ export async function POST(req: NextRequest) {
     { status: 201 },
   );
 
-  res.cookies.set(USER_COOKIE, cookieValue, {
-    httpOnly: true,
-    secure:   process.env.NODE_ENV === 'production',
-    sameSite: 'strict',
-    maxAge:   60 * 60 * 24 * 30,
-    path:     '/',
-  });
+  res.cookies.set(USER_COOKIE, cookieValue, USER_COOKIE_OPTS);
 
   logger.info('user registered', { userId: user.id, name: user.name });
   return res;
