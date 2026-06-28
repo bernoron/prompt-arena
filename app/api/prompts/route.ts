@@ -18,6 +18,7 @@ import { POINTS } from '@/lib/points';
 import { CreatePromptSchema, PathId, validationError } from '@/lib/validation';
 import { readLimiter, writeLimiter, getClientIp } from '@/lib/rate-limit';
 import { resolveUserId, USER_COOKIE } from '@/lib/user-auth';
+import { optionalUser } from '@/lib/route-auth';
 import { logger, serializeError } from '@/lib/logger';
 
 // ─── GET /api/prompts ────────────────────────────────────────────────────────
@@ -55,15 +56,20 @@ export async function GET(req: NextRequest) {
     cursor = parsedCursor;
   }
 
-  // Validate optional userId query param
-  let parsedUserId: number | null = null;
+  // Validate optional userId query param. When present it must match the
+  // signed session cookie; otherwise userVote/userFavorite would be an IDOR.
+  let requestedUserId: number | null = null;
   if (userId) {
     const idResult = PathId.safeParse(userId);
     if (!idResult.success) {
       return NextResponse.json({ error: 'Invalid userId' }, { status: 400 });
     }
-    parsedUserId = idResult.data;
+    requestedUserId = idResult.data;
   }
+
+  const userAuth = await optionalUser(req, requestedUserId);
+  if ('response' in userAuth) return userAuth.response;
+  const resolvedUserId = userAuth.userId;
 
   try {
     const prompts = await prisma.prompt.findMany({
@@ -111,20 +117,20 @@ export async function GET(req: NextRequest) {
       ]),
     );
 
-    const userVoteMap = parsedUserId && promptIds.length
+    const userVoteMap = resolvedUserId && promptIds.length
       ? new Map(
           (await prisma.vote.findMany({
-            where: { userId: parsedUserId, promptId: { in: promptIds } },
+            where: { userId: resolvedUserId, promptId: { in: promptIds } },
             select: { promptId: true, value: true },
           })).map((v) => [v.promptId, v.value]),
         )
       : new Map<number, number>();
 
     // Pre-fetch the user's favorites set for O(1) lookup per prompt
-    const favSet = parsedUserId
+    const favSet = resolvedUserId
       ? new Set(
           (await prisma.favorite.findMany({
-            where: { userId: parsedUserId, isActive: true, promptId: { in: promptIds } },
+            where: { userId: resolvedUserId, isActive: true, promptId: { in: promptIds } },
             select: { promptId: true },
           })).map((f) => f.promptId)
         )
@@ -136,14 +142,14 @@ export async function GET(req: NextRequest) {
         ...p,
         avgRating:    rating.avgRating,
         voteCount:    rating.voteCount,
-        userVote:     parsedUserId ? (userVoteMap.get(p.id) ?? null) : null,
-        userFavorite: parsedUserId ? favSet.has(p.id) : undefined,
+        userVote:     resolvedUserId ? (userVoteMap.get(p.id) ?? null) : null,
+        userFavorite: resolvedUserId ? favSet.has(p.id) : undefined,
         createdAt:    p.createdAt.toISOString(),
       };
     });
 
     // Only cache when response is not user-specific (no userVote personalisation)
-    const cacheHeaders: HeadersInit = parsedUserId
+    const cacheHeaders: HeadersInit = resolvedUserId
       ? {}
       : { 'Cache-Control': 'public, s-maxage=20, stale-while-revalidate=60' };
 
@@ -204,7 +210,11 @@ export async function POST(req: NextRequest) {
 
     const prompt = await prisma.prompt.create({
       data: { title, titleEn: titleEn ?? title, content, contentEn: contentEn ?? content, category, difficulty, authorId },
-      include: { author: true },
+      include: {
+        author: {
+          select: { id: true, name: true, department: true, avatarColor: true },
+        },
+      },
     });
 
     await awardPoints(authorId, POINTS.SUBMIT_PROMPT);

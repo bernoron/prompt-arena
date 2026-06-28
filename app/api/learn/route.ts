@@ -6,6 +6,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { readLimiter, getClientIp } from '@/lib/rate-limit';
+import { optionalUser, parseOptionalPositiveInt } from '@/lib/route-auth';
 
 // @spec AC-08-001
 export async function GET(req: NextRequest) {
@@ -13,7 +14,12 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'Too many requests' }, { status: 429 });
   }
 
-  const userId = Number(req.nextUrl.searchParams.get('userId') ?? '0');
+  const requestedUserId = parseOptionalPositiveInt(req.nextUrl.searchParams.get('userId'), 'userId');
+  if (requestedUserId instanceof NextResponse) return requestedUserId;
+
+  const auth = await optionalUser(req, requestedUserId);
+  if ('response' in auth) return auth.response;
+  const userId = auth.userId ?? 0;
 
   const modules = await prisma.learningModule.findMany({
     orderBy: { order: 'asc' },

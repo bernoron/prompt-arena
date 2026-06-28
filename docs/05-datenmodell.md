@@ -35,6 +35,7 @@ WeeklyChallenge 1──n ChallengeSubmission
 | `votes` | `Vote[]` | Pflicht |  |
 | `challengeSubmissions` | `ChallengeSubmission[]` | Pflicht |  |
 | `favorites` | `Favorite[]` | Pflicht |  |
+| `usageEvents` | `UsageEvent[]` | Pflicht |  |
 | `lessonProgress` | `LessonProgress[]` | Pflicht |  |
 | `feedbacks` | `Feedback[]` | Pflicht |  |
 | `lessonFeedbacks` | `LessonFeedback[]` | Pflicht |  |
@@ -119,6 +120,7 @@ WeeklyChallenge 1──n ChallengeSubmission
 | `votes` | `Vote[]` | Pflicht |  |
 | `challengeSubmissions` | `ChallengeSubmission[]` | Pflicht |  |
 | `favorites` | `Favorite[]` | Pflicht |  |
+| `usageEvents` | `UsageEvent[]` | Pflicht |  |
 
 ---
 
@@ -148,6 +150,19 @@ WeeklyChallenge 1──n ChallengeSubmission
 | `createdAt` | `DateTime` | Pflicht | @default(now()) |
 | `prompt` | `Prompt` | Pflicht | @relation(fields: [promptId], references: [id]) |
 | `user` | `User` | Pflicht | @relation(fields: [userId], references: [id]) |
+
+---
+
+### UsageEvent
+
+| Feld | Typ | Pflicht | Hinweise |
+|---|---|---|---|
+| `id` | `Int` | Pflicht | @id @default(autoincrement()) |
+| `promptId` | `Int` | Pflicht |  |
+| `userId` | `Int` | Pflicht |  |
+| `createdAt` | `DateTime` | Pflicht | @default(now()) |
+| `prompt` | `Prompt` | Pflicht | @relation(fields: [promptId], references: [id], onDelete: Cascade) |
+| `user` | `User` | Pflicht | @relation(fields: [userId], references: [id], onDelete: Cascade) |
 
 ---
 
@@ -258,4 +273,4 @@ Für Produktivbetrieb empfiehlt sich PostgreSQL (nur `schema.prisma` anpassen).
 
 
 ---
-*Automatisch generiert am 28.06.2026, 14:48 · [Quellcode](https://github.com/your-org/prompt-arena)*
+*Automatisch generiert am 28.06.2026, 21:15 · [Quellcode](https://github.com/your-org/prompt-arena)*

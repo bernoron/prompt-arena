@@ -19,9 +19,10 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { awardPoints } from '@/lib/db-helpers';
 import { POINTS } from '@/lib/points';
-import { FavoriteSchema, PathId, validationError } from '@/lib/validation';
+import { FavoriteSchema, validationError } from '@/lib/validation';
 import { writeLimiter, readLimiter, getClientIp } from '@/lib/rate-limit';
 import { resolveUserId, USER_COOKIE } from '@/lib/user-auth';
+import { parseOptionalPositiveInt, requireUser } from '@/lib/route-auth';
 import { logger, serializeError } from '@/lib/logger';
 
 // ─── GET /api/favorites ──────────────────────────────────────────────────────
@@ -34,16 +35,15 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'Too many requests' }, { status: 429 });
   }
 
-  const userId = new URL(req.url).searchParams.get('userId');
-  if (!userId) {
-    return NextResponse.json({ error: 'userId is required' }, { status: 400 });
-  }
+  const requestedUserId = parseOptionalPositiveInt(
+    new URL(req.url).searchParams.get('userId'),
+    'userId',
+  );
+  if (requestedUserId instanceof NextResponse) return requestedUserId;
 
-  const idResult = PathId.safeParse(userId);
-  if (!idResult.success) {
-    return NextResponse.json({ error: 'Invalid userId' }, { status: 400 });
-  }
-  const parsedUserId = idResult.data;
+  const auth = await requireUser(req, requestedUserId);
+  if ('response' in auth) return auth.response;
+  const parsedUserId = auth.userId;
 
   try {
     const favorites = await prisma.favorite.findMany({

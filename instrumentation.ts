@@ -1,11 +1,8 @@
 /**
- * Next.js instrumentation hook — runs once when the server process starts.
+ * Next.js instrumentation hook - runs once when the server process starts.
  *
- * Purpose: fail fast (or at least warn loudly) on a misconfigured production
- * deployment, instead of discovering missing/weak secrets only when the first
- * admin login or write request returns 503 at runtime.
- *
- * Enabled via `experimental.instrumentationHook` in next.config.mjs.
+ * Purpose: fail fast on a misconfigured production deployment, instead of
+ * discovering missing or weak secrets only when the first request fails.
  */
 
 export async function register(): Promise<void> {
@@ -22,41 +19,53 @@ export async function register(): Promise<void> {
   const warnings: string[] = [];
 
   const adminSecret = process.env.ADMIN_SECRET ?? '';
-  const userSecret  = process.env.USER_SECRET ?? '';
-  const dbUrl       = process.env.DATABASE_URL ?? '';
+  const userSecret = process.env.USER_SECRET ?? '';
+  const emailSecret = process.env.EMAIL_SECRET ?? '';
+  const dbUrl = process.env.DATABASE_URL ?? '';
 
-  // ── Hard requirements ────────────────────────────────────────────────────
   if (!adminSecret) {
-    problems.push('ADMIN_SECRET is not set — the admin panel will reject every login (503).');
+    problems.push('ADMIN_SECRET is not set.');
   } else if (adminSecret.length < 12) {
-    warnings.push('ADMIN_SECRET is shorter than 12 characters — choose a stronger password.');
+    warnings.push('ADMIN_SECRET is shorter than 12 characters.');
   }
 
   if (!userSecret) {
-    problems.push('USER_SECRET is not set — all write actions (submit, vote, favorite) will be blocked (503).');
+    problems.push('USER_SECRET is not set.');
   } else if (userSecret.length < 32) {
-    warnings.push('USER_SECRET is shorter than 32 characters — HMAC signing key should be at least 32 chars.');
+    warnings.push('USER_SECRET is shorter than 32 characters.');
+  }
+
+  if (!emailSecret) {
+    problems.push('EMAIL_SECRET is not set.');
+  } else if (emailSecret.length < 32) {
+    warnings.push('EMAIL_SECRET is shorter than 32 characters.');
   }
 
   if (!dbUrl) {
-    problems.push('DATABASE_URL is not set — the application cannot reach the database.');
+    problems.push('DATABASE_URL is not set.');
   } else if (dbUrl.startsWith('file:') && dbUrl.includes('dev.db')) {
-    warnings.push('DATABASE_URL points at the bundled dev.db SQLite file — ensure it lives on a persistent volume in production.');
+    warnings.push('DATABASE_URL points at the bundled dev.db SQLite file.');
   }
 
-  for (const w of warnings) logger.warn(`startup config warning: ${w}`);
+  for (const warning of warnings) {
+    logger.warn(`startup config warning: ${warning}`);
+  }
 
   if (problems.length) {
-    for (const p of problems) logger.error(`startup config error: ${p}`);
-    logger.error(
-      'PromptArena started with an incomplete production configuration. ' +
+    for (const problem of problems) {
+      logger.error(`startup config error: ${problem}`);
+    }
+
+    throw new Error(
+      'PromptArena cannot start with incomplete production configuration. ' +
       'Set the missing environment variables and restart.',
     );
-  } else {
-    logger.info('startup config check passed', {
-      adminSecret: 'set',
-      userSecret:  'set',
-      db:          dbUrl.startsWith('file:') ? 'sqlite' : 'remote',
-    });
   }
+
+  logger.info('startup config check passed', {
+    adminSecret: 'set',
+    userSecret: 'set',
+    emailSecret: 'set',
+    db: dbUrl.startsWith('file:') ? 'sqlite' : 'remote',
+  });
 }

@@ -253,15 +253,21 @@ GET /api/prompts/trending Returns two lists for the Dashboard Trending widget: -
 
 ### `POST /api/usage`
 
+POST /api/usage Records that the current user copied and used a prompt. The first use per user/prompt increments usageCount and awards PROMPT_USED points to the prompt author. Repeated uses by the same user are idempotent. Body: { promptId: number, userId: number }
+
 
 ---
 
 ### `GET /api/users`
 
+GET  /api/users   - List all users ordered by points. POST /api/users   - Legacy self-registration endpoint (disabled).
+
 
 ---
 
 ### `POST /api/users`
+
+GET  /api/users   - List all users ordered by points. POST /api/users   - Legacy self-registration endpoint (disabled).
 
 
 ---
@@ -291,4 +297,4 @@ Alle Timestamps werden als **ISO 8601** Strings zurückgegeben, z.B. `"2024-03-1
 
 
 ---
-*Automatisch generiert am 28.06.2026, 14:48 · [Quellcode](https://github.com/your-org/prompt-arena)*
+*Automatisch generiert am 28.06.2026, 21:15 · [Quellcode](https://github.com/your-org/prompt-arena)*

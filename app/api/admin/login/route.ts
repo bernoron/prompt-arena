@@ -8,14 +8,14 @@
  */
 import { timingSafeEqual } from 'crypto';
 import { NextRequest, NextResponse } from 'next/server';
-import { hashSecret, ADMIN_COOKIE } from '@/lib/admin-auth';
-import { writeLimiter, getClientIp } from '@/lib/rate-limit';
+import { createAdminSession, ADMIN_COOKIE } from '@/lib/admin-auth';
+import { authLimiter, getClientIp } from '@/lib/rate-limit';
 import { logger } from '@/lib/logger';
 
 // @spec AC-07-001
 export async function POST(req: NextRequest) {
   // Rate-limit login attempts to slow brute-force
-  if (!writeLimiter.check(getClientIp(req))) {
+  if (!authLimiter.check(`admin-login:${getClientIp(req)}`)) {
     return NextResponse.json({ error: 'Too many requests' }, { status: 429 });
   }
 
@@ -50,10 +50,10 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Invalid password' }, { status: 401 });
   }
 
-  const hash = await hashSecret(secret);
-  const res  = NextResponse.json({ ok: true });
+  const session = await createAdminSession();
+  const res = NextResponse.json({ ok: true });
 
-  res.cookies.set(ADMIN_COOKIE, hash, {
+  res.cookies.set(ADMIN_COOKIE, session, {
     httpOnly:  true,
     secure:    process.env.NODE_ENV === 'production',
     sameSite:  'strict',

@@ -8,6 +8,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { readLimiter, writeLimiter, getClientIp } from '@/lib/rate-limit';
 import { z } from 'zod';
+import { requireAdmin } from '@/lib/route-auth';
 
 const CategorySchema = z.object({
   slug:  z.string().trim().min(1).max(40).regex(/^[a-zA-Z0-9_-]+$/, 'Slug darf nur Buchstaben, Zahlen, - und _ enthalten'),
@@ -19,6 +20,9 @@ const CategorySchema = z.object({
 
 // @spec AC-07-009
 export async function GET(req: NextRequest) {
+  const auth = await requireAdmin(req);
+  if (auth) return auth;
+
   if (!readLimiter.check(getClientIp(req))) {
     return NextResponse.json({ error: 'Too many requests' }, { status: 429 });
   }
@@ -27,6 +31,9 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
+  const auth = await requireAdmin(req);
+  if (auth) return auth;
+
   if (!writeLimiter.check(getClientIp(req))) {
     return NextResponse.json({ error: 'Too many requests' }, { status: 429 });
   }

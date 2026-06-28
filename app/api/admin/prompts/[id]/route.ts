@@ -5,9 +5,13 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { PathId } from '@/lib/validation';
 import { writeLimiter, getClientIp } from '@/lib/rate-limit';
+import { requireAdmin } from '@/lib/route-auth';
 
 // @spec AC-07-005
 export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
+  const auth = await requireAdmin(req);
+  if (auth) return auth;
+
   if (!writeLimiter.check(getClientIp(req)))
     return NextResponse.json({ error: 'Too many requests' }, { status: 429 });
 
@@ -19,6 +23,7 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
     await tx.challengeSubmission.deleteMany({ where: { promptId: id } });
     await tx.vote.deleteMany({ where: { promptId: id } });
     await tx.favorite.deleteMany({ where: { promptId: id } });
+    await tx.usageEvent.deleteMany({ where: { promptId: id } });
     await tx.prompt.delete({ where: { id } }).catch(() => null);
   });
   return new NextResponse(null, { status: 204 });
