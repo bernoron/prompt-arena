@@ -1,5 +1,12 @@
 # Changelog
 
+## [5.3.1](https://github.com/bernoron/prompt-arena/compare/v5.3.0...v5.3.1) (2026-06-28)
+
+
+### Bug Fixes
+
+* security leak-audit hardening and WAL pragma fix ([25d0f5e](https://github.com/bernoron/prompt-arena/commit/25d0f5e47d58f4c7f0db3f0afa658d0f5a60fe91))
+
 ## [5.3.0](https://github.com/bernoron/prompt-arena/compare/v5.2.0...v5.3.0) (2026-06-27)
 
 
