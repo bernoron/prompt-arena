@@ -25,6 +25,12 @@ import { verifyUserCookie, USER_COOKIE } from '@/lib/user-session';
 
 const SILENT: string[] = ['/_next/', '/favicon'];
 
+// Custom admin URL prefix — set ADMIN_PATH env var to hide /admin behind a secret path.
+// Example: ADMIN_PATH=backstage → admin UI served at /backstage, direct /admin returns 404.
+// Default: 'admin' (backward-compatible, no path rewriting).
+const ADMIN_PREFIX = (process.env.ADMIN_PATH ?? 'admin').replace(/^\/+|\/+$/g, '');
+const CUSTOM_ADMIN = ADMIN_PREFIX !== 'admin';
+
 /** Paths that do NOT require a user session. */
 function isPublicPath(pathname: string): boolean {
   return (
@@ -33,6 +39,7 @@ function isPublicPath(pathname: string): boolean {
     pathname === '/register' ||
     pathname.startsWith('/register/') ||
     pathname.startsWith('/admin') ||
+    pathname.startsWith(`/${ADMIN_PREFIX}`) ||
     pathname.startsWith('/api/')
   );
 }
@@ -42,8 +49,20 @@ export async function middleware(req: NextRequest): Promise<NextResponse> {
   const { pathname } = req.nextUrl;
 
   // ── 1. Admin guard ─────────────────────────────────────────────────────────
-  const isAdminPath = pathname.startsWith('/admin') || pathname.startsWith('/api/admin');
-  const isLoginPath = pathname === '/admin/login' || pathname.startsWith('/api/admin/login');
+
+  // Block direct /admin access when a custom path is configured
+  if (CUSTOM_ADMIN && pathname.startsWith('/admin') && !pathname.startsWith('/api/admin')) {
+    return new NextResponse(null, { status: 404 });
+  }
+
+  // Resolve effective admin path (custom prefix → /admin equivalent)
+  const customAdminMatch = CUSTOM_ADMIN && pathname.startsWith(`/${ADMIN_PREFIX}`);
+  const effectivePath = customAdminMatch
+    ? '/admin' + pathname.slice(`/${ADMIN_PREFIX}`.length)
+    : pathname;
+
+  const isAdminPath = effectivePath.startsWith('/admin') || pathname.startsWith('/api/admin');
+  const isLoginPath = effectivePath === '/admin/login' || pathname.startsWith('/api/admin/login');
 
   if (isAdminPath && !isLoginPath) {
     const cookieValue = req.cookies.get(ADMIN_COOKIE)?.value;
@@ -53,8 +72,16 @@ export async function middleware(req: NextRequest): Promise<NextResponse> {
       if (pathname.startsWith('/api/')) {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
       }
-      return NextResponse.redirect(new URL('/admin/login', req.url));
+      return NextResponse.redirect(new URL(`/${ADMIN_PREFIX}/login`, req.url));
     }
+  }
+
+  // Rewrite custom admin path to /admin so Next.js serves the right pages
+  if (customAdminMatch) {
+    const rewriteUrl = new URL(effectivePath, req.url);
+    const rewritten  = NextResponse.rewrite(rewriteUrl);
+    rewritten.headers.set('x-request-id', crypto.randomUUID());
+    return rewritten;
   }
 
   // ── 2. User auth guard ─────────────────────────────────────────────────────

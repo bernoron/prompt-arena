@@ -54,17 +54,6 @@ export default function Navigation() {
           >
             + Einreichen
           </Link>
-          <Link
-            href="/admin"
-            className={`ml-1 px-3 py-2 rounded-lg text-sm font-medium transition-all ${
-              pathname.startsWith('/admin')
-                ? 'bg-amber-500/20 text-amber-400'
-                : 'text-slate-500 hover:text-amber-400 hover:bg-white/10'
-            }`}
-            title="Admin"
-          >
-            ⚙️
-          </Link>
         </nav>
 
         {/* User Menu */}
@@ -98,15 +87,6 @@ export default function Navigation() {
         >
           <span className="text-base leading-none">✨</span>
           <span>Einreichen</span>
-        </Link>
-        <Link
-          href="/admin"
-          className={`flex flex-col items-center gap-0.5 py-2 text-xs font-medium transition-colors ${
-            pathname.startsWith('/admin') ? 'text-amber-400 bg-amber-500/10' : 'text-slate-500'
-          }`}
-        >
-          <span className="text-base leading-none">⚙️</span>
-          <span>Admin</span>
         </Link>
       </nav>
     </header>
