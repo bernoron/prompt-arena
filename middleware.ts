@@ -5,42 +5,45 @@
  *
  * Responsibilities:
  *   1. Guard /admin/* and /api/admin/* behind an admin-session cookie.
- *      → /admin/login and /api/admin/login are exempt (the login flow itself).
+ *      → /admin/login and /api/admin/login are exempt.
  *      → Unauthorised page requests → redirect to /admin/login.
  *      → Unauthorised API requests  → 401 JSON.
  *
- *   2. Assign a unique `x-request-id` to every request.
- *      → Visible in browser DevTools (Response Headers tab).
- *      → API routes can read it with req.headers.get('x-request-id')
- *        to correlate their own log lines with the middleware entry.
+ *   2. Guard all user-facing pages (not /login, /register) behind a
+ *      valid user_session cookie.
+ *      → Unauthenticated page requests → redirect to /login.
+ *      → API routes handle their own auth via resolveUserId().
  *
- *   3. Emit a single "→ METHOD /path" log line per request.
- *      → Skipped for static assets to keep the terminal clean.
- *      → Suppressed completely when LOG_LEVEL=error (production quiet mode).
+ *   3. Assign a unique `x-request-id` to every request.
  *
- * Note: Response timing (ms) cannot be measured here because middleware
- * completes before the route handler runs. Response-level timing is handled
- * inside individual route handlers via the `logger` utility.
+ *   4. Emit a single "→ METHOD /path" log line per request.
  */
 
 import { NextRequest, NextResponse } from 'next/server';
 import { isAdminAuthorised, ADMIN_COOKIE } from '@/lib/admin-auth';
+import { verifyUserCookie, USER_COOKIE } from '@/lib/user-session';
 
-
-/** Static-asset path prefixes that are too noisy to log. */
 const SILENT: string[] = ['/_next/', '/favicon'];
+
+/** Paths that do NOT require a user session. */
+function isPublicPath(pathname: string): boolean {
+  return (
+    pathname === '/login' ||
+    pathname.startsWith('/login/') ||
+    pathname === '/register' ||
+    pathname.startsWith('/register/') ||
+    pathname.startsWith('/admin') ||
+    pathname.startsWith('/api/')
+  );
+}
 
 // @spec AC-07-003
 export async function middleware(req: NextRequest): Promise<NextResponse> {
   const { pathname } = req.nextUrl;
 
   // ── 1. Admin guard ─────────────────────────────────────────────────────────
-  //  All /admin/* and /api/admin/* paths require a valid admin_session cookie,
-  //  except the login endpoints themselves.
-  const isAdminPath =
-    pathname.startsWith('/admin') || pathname.startsWith('/api/admin');
-  const isLoginPath =
-    pathname === '/admin/login' || pathname.startsWith('/api/admin/login');
+  const isAdminPath = pathname.startsWith('/admin') || pathname.startsWith('/api/admin');
+  const isLoginPath = pathname === '/admin/login' || pathname.startsWith('/api/admin/login');
 
   if (isAdminPath && !isLoginPath) {
     const cookieValue = req.cookies.get(ADMIN_COOKIE)?.value;
@@ -50,19 +53,28 @@ export async function middleware(req: NextRequest): Promise<NextResponse> {
       if (pathname.startsWith('/api/')) {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
       }
-      const loginUrl = new URL('/admin/login', req.url);
+      return NextResponse.redirect(new URL('/admin/login', req.url));
+    }
+  }
+
+  // ── 2. User auth guard ─────────────────────────────────────────────────────
+  if (!isPublicPath(pathname)) {
+    const cookieValue = req.cookies.get(USER_COOKIE)?.value;
+    const userId      = await verifyUserCookie(cookieValue);
+
+    if (!userId) {
+      const loginUrl = new URL('/login', req.url);
+      loginUrl.searchParams.set('next', pathname);
       return NextResponse.redirect(loginUrl);
     }
   }
 
-  // ── 2. Request ID ──────────────────────────────────────────────────────────
-  //  Attach a unique trace identifier to the response so developers can
-  //  correlate browser requests with server log entries.
+  // ── 3. Request ID ──────────────────────────────────────────────────────────
   const reqId = crypto.randomUUID();
   const res   = NextResponse.next();
   res.headers.set('x-request-id', reqId);
 
-  // ── 3. Request log ─────────────────────────────────────────────────────────
+  // ── 4. Request log ─────────────────────────────────────────────────────────
   const logLevel = (process.env.LOG_LEVEL ?? 'info').toLowerCase();
   const isQuiet  = logLevel === 'error';
   const isStatic = SILENT.some((p) => pathname.startsWith(p));
@@ -72,13 +84,8 @@ export async function middleware(req: NextRequest): Promise<NextResponse> {
     const isDev = process.env.NODE_ENV !== 'production';
 
     const line = isDev
-      // Coloured dev output
       ? `\x1b[2m${ts}\x1b[0m \x1b[32mINFO \x1b[0m → ${req.method.padEnd(6)} ${pathname}  \x1b[2m[${reqId}]\x1b[0m`
-      // JSON prod output
-      : JSON.stringify({
-          level: 'info', ts, msg: 'request',
-          method: req.method, path: pathname, reqId,
-        });
+      : JSON.stringify({ level: 'info', ts, msg: 'request', method: req.method, path: pathname, reqId });
 
     console.log(line);
   }
@@ -87,6 +94,5 @@ export async function middleware(req: NextRequest): Promise<NextResponse> {
 }
 
 export const config = {
-  // Match all paths except Next.js internals and static files
   matcher: ['/((?!_next/static|_next/image|favicon.ico).*)'],
 };

@@ -12,6 +12,7 @@ model User {
   name         String
   department   String
   avatarColor  String
+  passwordHash String?
   totalPoints  Int      @default(0)
   level        String   @default("Prompt-Lehrling")
   createdAt    DateTime @default(now())

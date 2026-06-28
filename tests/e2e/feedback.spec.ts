@@ -2,21 +2,27 @@
 import { test, expect, type APIRequestContext } from '@playwright/test';
 
 const ADMIN_PASSWORD = process.env.ADMIN_SECRET ?? 'admin1234';
+const TEST_PASSWORD  = 'Test1234!';
 
-async function createUser(request: APIRequestContext) {
+/** Register a fresh user and return their id + session cookie. */
+async function createAndLoginUser(request: APIRequestContext): Promise<{ id: number; cookie: string }> {
   const suffix = `${Date.now()}-${Math.random().toString(16).slice(2)}`;
-  const res = await request.post('/api/users', {
-    data: { name: `FB User ${suffix}`, department: 'IT' },
-  });
-  expect(res.status()).toBe(201);
-  return (await res.json()) as { id: number };
-}
+  const name   = `FB User ${suffix}`;
 
-async function loginUser(request: APIRequestContext, userId: number) {
-  const res = await request.post('/api/auth/login', { data: { userId } });
-  expect(res.status()).toBe(200);
-  const setCookie = res.headers()['set-cookie'];
-  return setCookie.split(',').map((c: string) => c.split(';')[0].trim()).join('; ');
+  const regRes = await request.post('/api/auth/register', {
+    data: { name, department: 'IT', password: TEST_PASSWORD },
+  });
+  expect(regRes.status()).toBe(201);
+  const { userId } = await regRes.json() as { userId: number };
+
+  const loginRes = await request.post('/api/auth/login', {
+    data: { name, password: TEST_PASSWORD },
+  });
+  expect(loginRes.status()).toBe(200);
+  const setCookie = loginRes.headers()['set-cookie'];
+  const cookie    = setCookie.split(',').map((c: string) => c.split(';')[0].trim()).join('; ');
+
+  return { id: userId, cookie };
 }
 
 async function loginAdmin(request: APIRequestContext) {
@@ -29,13 +35,12 @@ async function loginAdmin(request: APIRequestContext) {
 test.describe('BAC-11 feedback system', () => {
 
   test('user can submit general feedback (happy path)', async ({ request }) => {
-    const user = await createUser(request);
-    const cookie = await loginUser(request, user.id);
+    const { id: userId, cookie } = await createAndLoginUser(request);
 
     const res = await request.post('/api/feedback', {
       headers: { Cookie: cookie },
       data: {
-        userId: user.id,
+        userId,
         category: 'IDEA',
         text: 'It would be great to have dark mode',
         contextPath: '/dashboard',
@@ -46,100 +51,89 @@ test.describe('BAC-11 feedback system', () => {
   });
 
   test('feedback POST rejects missing category (validation)', async ({ request }) => {
-    const user = await createUser(request);
-    const cookie = await loginUser(request, user.id);
+    const { id: userId, cookie } = await createAndLoginUser(request);
 
     const res = await request.post('/api/feedback', {
       headers: { Cookie: cookie },
-      data: { userId: user.id, text: 'Some text without a category' },
+      data: { userId, text: 'Some text without a category' },
     });
     expect(res.status()).toBe(400);
   });
 
   test('feedback POST rejects empty text', async ({ request }) => {
-    const user = await createUser(request);
-    const cookie = await loginUser(request, user.id);
+    const { id: userId, cookie } = await createAndLoginUser(request);
 
     const res = await request.post('/api/feedback', {
       headers: { Cookie: cookie },
-      data: { userId: user.id, category: 'BUG', text: '' },
+      data: { userId, category: 'BUG', text: '' },
     });
     expect(res.status()).toBe(400);
   });
 
   test('lesson feedback: submit thumbs-up, then update with text', async ({ request }) => {
-    const user = await createUser(request);
-    const cookie = await loginUser(request, user.id);
+    const { id: userId, cookie } = await createAndLoginUser(request);
 
-    // Fetch a valid lessonId from the API
-    const learnRes = await request.get(`/api/learn?userId=${user.id}`);
+    const learnRes = await request.get(`/api/learn?userId=${userId}`);
     expect(learnRes.status()).toBe(200);
     const modules = await learnRes.json() as Array<{ lessons: Array<{ id: number }> }>;
     const lessonId = modules[0]?.lessons[0]?.id;
     expect(lessonId).toBeGreaterThan(0);
 
-    // Submit helpful=true
     const postRes = await request.post('/api/feedback/lesson', {
       headers: { Cookie: cookie },
-      data: { userId: user.id, lessonId, helpful: true },
+      data: { userId, lessonId, helpful: true },
     });
     expect(postRes.status()).toBe(200);
     const { id } = await postRes.json() as { ok: boolean; id: number };
     expect(id).toBeGreaterThan(0);
 
-    // GET should return the existing feedback
-    const getRes = await request.get(`/api/feedback/lesson?userId=${user.id}&lessonId=${lessonId}`);
+    const getRes = await request.get(`/api/feedback/lesson?userId=${userId}&lessonId=${lessonId}`);
     expect(getRes.status()).toBe(200);
     const fb = await getRes.json() as { id: number; helpful: boolean; text: string | null };
     expect(fb.helpful).toBe(true);
     expect(fb.text).toBeNull();
 
-    // Update with text
     const putRes = await request.put(`/api/feedback/lesson/${id}`, {
       headers: { Cookie: cookie },
       data: { text: 'Very clear and useful!' },
     });
     expect(putRes.status()).toBe(200);
 
-    // Second GET shows updated text
-    const getRes2 = await request.get(`/api/feedback/lesson?userId=${user.id}&lessonId=${lessonId}`);
+    const getRes2 = await request.get(`/api/feedback/lesson?userId=${userId}&lessonId=${lessonId}`);
     const fb2 = await getRes2.json() as { helpful: boolean; text: string };
     expect(fb2.text).toBe('Very clear and useful!');
   });
 
   test('lesson feedback: re-voting overwrites, does not create duplicates', async ({ request }) => {
-    const user = await createUser(request);
-    const cookie = await loginUser(request, user.id);
+    const { id: userId, cookie } = await createAndLoginUser(request);
 
-    const learnRes = await request.get(`/api/learn?userId=${user.id}`);
+    const learnRes = await request.get(`/api/learn?userId=${userId}`);
     const modules = await learnRes.json() as Array<{ lessons: Array<{ id: number }> }>;
     const lessonId = modules[0]?.lessons[0]?.id;
 
     await request.post('/api/feedback/lesson', {
       headers: { Cookie: cookie },
-      data: { userId: user.id, lessonId, helpful: true },
+      data: { userId, lessonId, helpful: true },
     });
-    // Vote again with opposite value
     const res2 = await request.post('/api/feedback/lesson', {
       headers: { Cookie: cookie },
-      data: { userId: user.id, lessonId, helpful: false },
+      data: { userId, lessonId, helpful: false },
     });
     expect(res2.status()).toBe(200);
 
-    const getRes = await request.get(`/api/feedback/lesson?userId=${user.id}&lessonId=${lessonId}`);
+    const getRes = await request.get(`/api/feedback/lesson?userId=${userId}&lessonId=${lessonId}`);
     const fb = await getRes.json() as { helpful: boolean };
     expect(fb.helpful).toBe(false);
   });
 
   test('topic suggestion: submit and appear in admin list', async ({ request }) => {
-    const user = await createUser(request);
-    const cookie = await loginUser(request, user.id);
+    const { id: userId, cookie } = await createAndLoginUser(request);
     const adminCookie = await loginAdmin(request);
 
     const title = `Suggestion ${Date.now()}`;
     const postRes = await request.post('/api/feedback/suggestions', {
       headers: { Cookie: cookie },
-      data: { userId: user.id, title, description: 'Would be very helpful for the team' },
+      data: { userId, title, description: 'Would be very helpful for the team' },
     });
     expect(postRes.status()).toBe(200);
 
@@ -154,25 +148,23 @@ test.describe('BAC-11 feedback system', () => {
   });
 
   test('topic suggestion: title is required (min 3 chars)', async ({ request }) => {
-    const user = await createUser(request);
-    const cookie = await loginUser(request, user.id);
+    const { id: userId, cookie } = await createAndLoginUser(request);
 
     const res = await request.post('/api/feedback/suggestions', {
       headers: { Cookie: cookie },
-      data: { userId: user.id, title: 'AB' },
+      data: { userId, title: 'AB' },
     });
     expect(res.status()).toBe(400);
   });
 
   test('admin: feedback list shows submitted entries with context', async ({ request }) => {
-    const user = await createUser(request);
-    const cookie = await loginUser(request, user.id);
+    const { id: userId, cookie } = await createAndLoginUser(request);
     const adminCookie = await loginAdmin(request);
 
     await request.post('/api/feedback', {
       headers: { Cookie: cookie },
       data: {
-        userId: user.id,
+        userId,
         category: 'BUG',
         text: 'Admin visibility test entry',
         contextPath: '/library',
@@ -191,13 +183,12 @@ test.describe('BAC-11 feedback system', () => {
   });
 
   test('admin: mark feedback as done', async ({ request }) => {
-    const user = await createUser(request);
-    const cookie = await loginUser(request, user.id);
+    const { id: userId, cookie } = await createAndLoginUser(request);
     const adminCookie = await loginAdmin(request);
 
     await request.post('/api/feedback', {
       headers: { Cookie: cookie },
-      data: { userId: user.id, category: 'PRAISE', text: 'Great platform!' },
+      data: { userId, category: 'PRAISE', text: 'Great platform!' },
     });
 
     const listRes = await request.get('/api/admin/feedback', { headers: { Cookie: adminCookie } });
@@ -218,13 +209,12 @@ test.describe('BAC-11 feedback system', () => {
   });
 
   test('admin: delete feedback entry', async ({ request }) => {
-    const user = await createUser(request);
-    const cookie = await loginUser(request, user.id);
+    const { id: userId, cookie } = await createAndLoginUser(request);
     const adminCookie = await loginAdmin(request);
 
     await request.post('/api/feedback', {
       headers: { Cookie: cookie },
-      data: { userId: user.id, category: 'IMPROVEMENT', text: 'Delete me please' },
+      data: { userId, category: 'IMPROVEMENT', text: 'Delete me please' },
     });
 
     const listRes = await request.get('/api/admin/feedback', { headers: { Cookie: adminCookie } });
@@ -243,14 +233,13 @@ test.describe('BAC-11 feedback system', () => {
   });
 
   test('admin: update suggestion status', async ({ request }) => {
-    const user = await createUser(request);
-    const cookie = await loginUser(request, user.id);
+    const { id: userId, cookie } = await createAndLoginUser(request);
     const adminCookie = await loginAdmin(request);
 
     const title = `Status Test ${Date.now()}`;
     await request.post('/api/feedback/suggestions', {
       headers: { Cookie: cookie },
-      data: { userId: user.id, title },
+      data: { userId, title },
     });
 
     const listRes = await request.get('/api/admin/feedback/suggestions', { headers: { Cookie: adminCookie } });

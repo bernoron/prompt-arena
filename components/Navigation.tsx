@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import UserPicker from './UserPicker';
+import UserMenu from './UserMenu';
 
 const navLinks = [
   { href: '/dashboard',  label: 'Dashboard',  icon: '⚡'  },
@@ -67,9 +67,9 @@ export default function Navigation() {
           </Link>
         </nav>
 
-        {/* User Picker */}
+        {/* User Menu */}
         <div className="flex items-center">
-          <UserPicker dark />
+          <UserMenu dark />
         </div>
       </div>
 

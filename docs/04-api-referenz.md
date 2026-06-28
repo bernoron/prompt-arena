@@ -118,6 +118,8 @@ GET /api/admin/stats  – Aggregate statistics for the admin dashboard Protected
 
 ### `POST /api/auth/login`
 
+POST /api/auth/login Body: { name: string, password: string } Verifies the user's password and sets a signed HttpOnly `user_session` cookie.
+
 
 ---
 
@@ -131,6 +133,13 @@ POST /api/auth/logout Clears the user session cookie.
 ### `GET /api/auth/me`
 
 GET /api/auth/me Returns the currently authenticated user from the session cookie. Used by Server Components to bootstrap the user identity server-side.
+
+
+---
+
+### `POST /api/auth/register`
+
+POST /api/auth/register Body: { name: string, department: string, password: string } Creates a new user account and sets a signed session cookie (auto-login).
 
 
 ---
@@ -281,4 +290,4 @@ Alle Timestamps werden als **ISO 8601** Strings zurückgegeben, z.B. `"2024-03-1
 
 
 ---
-*Automatisch generiert am 28.06.2026, 09:37 · [Quellcode](https://github.com/your-org/prompt-arena)*
+*Automatisch generiert am 28.06.2026, 10:57 · [Quellcode](https://github.com/your-org/prompt-arena)*

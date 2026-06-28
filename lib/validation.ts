@@ -42,6 +42,21 @@ export const CreateUserSchema = z.object({
   ),
 });
 
+/** POST /api/auth/login */
+export const LoginSchema = z.object({
+  name:     z.string().trim().min(1).max(80),
+  password: z.string().min(1).max(100),
+});
+
+/** POST /api/auth/register */
+export const RegisterSchema = z.object({
+  name:       z.string().trim().min(2).max(80),
+  department: z.enum([...DEPARTMENTS, '__other__'] as [string, ...string[]]).or(
+    z.string().trim().min(2).max(50),
+  ),
+  password:   z.string().min(8).max(100),
+});
+
 // ─── Prompts ──────────────────────────────────────────────────────────────────
 
 /**

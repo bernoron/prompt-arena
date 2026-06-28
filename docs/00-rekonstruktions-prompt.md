@@ -48,6 +48,7 @@ model User {
   name         String
   department   String
   avatarColor  String
+  passwordHash String?
   totalPoints  Int      @default(0)
   level        String   @default("Prompt-Lehrling")
   createdAt    DateTime @default(now())
@@ -278,6 +279,8 @@ SEITEN (app/ mit App Router)
 ════════════════════════════════════════════════════════════
 - / → app/page.tsx (Redirect → /dashboard)
 - /(user) → app/(user)/page.tsx
+- /login → app/login/page.tsx
+- /register → app/register/page.tsx
 
 Dashboard (/dashboard):
   - Dark hero mit Nutzer-Avatar, Punkten, Level, XP-Fortschrittsbalken
@@ -328,6 +331,7 @@ KOMPONENTEN (components/)
 - PromptCard.tsx
 - PromptModal.tsx
 - TopicSuggestionModal.tsx
+- UserMenu.tsx
 - UserPicker.tsx
 - WeeklyChallengeCard.tsx
 
@@ -390,6 +394,7 @@ API-ROUTEN (app/api/)
 - POST /api/auth/login
 - POST /api/auth/logout
 - GET /api/auth/me
+- POST /api/auth/register
 - GET /api/categories
 - GET /api/challenges
 - GET /api/favorites
@@ -540,4 +545,4 @@ SETUP-REIHENFOLGE
 
 
 ---
-*Automatisch generiert am 28.06.2026, 09:37 · [Quellcode](https://github.com/your-org/prompt-arena)*
+*Automatisch generiert am 28.06.2026, 10:57 · [Quellcode](https://github.com/your-org/prompt-arena)*
