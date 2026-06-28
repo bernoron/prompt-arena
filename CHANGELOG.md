@@ -1,5 +1,12 @@
 # Changelog
 
+## [5.4.0](https://github.com/bernoron/prompt-arena/compare/v5.3.1...v5.4.0) (2026-06-28)
+
+
+### Features
+
+* **feedback:** add user feedback system (Feature 11) ([9c60528](https://github.com/bernoron/prompt-arena/commit/9c6052808cde7be083d9b88405c33f4e6262aace))
+
 ## [5.3.1](https://github.com/bernoron/prompt-arena/compare/v5.3.0...v5.3.1) (2026-06-28)
 
 
