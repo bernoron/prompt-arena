@@ -28,7 +28,7 @@ const SILENT: string[] = ['/_next/', '/favicon'];
 // Custom admin URL prefix — set ADMIN_PATH env var to hide /admin behind a secret path.
 // Example: ADMIN_PATH=backstage → admin UI served at /backstage, direct /admin returns 404.
 // Default: 'admin' (backward-compatible, no path rewriting).
-const ADMIN_PREFIX = (process.env.ADMIN_PATH ?? 'admin').replace(/^\/+|\/+$/g, '');
+const ADMIN_PREFIX = (process.env.ADMIN_PATH || 'admin').replace(/^\/+|\/+$/g, '');
 const CUSTOM_ADMIN = ADMIN_PREFIX !== 'admin';
 
 /** Paths that do NOT require a user session. */
