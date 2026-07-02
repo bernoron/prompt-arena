@@ -10,47 +10,9 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { Prisma } from '@prisma/client';
-import { prisma } from '@/lib/prisma';
 import { readLimiter, getClientIp } from '@/lib/rate-limit';
 import { logger, serializeError } from '@/lib/logger';
-
-async function enrichWithRatings(prompts: Awaited<ReturnType<typeof fetchPrompts>>) {
-  const ids = prompts.map((p) => p.id);
-  if (!ids.length) return [];
-
-  const ratingRows = await prisma.vote.groupBy({
-    by: ['promptId'],
-    where: { promptId: { in: ids } },
-    _avg: { value: true },
-    _count: { value: true },
-  });
-  const ratingMap = new Map(
-    ratingRows.map((r) => [
-      r.promptId,
-      {
-        avgRating: r._avg.value ? Math.round(r._avg.value * 10) / 10 : 0,
-        voteCount: r._count.value,
-      },
-    ]),
-  );
-
-  return prompts.map((p) => ({
-    ...p,
-    createdAt: p.createdAt.toISOString(),
-    ...( ratingMap.get(p.id) ?? { avgRating: 0, voteCount: 0 }),
-  }));
-}
-
-async function fetchPrompts(orderBy: Prisma.PromptOrderByWithRelationInput[]) {
-  return prisma.prompt.findMany({
-    take: 5,
-    orderBy,
-    include: {
-      author: { select: { id: true, name: true, avatarColor: true } },
-    },
-  });
-}
+import { getTrendingPrompts } from '@/lib/services/prompt-service';
 
 // @spec AC-02-011
 export async function GET(req: NextRequest) {
@@ -59,24 +21,7 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    const [hot, newest] = await Promise.all([
-      fetchPrompts([{ usageCount: 'desc' }, { id: 'desc' }]),
-      fetchPrompts([{ createdAt: 'desc' }, { id: 'desc' }]),
-    ]);
-
-    const [hotEnriched, newestEnriched] = await Promise.all([
-      enrichWithRatings(hot),
-      enrichWithRatings(newest),
-    ]);
-
-    // Merge both lists, deduplicating by id, hot first
-    const seen = new Set<number>();
-    const merged = [...hotEnriched, ...newestEnriched].filter((p) => {
-      if (seen.has(p.id)) return false;
-      seen.add(p.id);
-      return true;
-    });
-
+    const merged = await getTrendingPrompts();
     return NextResponse.json(merged, {
       headers: { 'Cache-Control': 'public, s-maxage=20, stale-while-revalidate=60' },
     });

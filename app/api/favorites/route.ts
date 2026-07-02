@@ -16,14 +16,12 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
-import { awardPoints } from '@/lib/db-helpers';
-import { POINTS } from '@/lib/points';
 import { FavoriteSchema, validationError } from '@/lib/validation';
 import { writeLimiter, readLimiter, getClientIp } from '@/lib/rate-limit';
 import { resolveUserId, USER_COOKIE } from '@/lib/user-auth';
 import { parseOptionalPositiveInt, requireUser } from '@/lib/route-auth';
 import { logger, serializeError } from '@/lib/logger';
+import { listFavorites, toggleFavorite } from '@/lib/services/favorite-service';
 
 // ─── GET /api/favorites ──────────────────────────────────────────────────────
 
@@ -46,58 +44,7 @@ export async function GET(req: NextRequest) {
   const parsedUserId = auth.userId;
 
   try {
-    const favorites = await prisma.favorite.findMany({
-      where: { userId: parsedUserId, isActive: true },
-      include: {
-        prompt: {
-          include: {
-            author: { select: { id: true, name: true, avatarColor: true } },
-          },
-        },
-      },
-      orderBy: { createdAt: 'desc' },
-    });
-
-    const promptIds = favorites.map(({ prompt }) => prompt.id);
-    const ratingRows = promptIds.length
-      ? await prisma.vote.groupBy({
-          by: ['promptId'],
-          where: { promptId: { in: promptIds } },
-          _avg: { value: true },
-          _count: { value: true },
-        })
-      : [];
-    const ratingMap = new Map(
-      ratingRows.map((row) => [
-        row.promptId,
-        {
-          avgRating: row._avg.value ? Math.round(row._avg.value * 10) / 10 : 0,
-          voteCount: row._count.value,
-        },
-      ]),
-    );
-
-    const userVoteMap = promptIds.length
-      ? new Map(
-          (await prisma.vote.findMany({
-            where: { userId: parsedUserId, promptId: { in: promptIds } },
-            select: { promptId: true, value: true },
-          })).map((v) => [v.promptId, v.value]),
-        )
-      : new Map<number, number>();
-
-    const result = favorites.map(({ prompt }) => {
-      const rating = ratingMap.get(prompt.id) ?? { avgRating: 0, voteCount: 0 };
-      return {
-        ...prompt,
-        avgRating:   rating.avgRating,
-        voteCount:   rating.voteCount,
-        userVote:    userVoteMap.get(prompt.id) ?? null,
-        userFavorite: true,
-        createdAt:   prompt.createdAt.toISOString(),
-      };
-    });
-
+    const result = await listFavorites(parsedUserId);
     return NextResponse.json(result);
   } catch (err) {
     logger.error('failed to fetch favorites', serializeError(err));
@@ -132,52 +79,9 @@ export async function POST(req: NextRequest) {
   const userId = resolved;
 
   try {
-    // Look up any existing record (active OR soft-deleted) for this pair
-    const existing = await prisma.favorite.findUnique({
-      where: { promptId_userId: { promptId, userId } },
-    });
-
-    if (existing?.isActive) {
-      // ── Remove favorite (soft-delete) ─────────────────────────────────────
-      // pointsAwarded is preserved so re-adding won't trigger another payout.
-      await prisma.favorite.update({
-        where: { promptId_userId: { promptId, userId } },
-        data:  { isActive: false },
-      });
-      logger.debug('favorite removed', { promptId, userId, reqId });
-      return NextResponse.json({ favorited: false });
-    }
-
-    if (existing && !existing.isActive) {
-      // ── Re-add favorite (un-soft-delete) ──────────────────────────────────
-      // Points were already awarded on the first-ever favorite — skip award.
-      await prisma.favorite.update({
-        where: { promptId_userId: { promptId, userId } },
-        data:  { isActive: true },
-      });
-      logger.debug('favorite re-added (no points — already awarded)', { promptId, userId, reqId });
-      return NextResponse.json({ favorited: true });
-    }
-
-    // ── First-ever favorite ────────────────────────────────────────────────
-    // Create the record and — atomically — award points to the author.
-    const prompt = await prisma.prompt.findUnique({
-      where: { id: promptId },
-      select: { authorId: true },
-    });
-
-    await prisma.$transaction(async (tx) => {
-      await tx.favorite.create({
-        data: { promptId, userId, isActive: true, pointsAwarded: true },
-      });
-      // Only award if the author isn't the same user who favorited
-      if (prompt && prompt.authorId !== userId) {
-        await awardPoints(prompt.authorId, POINTS.FAVORITE_PROMPT, tx);
-      }
-    });
-
-    logger.info('favorite added (points awarded)', { promptId, userId, reqId });
-    return NextResponse.json({ favorited: true });
+    const { favorited } = await toggleFavorite(promptId, userId);
+    logger.info(favorited ? 'favorite added' : 'favorite removed', { promptId, userId, reqId });
+    return NextResponse.json({ favorited });
   } catch (err) {
     logger.error('favorite toggle failed', { promptId, userId, reqId, ...serializeError(err) });
     return NextResponse.json({ error: 'Failed to toggle favorite' }, { status: 500 });

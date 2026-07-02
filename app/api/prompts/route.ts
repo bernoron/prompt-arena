@@ -12,14 +12,12 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
-import { awardPoints } from '@/lib/db-helpers';
-import { POINTS } from '@/lib/points';
 import { CreatePromptSchema, PathId, validationError } from '@/lib/validation';
 import { readLimiter, writeLimiter, getClientIp } from '@/lib/rate-limit';
 import { resolveUserId, USER_COOKIE } from '@/lib/user-auth';
 import { optionalUser } from '@/lib/route-auth';
 import { logger, serializeError } from '@/lib/logger';
+import { listPrompts, createPrompt } from '@/lib/services/prompt-service';
 
 // ─── GET /api/prompts ────────────────────────────────────────────────────────
 
@@ -72,80 +70,8 @@ export async function GET(req: NextRequest) {
   const resolvedUserId = userAuth.userId;
 
   try {
-    const prompts = await prisma.prompt.findMany({
-      where: {
-        ...(category && category !== 'all' ? { category } : {}),
-        ...(search ? {
-          OR: [
-            { title:   { contains: search } },
-            { titleEn: { contains: search } },
-            { content: { contains: search } },
-          ],
-        } : {}),
-      },
-      include: {
-        author: { select: { id: true, name: true, avatarColor: true } },
-      },
-      orderBy: sortBy === 'most-used'
-        ? [{ usageCount: 'desc' }, { id: 'desc' }]
-        : [{ createdAt: 'desc' }, { id: 'desc' }],
-      take: take + 1, // fetch one extra to determine if there's a next page
-      ...(cursor ? { cursor: { id: cursor }, skip: 1 } : {}),
-    });
-
-    // Determine pagination state
-    const hasNextPage = prompts.length > take;
-    const page = hasNextPage ? prompts.slice(0, take) : prompts;
-    const nextCursor = hasNextPage ? page[page.length - 1]?.id : null;
-
-    const promptIds = page.map((p) => p.id);
-    const ratingRows = promptIds.length
-      ? await prisma.vote.groupBy({
-          by: ['promptId'],
-          where: { promptId: { in: promptIds } },
-          _avg: { value: true },
-          _count: { value: true },
-        })
-      : [];
-    const ratingMap = new Map(
-      ratingRows.map((row) => [
-        row.promptId,
-        {
-          avgRating: row._avg.value ? Math.round(row._avg.value * 10) / 10 : 0,
-          voteCount: row._count.value,
-        },
-      ]),
-    );
-
-    const userVoteMap = resolvedUserId && promptIds.length
-      ? new Map(
-          (await prisma.vote.findMany({
-            where: { userId: resolvedUserId, promptId: { in: promptIds } },
-            select: { promptId: true, value: true },
-          })).map((v) => [v.promptId, v.value]),
-        )
-      : new Map<number, number>();
-
-    // Pre-fetch the user's favorites set for O(1) lookup per prompt
-    const favSet = resolvedUserId
-      ? new Set(
-          (await prisma.favorite.findMany({
-            where: { userId: resolvedUserId, isActive: true, promptId: { in: promptIds } },
-            select: { promptId: true },
-          })).map((f) => f.promptId)
-        )
-      : new Set<number>();
-
-    const items = page.map((p) => {
-      const rating = ratingMap.get(p.id) ?? { avgRating: 0, voteCount: 0 };
-      return {
-        ...p,
-        avgRating:    rating.avgRating,
-        voteCount:    rating.voteCount,
-        userVote:     resolvedUserId ? (userVoteMap.get(p.id) ?? null) : null,
-        userFavorite: resolvedUserId ? favSet.has(p.id) : undefined,
-        createdAt:    p.createdAt.toISOString(),
-      };
+    const { items, nextCursor, hasNextPage } = await listPrompts({
+      category, search, sortBy: sortBy as 'newest' | 'most-used', cursor, take, resolvedUserId,
     });
 
     // Only cache when response is not user-specific (no userVote personalisation)
@@ -187,46 +113,12 @@ export async function POST(req: NextRequest) {
   const authorId = resolved;
 
   try {
-    // Validate challenge if provided: must exist and still be active
-    if (challengeId !== undefined) {
-      const challenge = await prisma.weeklyChallenge.findUnique({
-        where: { id: challengeId },
-      });
-      if (!challenge) {
-        return NextResponse.json({ error: 'Challenge not found' }, { status: 404 });
-      }
-      if (!challenge.isActive) {
-        return NextResponse.json({ error: 'Challenge is no longer active' }, { status: 400 });
-      }
+    const created = await createPrompt({ title, titleEn, content, contentEn, category, difficulty, authorId, challengeId });
+    if (!created.ok) {
+      return NextResponse.json({ error: created.error }, { status: created.status });
     }
 
-    const categoryExists = await prisma.promptCategory.findUnique({
-      where: { slug: category },
-      select: { id: true },
-    });
-    if (!categoryExists) {
-      return NextResponse.json({ error: 'Category not found' }, { status: 400 });
-    }
-
-    const prompt = await prisma.prompt.create({
-      data: { title, titleEn: titleEn ?? title, content, contentEn: contentEn ?? content, category, difficulty, authorId },
-      include: {
-        author: {
-          select: { id: true, name: true, avatarColor: true },
-        },
-      },
-    });
-
-    await awardPoints(authorId, POINTS.SUBMIT_PROMPT);
-
-    // Optionally link to the active weekly challenge
-    if (challengeId !== undefined) {
-      await prisma.challengeSubmission.create({
-        data: { challengeId, promptId: prompt.id, userId: authorId },
-      });
-      await awardPoints(authorId, POINTS.CHALLENGE_SUBMIT);
-    }
-
+    const { prompt } = created;
     logger.info('prompt created', { promptId: prompt.id, authorId, category, difficulty, challengeId, reqId });
     return NextResponse.json({ ...prompt, createdAt: prompt.createdAt.toISOString() }, { status: 201 });
   } catch (err) {
