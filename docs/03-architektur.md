@@ -117,12 +117,20 @@ Der `useCurrentUser`-Hook abstrahiert dieses Pattern in allen Client-Komponenten
 | Massnahme | Implementierung |
 |---|---|
 | Input-Validierung | Zod-Schemas in `lib/validation.ts` für alle API-Inputs |
-| Rate Limiting | Sliding-Window-Limiter in `lib/rate-limit.ts` (30 W / 120 R pro Min/IP) |
-| Security Headers | CSP, X-Frame-Options, Referrer-Policy in `next.config.mjs` |
+| Rate Limiting | Sliding-Window-Limiter in `lib/rate-limit.ts` (30 W / 120 R pro Min/IP, 10 Auth-Versuche / 15 Min); Speicher gedeckelt (max. 10 000 Keys) |
+| Client-IP-Ermittlung | `getClientIp()` vertraut nur Plattform-Headern (`Fly-Client-IP`, `CF-Connecting-IP`, `X-Real-IP`) bzw. dem **letzten** `X-Forwarded-For`-Hop — der erste Eintrag ist Client-fälschbar |
+| User-Sessions | HMAC-SHA256-signierter HttpOnly-Cookie `{userId}.{issuedAt}.{sig}`; serverseitiger Ablauf nach 30 Tagen; `Secure` + `SameSite=strict` |
+| Admin-Sessions | HMAC-signiertes Token mit Nonce + Timestamp, 7 Tage gültig; Middleware- **und** Handler-seitige Prüfung (Defence in Depth) |
+| Passwörter | scrypt mit zufälligem Salt (`lib/password.ts`); Timing-safe-Vergleich; Dummy-Hash gegen User-Enumeration beim Login |
+| E-Mail-Daten | AES-256-GCM-verschlüsselt at rest + HMAC-Blind-Index für Uniqueness (`lib/email-crypto.ts`) |
+| Security Headers | CSP (inkl. `object-src 'none'`, `frame-ancestors 'none'`), HSTS, X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy in `next.config.mjs` |
+| Request-ID | Middleware überschreibt eingehende `x-request-id`-Header — Log-Injection über gefälschte IDs ist nicht möglich |
+| Image Optimizer | Deaktiviert (`images.unoptimized`) — `/_next/image` als DoS-Angriffsfläche entfällt |
 | SQL-Injection | Prisma ORM (parametrisierte Queries, kein Raw-SQL) |
 | Enum-Validierung | Kategorien und Schwierigkeit durch Zod-Enum eingeschränkt |
 | Duplikat-Votes | DB-Unique-Constraint `@@unique([promptId, userId])` |
 | Points-Farming | Points nur bei erstem Vote (Pre-Upsert-Check) |
+| Startup-Check | `instrumentation.ts` verweigert Produktions-Start ohne `ADMIN_SECRET`, `USER_SECRET`, `EMAIL_SECRET`, `DATABASE_URL` |
 
 ---
 
@@ -143,4 +151,4 @@ Der `useCurrentUser`-Hook abstrahiert dieses Pattern in allen Client-Komponenten
 
 
 ---
-*Automatisch generiert am 28.06.2026, 21:15 · [Quellcode](https://github.com/your-org/prompt-arena)*
+*Automatisch generiert am 02.07.2026, 07:22 · [Quellcode](https://github.com/your-org/prompt-arena)*

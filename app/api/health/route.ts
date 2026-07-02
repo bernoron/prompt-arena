@@ -11,11 +11,18 @@
  * Use this endpoint from uptime monitors, Docker HEALTHCHECK, or k8s probes.
  */
 
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { readLimiter, getClientIp } from '@/lib/rate-limit';
 import { logger } from '@/lib/logger';
 
-export async function GET() {
+export async function GET(req: NextRequest) {
+  // Each health check hits the DB — rate-limit to prevent cheap DoS
+  // amplification. 120/min per IP is far above any monitor's poll rate.
+  if (!readLimiter.check(`health:${getClientIp(req)}`)) {
+    return NextResponse.json({ error: 'Too many requests' }, { status: 429 });
+  }
+
   const start = Date.now();
 
   try {

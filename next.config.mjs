@@ -31,10 +31,19 @@ const cspDirectives = [
   "frame-ancestors 'none'",
   "base-uri 'self'",
   "form-action 'self'",
+  // Block <object>/<embed> plugin content entirely — never used by the app.
+  "object-src 'none'",
 ];
 
 const nextConfig = {
   output: 'standalone',
+
+  // The app does not use next/image. Disabling the optimizer removes the
+  // /_next/image endpoint as an attack surface (several known DoS advisories
+  // target the Image Optimization API in self-hosted deployments).
+  images: {
+    unoptimized: true,
+  },
 
   // Don't advertise the framework/version (reduces fingerprinting).
   poweredByHeader: false,

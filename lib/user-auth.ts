@@ -4,7 +4,8 @@
  * Strategy:
  *   - On login/register, POST /api/auth/login or /api/auth/register sets a
  *     signed HttpOnly cookie containing the userId.
- *   - Cookie value: `{userId}.{HMAC-SHA256(userId, key=USER_SECRET)}`
+ *   - Cookie value: `{userId}.{issuedAt}.{HMAC-SHA256("{userId}.{issuedAt}", key=USER_SECRET)}`
+ *   - Tokens expire server-side after 30 days (USER_SESSION_MAX_AGE_MS).
  *   - Write API routes call resolveUserId() to verify the session and obtain
  *     the authoritative userId — preventing impersonation.
  *   - USER_SECRET must be set in production.
