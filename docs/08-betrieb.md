@@ -126,8 +126,15 @@ Jeder Request erhält einen eindeutigen `x-request-id`-Header zur Log-Korrelatio
 |---|---|---|---|
 | `writeLimiter` | 30 | 60 Sekunden | POST / PATCH / DELETE |
 | `readLimiter` | 120 | 60 Sekunden | GET |
+| `authLimiter` | 10 | 15 Minuten | Login / Registrierung / Admin-Login |
 
 Bei Überschreitung: **HTTP 429** mit `{ "error": "Too many requests" }`.
+
+Die Client-IP wird über vertrauenswürdige Proxy-Header ermittelt (`Fly-Client-IP`,
+`CF-Connecting-IP`, `X-Real-IP`, sonst letzter `X-Forwarded-For`-Hop). Der
+In-Memory-Store ist auf 10 000 Keys gedeckelt und räumt abgelaufene Einträge
+periodisch auf — ein Angreifer kann den Speicher nicht durch rotierende
+Fake-IPs erschöpfen.
 
 > **Hinweis:** Prozesslokal (In-Memory) — bei mehreren App-Instanzen muss ein Redis-Adapter eingesetzt werden.
 
@@ -202,4 +209,4 @@ Empfohlene externe Uptime-Monitore (alle mit Gratis-Tier verfügbar): **UptimeRo
 
 
 ---
-*Automatisch generiert am 28.06.2026, 21:15 · [Quellcode](https://github.com/your-org/prompt-arena)*
+*Automatisch generiert am 02.07.2026, 07:22 · [Quellcode](https://github.com/your-org/prompt-arena)*

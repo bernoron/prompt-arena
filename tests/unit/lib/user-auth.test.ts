@@ -28,6 +28,34 @@ describe('user session cookies', () => {
 
     await expect(verifyUserCookie('42.signature')).resolves.toBeNull();
   });
+
+  it('rejects legacy two-part tokens without an issued-at timestamp', async () => {
+    vi.stubEnv('USER_SECRET', 'a-test-secret-with-at-least-32-chars');
+
+    await expect(verifyUserCookie('42.deadbeef')).resolves.toBeNull();
+  });
+
+  it('rejects expired tokens (older than 30 days)', async () => {
+    vi.stubEnv('USER_SECRET', 'a-test-secret-with-at-least-32-chars');
+
+    vi.useFakeTimers();
+    vi.setSystemTime(Date.now() - 31 * 24 * 60 * 60 * 1000);
+    const cookie = await signUserId(42);
+    vi.useRealTimers();
+
+    await expect(verifyUserCookie(cookie)).resolves.toBeNull();
+  });
+
+  it('rejects tokens with an issued-at timestamp in the future', async () => {
+    vi.stubEnv('USER_SECRET', 'a-test-secret-with-at-least-32-chars');
+
+    vi.useFakeTimers();
+    vi.setSystemTime(Date.now() + 60 * 60 * 1000);
+    const cookie = await signUserId(42);
+    vi.useRealTimers();
+
+    await expect(verifyUserCookie(cookie)).resolves.toBeNull();
+  });
 });
 
 describe('resolveUserId', () => {

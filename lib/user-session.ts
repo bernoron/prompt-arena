@@ -10,6 +10,13 @@
 
 export const USER_COOKIE = 'user_session';
 
+/**
+ * Maximum age of a session token. Enforced server-side on every verify —
+ * the browser cookie Max-Age alone is not a security boundary, because a
+ * stolen token would otherwise stay valid forever.
+ */
+export const USER_SESSION_MAX_AGE_MS = 60 * 60 * 24 * 30 * 1000; // 30 days
+
 async function hmac(message: string): Promise<string> {
   const secret = process.env.USER_SECRET ?? '';
   const keyData = new TextEncoder().encode(secret);
@@ -21,23 +28,38 @@ async function hmac(message: string): Promise<string> {
   return Array.from(new Uint8Array(sig)).map((b) => b.toString(16).padStart(2, '0')).join('');
 }
 
+/**
+ * Token format: `{userId}.{issuedAt}.{sig}` with sig = HMAC(`{userId}.{issuedAt}`).
+ *
+ * The signed issuedAt timestamp gives every token a server-enforced expiry.
+ * Legacy two-part tokens (`{userId}.{sig}`) are rejected — affected users
+ * simply have to log in again once.
+ */
 export async function signUserId(userId: number): Promise<string> {
-  const sig = await hmac(String(userId));
-  return `${userId}.${sig}`;
+  const payload = `${userId}.${Date.now()}`;
+  const sig = await hmac(payload);
+  return `${payload}.${sig}`;
 }
 
 export async function verifyUserCookie(cookieValue: string | undefined): Promise<number | null> {
   if (!process.env.USER_SECRET || !cookieValue) return null;
 
-  const dotIdx = cookieValue.indexOf('.');
-  if (dotIdx === -1) return null;
+  const parts = cookieValue.split('.');
+  if (parts.length !== 3) return null;
 
-  const userIdStr = cookieValue.slice(0, dotIdx);
-  const receivedSig = cookieValue.slice(dotIdx + 1);
+  const [userIdStr, issuedAtStr, receivedSig] = parts;
+  if (!/^\d+$/.test(userIdStr) || !/^\d+$/.test(issuedAtStr) || !receivedSig) return null;
+
   const userId = parseInt(userIdStr, 10);
-  if (!Number.isFinite(userId) || userId <= 0) return null;
+  if (!Number.isSafeInteger(userId) || userId <= 0) return null;
 
-  const expectedSig = await hmac(userIdStr);
+  const issuedAt = parseInt(issuedAtStr, 10);
+  if (!Number.isSafeInteger(issuedAt)) return null;
+
+  const age = Date.now() - issuedAt;
+  if (age < 0 || age > USER_SESSION_MAX_AGE_MS) return null;
+
+  const expectedSig = await hmac(`${userIdStr}.${issuedAtStr}`);
   const a = new TextEncoder().encode(receivedSig);
   const b = new TextEncoder().encode(expectedSig);
   if (a.length !== b.length) return null;

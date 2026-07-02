@@ -389,26 +389,26 @@ useCurrentUser.ts:
 ════════════════════════════════════════════════════════════
 API-ROUTEN (app/api/)
 ════════════════════════════════════════════════════════════
-- GET /api/admin/categories
-- POST /api/admin/categories
 - PATCH /api/admin/categories/[id]
 - DELETE /api/admin/categories/[id]
-- GET /api/admin/challenges
-- POST /api/admin/challenges
+- GET /api/admin/categories
+- POST /api/admin/categories
 - PATCH /api/admin/challenges/[id]
 - DELETE /api/admin/challenges/[id]
-- GET /api/admin/feedback
-- GET /api/admin/feedback/suggestions
-- PATCH /api/admin/feedback/suggestions/[id]
+- GET /api/admin/challenges
+- POST /api/admin/challenges
 - PATCH /api/admin/feedback/[id]
 - DELETE /api/admin/feedback/[id]
+- GET /api/admin/feedback
+- PATCH /api/admin/feedback/suggestions/[id]
+- GET /api/admin/feedback/suggestions
 - POST /api/admin/login
 - POST /api/admin/logout
 - DELETE /api/admin/prompts/[id]
 - GET /api/admin/stats
-- GET /api/admin/users
 - PATCH /api/admin/users/[id]
 - DELETE /api/admin/users/[id]
+- GET /api/admin/users
 - POST /api/auth/login
 - POST /api/auth/logout
 - GET /api/auth/me
@@ -417,22 +417,22 @@ API-ROUTEN (app/api/)
 - GET /api/challenges
 - GET /api/favorites
 - POST /api/favorites
+- PUT /api/feedback/lesson/[id]
 - GET /api/feedback/lesson
 - POST /api/feedback/lesson
-- PUT /api/feedback/lesson/[id]
 - POST /api/feedback
 - POST /api/feedback/suggestions
 - GET /api/health
-- GET /api/learn
 - POST /api/learn/[moduleSlug]/[lessonSlug]/complete
 - GET /api/learn/[moduleSlug]/[lessonSlug]
+- GET /api/learn
 - GET /api/prompts
 - POST /api/prompts
 - GET /api/prompts/trending
 - POST /api/usage
+- GET /api/users/[id]
 - GET /api/users
 - POST /api/users
-- GET /api/users/[id]
 - POST /api/votes
 
 Jede Route folgt diesem Muster:
@@ -563,4 +563,4 @@ SETUP-REIHENFOLGE
 
 
 ---
-*Automatisch generiert am 28.06.2026, 21:15 · [Quellcode](https://github.com/your-org/prompt-arena)*
+*Automatisch generiert am 02.07.2026, 07:22 · [Quellcode](https://github.com/your-org/prompt-arena)*

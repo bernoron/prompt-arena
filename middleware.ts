@@ -48,6 +48,13 @@ function isPublicPath(pathname: string): boolean {
 export async function middleware(req: NextRequest): Promise<NextResponse> {
   const { pathname } = req.nextUrl;
 
+  // Generate the request ID up front and OVERWRITE any inbound x-request-id
+  // header. Route handlers read this header for log correlation — without the
+  // overwrite a client could inject arbitrary values into server logs.
+  const reqId = crypto.randomUUID();
+  const requestHeaders = new Headers(req.headers);
+  requestHeaders.set('x-request-id', reqId);
+
   // ── 1. Admin guard ─────────────────────────────────────────────────────────
 
   // Block direct /admin access when a custom path is configured
@@ -79,8 +86,8 @@ export async function middleware(req: NextRequest): Promise<NextResponse> {
   // Rewrite custom admin path to /admin so Next.js serves the right pages
   if (customAdminMatch) {
     const rewriteUrl = new URL(effectivePath, req.url);
-    const rewritten  = NextResponse.rewrite(rewriteUrl);
-    rewritten.headers.set('x-request-id', crypto.randomUUID());
+    const rewritten  = NextResponse.rewrite(rewriteUrl, { request: { headers: requestHeaders } });
+    rewritten.headers.set('x-request-id', reqId);
     return rewritten;
   }
 
@@ -97,8 +104,7 @@ export async function middleware(req: NextRequest): Promise<NextResponse> {
   }
 
   // ── 3. Request ID ──────────────────────────────────────────────────────────
-  const reqId = crypto.randomUUID();
-  const res   = NextResponse.next();
+  const res = NextResponse.next({ request: { headers: requestHeaders } });
   res.headers.set('x-request-id', reqId);
 
   // ── 4. Request log ─────────────────────────────────────────────────────────

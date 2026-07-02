@@ -11,6 +11,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { decryptEmail } from '@/lib/email-crypto';
 import { isAdminAuthorised, ADMIN_COOKIE } from '@/lib/admin-auth';
+import { readLimiter, getClientIp } from '@/lib/rate-limit';
 import { logger } from '@/lib/logger';
 
 export async function GET(req: NextRequest) {
@@ -18,6 +19,10 @@ export async function GET(req: NextRequest) {
   const authorised = await isAdminAuthorised(req.cookies.get(ADMIN_COOKIE)?.value);
   if (!authorised) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  if (!readLimiter.check(getClientIp(req))) {
+    return NextResponse.json({ error: 'Too many requests' }, { status: 429 });
   }
 
   const users = await prisma.user.findMany({

@@ -33,6 +33,13 @@ interface RateLimiter {
   check: (key: string) => boolean;
 }
 
+/**
+ * Hard cap on the number of tracked keys per limiter. Without a cap an
+ * attacker could spray unique keys (e.g. spoofed IP headers) and grow the
+ * Map without bound until the process runs out of memory.
+ */
+const MAX_TRACKED_KEYS = 10_000;
+
 export function createRateLimiter({ windowMs, max }: RateLimiterOptions): RateLimiter {
   // In CI pipelines all requests share the same IP ('unknown'), which exhausts
   // the rate-limit budget within seconds. GitHub Actions sets CI=true automatically.
@@ -42,11 +49,39 @@ export function createRateLimiter({ windowMs, max }: RateLimiterOptions): RateLi
 
   // Map<key, sorted array of timestamps>
   const store = new Map<string, number[]>();
+  let lastSweep = Date.now();
+
+  /** Drop keys whose entire window has expired; runs at most once per window. */
+  function sweep(now: number): void {
+    if (now - lastSweep < windowMs) return;
+    lastSweep = now;
+    const cutoff = now - windowMs;
+    const expired: string[] = [];
+    store.forEach((timestamps, key) => {
+      if (timestamps.length === 0 || timestamps[timestamps.length - 1] <= cutoff) {
+        expired.push(key);
+      }
+    });
+    expired.forEach((key) => store.delete(key));
+  }
 
   return {
     check(key: string): boolean {
       const now = Date.now();
       const cutoff = now - windowMs;
+
+      sweep(now);
+
+      // Emergency valve: if the sweep couldn't reclaim space (burst of unique
+      // keys within one window), evict the oldest-inserted entries.
+      if (store.size >= MAX_TRACKED_KEYS && !store.has(key)) {
+        const evictCount = Math.ceil(MAX_TRACKED_KEYS / 10);
+        const toEvict: string[] = [];
+        store.forEach((_timestamps, oldKey) => {
+          if (toEvict.length < evictCount) toEvict.push(oldKey);
+        });
+        toEvict.forEach((oldKey) => store.delete(oldKey));
+      }
 
       // Get or initialise the timestamps array for this key
       const timestamps = (store.get(key) ?? []).filter((t) => t > cutoff);
@@ -82,12 +117,31 @@ export const authLimiter = createRateLimiter({ windowMs: 15 * 60_000, max: 10 })
 
 /**
  * Extracts the best available IP identifier from the request headers.
- * Falls back to 'unknown' if none is present (e.g. local dev without a proxy).
+ *
+ * Trust order matters — clients can freely send their own X-Forwarded-For,
+ * which the reverse proxy then *appends to*, so the LEFTMOST entry is
+ * attacker-controlled. Using it would let anyone bypass rate limiting by
+ * rotating a fake header value on every request.
+ *
+ *   1. Platform headers set by the edge itself (Fly.io / Cloudflare) —
+ *      these cannot be spoofed from outside.
+ *   2. x-real-ip — set by nginx-style proxies, overwrites any client value.
+ *   3. RIGHTMOST x-forwarded-for entry — appended by the trusted proxy hop.
+ *   4. 'unknown' (local dev without a proxy).
  */
 export function getClientIp(req: { headers: { get(name: string): string | null } }): string {
-  return (
-    req.headers.get('x-forwarded-for')?.split(',')[0].trim() ??
-    req.headers.get('x-real-ip') ??
-    'unknown'
-  );
+  const platformIp =
+    req.headers.get('fly-client-ip') ??
+    req.headers.get('cf-connecting-ip') ??
+    req.headers.get('x-real-ip');
+  if (platformIp) return platformIp.trim();
+
+  const forwarded = req.headers.get('x-forwarded-for');
+  if (forwarded) {
+    const hops = forwarded.split(',');
+    const lastHop = hops[hops.length - 1]?.trim();
+    if (lastHop) return lastHop;
+  }
+
+  return 'unknown';
 }
