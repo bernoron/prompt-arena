@@ -5,24 +5,22 @@ import Link from 'next/link';
 import ProgressRing from '@/components/learn/ProgressRing';
 import TopicSuggestionModal from '@/components/TopicSuggestionModal';
 import type { LearningModuleWithProgress } from '@/lib/types';
-import { USER_ID_KEY } from '@/lib/constants';
 import { POINTS } from '@/lib/points';
+import { useCurrentUser } from '@/hooks/useCurrentUser';
 
 // @spec AC-08-004
 export default function LearnPage() {
+  const userId = useCurrentUser() ?? 0;
   const [modules, setModules] = useState<LearningModuleWithProgress[]>([]);
   const [loading, setLoading] = useState(true);
-  const [userId, setUserId] = useState<number>(0);
   const [showSuggest, setShowSuggest] = useState(false);
 
   useEffect(() => {
-    const uid = Number(localStorage.getItem(USER_ID_KEY) ?? '0');
-    setUserId(uid);
-    fetch(`/api/learn?userId=${uid}`)
+    fetch(`/api/learn?userId=${userId}`)
       .then((r) => r.json())
       .then((data) => { setModules(data); setLoading(false); })
       .catch(() => setLoading(false));
-  }, []);
+  }, [userId]);
 
   const totalLessons    = modules.reduce((s, m) => s + m.totalLessons, 0);
   const totalCompleted  = modules.reduce((s, m) => s + m.completedLessons, 0);

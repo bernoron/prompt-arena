@@ -597,17 +597,24 @@ Nutzer-Aktion (z.B. Prompt bewerten)
 
 Nutzer melden sich mit E-Mail und Passwort an. Das Backend setzt einen
 HMAC-signierten, HttpOnly-Cookie (\`user_session\`); Passwörter werden mit
-scrypt gehasht. Die Client-ID wird zusätzlich im \`localStorage\` gespiegelt,
-damit die UI ohne Server-Roundtrip sofort den aktiven Nutzer anzeigen kann:
+scrypt gehasht. Der signierte Cookie ist die **einzige** Quelle der Wahrheit —
+es gibt keinen localStorage-Spiegel und keinen Client-Event-Bus mehr.
+
+\`lib/session.ts\` liest den Cookie serverseitig (\`getSessionUser()\`) und gibt
+den vollständigen Nutzer an das \`(user)\`-Layout (Server Component) weiter.
+Das Layout reicht ihn über \`<SessionProvider>\` (React Context) an alle
+Client-Komponenten durch:
 
 \`\`\`
-localStorage['promptarena_user_id'] = "42"   // Anzeige-Cache, kein Security-Mechanismus
-window.dispatchEvent(new CustomEvent('userChanged'))  // cross-component sync
+app/(user)/layout.tsx  (Server Component)
+  → getSessionUser()               // liest + verifiziert den Cookie
+  → <SessionProvider user={user}>  // React Context, einmal pro Navigation befüllt
+      → useSession()                // voller Nutzer (Name, Avatar, Punkte, Level)
+      → useCurrentUser()            // nur die ID, für schlanke Konsumenten
 \`\`\`
 
-Der \`useCurrentUser\`-Hook abstrahiert dieses Pattern in allen Client-Komponenten;
-die eigentliche Autorisierung erfolgt serverseitig über den signierten Cookie
-(siehe Sicherheitsarchitektur unten).
+Ein Login/Logout löst immer eine Next.js-Navigation aus, wodurch das Layout
+den Cookie neu auswertet — ein manueller Sync-Mechanismus ist dafür nicht nötig.
 
 ---
 
@@ -773,13 +780,15 @@ prompt-arena/
 ├── components/               # Wiederverwendbare React-Komponenten
 ├── docs/                     # Generierte Dokumentation (diese Dateien)
 ├── hooks/                    # Custom React Hooks
-│   └── useCurrentUser.ts     # Aktive Nutzer-ID aus localStorage
+│   └── useCurrentUser.ts     # Liest die Nutzer-ID aus dem Session-Context
 ├── lib/                      # Shared Hilfsbibliotheken
 │   ├── constants.ts          # Alle Magic Values (Farben, Kategorien, Level)
 │   ├── db-helpers.ts         # Server-only Prisma-Hilfsfunktionen
 │   ├── points.ts             # Gamification-Logik (Punkte + Level)
 │   ├── prisma.ts             # Prisma-Client Singleton
 │   ├── rate-limit.ts         # In-Memory Sliding-Window Rate Limiter
+│   ├── session.ts            # Server-seitige Session-Auflösung (Cookie → User)
+│   ├── services/             # Business-Logik (prompt-, favorite-, rating-service)
 │   ├── types.ts              # TypeScript Domain-Typen
 │   └── validation.ts         # Zod-Schemas für alle API-Inputs
 ├── prisma/
@@ -812,10 +821,11 @@ prompt-arena/
 2. Beschriftung in \`lib/constants.ts → POINTS_GUIDE\` synchronisieren
 
 ### Client-seitigen Nutzerstatus erweitern
-Die Nutzer-ID liegt zur schnellen UI-Anzeige in \`localStorage['promptarena_user_id']\`
-(die eigentliche Auth läuft über den signierten \`user_session\`-Cookie).
-Änderungen werden via \`window.dispatchEvent(new CustomEvent('userChanged'))\` gebroadcastet.
-Der \`useCurrentUser\`-Hook in \`hooks/useCurrentUser.ts\` abonniert dieses Event.
+Der signierte \`user_session\`-Cookie ist die einzige Quelle. \`lib/session.ts\`
+liest ihn serverseitig; \`app/(user)/layout.tsx\` reicht das Ergebnis über
+\`<SessionProvider>\` (\`components/SessionProvider.tsx\`) als React Context an
+Client-Komponenten weiter. \`useCurrentUser()\` (nur die ID) und \`useSession()\`
+(voller Nutzer) lesen daraus — kein localStorage-Spiegel, kein Event-Bus.
 
 ---
 
@@ -1143,8 +1153,9 @@ kein Datenbankserver nötig, kein Verbindungs-Pooling. Für Skalierung einfach
 ### Warum kein NextAuth / SSO?
 Login läuft über E-Mail + Passwort mit einem eigenen, schlanken Cookie-basierten
 Session-Mechanismus (scrypt-Hashing, HMAC-signierter Cookie). Für den Umfang der
-App wäre eine volle Auth-Library wie NextAuth überdimensioniert; die localStorage-
-Kopie der User-ID dient nur der schnellen UI-Anzeige, nicht der Security.
+App wäre eine volle Auth-Library wie NextAuth überdimensioniert. Der Cookie ist
+die einzige Quelle der Wahrheit — \`lib/session.ts\` löst ihn serverseitig auf
+und reicht das Ergebnis per React Context an Client-Komponenten weiter.
 
 ### Warum Zod?
 TypeScript prüft Typen nur zur Compile-Zeit. Zur Laufzeit können API-Clients beliebige
@@ -1152,8 +1163,9 @@ Daten senden. Zod validiert und parst Eingaben zur Laufzeit und gibt typsichere
 Objekte zurück – in einer Zeile pro Endpunkt.
 
 ### Warum kein Redux / Zustand-Library?
-Der App-State ist minimal: aktive Nutzer-ID (localStorage + Event), geladene Daten
-(lokaler useState). Kein globaler State nötig. \`useCurrentUser\`-Hook reicht.
+Der App-State ist minimal: Identität kommt einmal pro Navigation aus dem
+Session-Context (\`SessionProvider\`), Seitendaten leben in lokalem \`useState\`.
+Kein globaler State nötig.
 
 ---
 
@@ -1319,14 +1331,13 @@ Navigation:
   - Links: Dashboard, Bibliothek, Rangliste, Profil
   - Aktiver Link: bg-emerald-500/20 text-emerald-400
   - Submit-Button mit Gradient linear-gradient(135deg, #059669, #0891b2)
-  - UserPicker rechts mit dark=true Prop
+  - UserMenu rechts mit dark=true Prop
 
-UserPicker:
+UserMenu:
   - dark Prop für Navbar-Kontext
-  - Lädt Nutzerliste beim Öffnen neu (frische Punkte)
-  - Register-Formular eingebettet im Dropdown
-  - localStorage-Key: 'promptarena_user_id'
-  - Cross-Component-Sync via window.dispatchEvent(new CustomEvent('userChanged'))
+  - Liest den Nutzer aus useSession() (React Context, siehe SessionProvider)
+  - Zeigt Avatar + Name, Dropdown mit Profil-Link und Abmelden
+  - Kein eigener Datenzugriff — die Identität kommt vom (user)-Layout
 
 PromptCard:
   - Farbiger border-t-4 oben je nach Kategorie (accentBorder aus CATEGORY_CONFIG)
@@ -1343,8 +1354,8 @@ HOOKS (hooks/)
 ════════════════════════════════════════════════════════════
 useCurrentUser.ts:
   'use client' hook
-  - Liest userId aus localStorage('promptarena_user_id')
-  - Abonniert window-Event 'userChanged' für Cross-Component-Sync
+  - Liest die Nutzer-ID aus dem SessionProvider-Context (components/SessionProvider.tsx)
+  - Kein localStorage, kein Event-Bus — die Session kommt vom (user)-Layout
   - Gibt number | null zurück
 
 ════════════════════════════════════════════════════════════
@@ -1373,7 +1384,6 @@ LIB-DATEIEN (lib/)
 ════════════════════════════════════════════════════════════
 
 constants.ts – SINGLE SOURCE OF TRUTH für alle Magic Values:
-  USER_ID_KEY = 'promptarena_user_id'
   AVATAR_COLORS = ['#1D9E75', '#3B82F6', '#F59E0B', '#8B5CF6', '#EF4444',
                    '#EC4899', '#14B8A6', '#F97316', '#6366F1', '#84CC16']
   CATEGORY_CONFIG = {

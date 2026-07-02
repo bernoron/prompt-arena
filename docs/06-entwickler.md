@@ -22,13 +22,15 @@ prompt-arena/
 ├── components/               # Wiederverwendbare React-Komponenten
 ├── docs/                     # Generierte Dokumentation (diese Dateien)
 ├── hooks/                    # Custom React Hooks
-│   └── useCurrentUser.ts     # Aktive Nutzer-ID aus localStorage
+│   └── useCurrentUser.ts     # Liest die Nutzer-ID aus dem Session-Context
 ├── lib/                      # Shared Hilfsbibliotheken
 │   ├── constants.ts          # Alle Magic Values (Farben, Kategorien, Level)
 │   ├── db-helpers.ts         # Server-only Prisma-Hilfsfunktionen
 │   ├── points.ts             # Gamification-Logik (Punkte + Level)
 │   ├── prisma.ts             # Prisma-Client Singleton
 │   ├── rate-limit.ts         # In-Memory Sliding-Window Rate Limiter
+│   ├── session.ts            # Server-seitige Session-Auflösung (Cookie → User)
+│   ├── services/             # Business-Logik (prompt-, favorite-, rating-service)
 │   ├── types.ts              # TypeScript Domain-Typen
 │   └── validation.ts         # Zod-Schemas für alle API-Inputs
 ├── prisma/
@@ -61,10 +63,11 @@ prompt-arena/
 2. Beschriftung in `lib/constants.ts → POINTS_GUIDE` synchronisieren
 
 ### Client-seitigen Nutzerstatus erweitern
-Die Nutzer-ID liegt zur schnellen UI-Anzeige in `localStorage['promptarena_user_id']`
-(die eigentliche Auth läuft über den signierten `user_session`-Cookie).
-Änderungen werden via `window.dispatchEvent(new CustomEvent('userChanged'))` gebroadcastet.
-Der `useCurrentUser`-Hook in `hooks/useCurrentUser.ts` abonniert dieses Event.
+Der signierte `user_session`-Cookie ist die einzige Quelle. `lib/session.ts`
+liest ihn serverseitig; `app/(user)/layout.tsx` reicht das Ergebnis über
+`<SessionProvider>` (`components/SessionProvider.tsx`) als React Context an
+Client-Komponenten weiter. `useCurrentUser()` (nur die ID) und `useSession()`
+(voller Nutzer) lesen daraus — kein localStorage-Spiegel, kein Event-Bus.
 
 ---
 
@@ -120,4 +123,4 @@ Der `useCurrentUser`-Hook in `hooks/useCurrentUser.ts` abonniert dieses Event.
 
 
 ---
-*Automatisch generiert am 02.07.2026, 23:22 · [Quellcode](https://github.com/your-org/prompt-arena)*
+*Automatisch generiert am 02.07.2026, 23:45 · [Quellcode](https://github.com/your-org/prompt-arena)*

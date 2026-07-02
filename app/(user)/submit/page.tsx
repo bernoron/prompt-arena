@@ -1,11 +1,12 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import CategoryBadge from '@/components/CategoryBadge';
 import DifficultyBadge from '@/components/DifficultyBadge';
-import type { Category, Difficulty, PromptCategoryInfo, WeeklyChallengeData, UserWithStats } from '@/lib/types';
+import type { Category, Difficulty, PromptCategoryInfo, WeeklyChallengeData } from '@/lib/types';
 import { POINTS } from '@/lib/points';
+import { useSession } from '@/components/SessionProvider';
 
 const DIFFICULTIES: Difficulty[] = ['Einstieg', 'Fortgeschritten'];
 
@@ -47,9 +48,9 @@ function LivePreviewCard({ title, titleEn, content, category, difficulty, author
 // @spec AC-02-009
 export default function SubmitPage() {
   const router = useRouter();
+  const currentUser = useSession();
   const [challenge, setChallenge] = useState<WeeklyChallengeData | null>(null);
   const [categories, setCategories] = useState<PromptCategoryInfo[]>([]);
-  const [currentUser, setCurrentUser] = useState<UserWithStats | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [linkChallenge, setLinkChallenge] = useState(false);
   const [form, setForm] = useState({
@@ -58,26 +59,13 @@ export default function SubmitPage() {
     difficulty: 'Einstieg' as Difficulty,
   });
 
-  const loadUser = useCallback(() => {
-    const uid = localStorage.getItem('promptarena_user_id');
-    if (!uid) return;
-    fetch(`/api/users/${uid}`)
-      .then((r) => r.json())
-      .then((user: UserWithStats) => {
-        if (user && user.id) setCurrentUser(user);
-      });
-  }, []);
-
   useEffect(() => {
     fetch('/api/challenges').then((r) => r.json()).then(setChallenge);
     fetch('/api/categories')
       .then((r) => r.json())
       .then((data) => setCategories(Array.isArray(data) ? data : []))
       .catch(() => setCategories([]));
-    loadUser();
-    window.addEventListener('userChanged', loadUser);
-    return () => window.removeEventListener('userChanged', loadUser);
-  }, [loadUser]);
+  }, []);
 
   const setField = (key: string, value: string) => setForm((f) => ({ ...f, [key]: value }));
   const valid = !!(form.title && form.content && form.category);

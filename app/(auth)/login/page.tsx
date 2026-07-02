@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { USER_ID_KEY } from '@/lib/constants';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -23,10 +22,8 @@ export default function LoginPage() {
     });
 
     if (res.ok) {
-      const data = await res.json() as { userId: number; name: string; avatarColor: string };
-      localStorage.setItem(USER_ID_KEY,                String(data.userId));
-      localStorage.setItem('promptarena_user_name',    data.name);
-      localStorage.setItem('promptarena_user_color',   data.avatarColor);
+      // The session cookie is now set server-side; the (user) layout resolves
+      // the signed-in user fresh on this navigation — no client mirror needed.
       router.push('/dashboard');
     } else {
       const data = await res.json() as { error?: string };

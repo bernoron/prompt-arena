@@ -5,11 +5,6 @@
  * add a new category in one place and the whole app picks it up.
  */
 
-// ─── Auth / Storage ──────────────────────────────────────────────────────────
-
-/** Key used in localStorage to persist the active user ID. */
-export const USER_ID_KEY = 'promptarena_user_id';
-
 // ─── Users ───────────────────────────────────────────────────────────────────
 
 /**

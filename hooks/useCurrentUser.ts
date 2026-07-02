@@ -3,40 +3,22 @@
 /**
  * Custom hook: useCurrentUser
  *
- * Provides the currently selected user's ID to any client component.
+ * Provides the currently authenticated user's ID to any client component.
  *
- * The ID is persisted in localStorage under USER_ID_KEY so it survives
- * page refreshes. The UserPicker component dispatches a `userChanged`
- * CustomEvent on the window whenever the active user switches; this hook
- * subscribes to that event so every consumer re-renders automatically
- * without needing prop drilling or a global state library.
+ * Backed by <SessionProvider> (components/SessionProvider.tsx), which itself
+ * is populated server-side from the signed session cookie via
+ * lib/session.ts — there is no localStorage mirror or 'userChanged' event
+ * bus anymore. Login/register/logout all cause a Next.js navigation, which
+ * re-renders the (user) layout and re-resolves the session automatically.
  *
  * Usage:
  *   const userId = useCurrentUser();
- *   // userId is null until localStorage is read (first render) or if no
- *   // user has been selected yet.
+ *   // null when logged out (middleware normally redirects before this
+ *   // matters, but pages can still handle the transient null safely).
  */
 
-import { useState, useEffect } from 'react';
-import { USER_ID_KEY } from '@/lib/constants';
+import { useSession } from '@/components/SessionProvider';
 
 export function useCurrentUser(): number | null {
-  const [userId, setUserId] = useState<number | null>(null);
-
-  useEffect(() => {
-    // Read initial value from localStorage (client-only, hence inside useEffect)
-    const stored = localStorage.getItem(USER_ID_KEY);
-    setUserId(stored ? parseInt(stored, 10) : null);
-
-    // Keep in sync when the user switches via UserPicker
-    const handleUserChanged = () => {
-      const updated = localStorage.getItem(USER_ID_KEY);
-      setUserId(updated ? parseInt(updated, 10) : null);
-    };
-
-    window.addEventListener('userChanged', handleUserChanged);
-    return () => window.removeEventListener('userChanged', handleUserChanged);
-  }, []);
-
-  return userId;
+  return useSession()?.id ?? null;
 }

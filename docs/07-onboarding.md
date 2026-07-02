@@ -65,8 +65,9 @@ kein Datenbankserver nötig, kein Verbindungs-Pooling. Für Skalierung einfach
 ### Warum kein NextAuth / SSO?
 Login läuft über E-Mail + Passwort mit einem eigenen, schlanken Cookie-basierten
 Session-Mechanismus (scrypt-Hashing, HMAC-signierter Cookie). Für den Umfang der
-App wäre eine volle Auth-Library wie NextAuth überdimensioniert; die localStorage-
-Kopie der User-ID dient nur der schnellen UI-Anzeige, nicht der Security.
+App wäre eine volle Auth-Library wie NextAuth überdimensioniert. Der Cookie ist
+die einzige Quelle der Wahrheit — `lib/session.ts` löst ihn serverseitig auf
+und reicht das Ergebnis per React Context an Client-Komponenten weiter.
 
 ### Warum Zod?
 TypeScript prüft Typen nur zur Compile-Zeit. Zur Laufzeit können API-Clients beliebige
@@ -74,8 +75,9 @@ Daten senden. Zod validiert und parst Eingaben zur Laufzeit und gibt typsichere
 Objekte zurück – in einer Zeile pro Endpunkt.
 
 ### Warum kein Redux / Zustand-Library?
-Der App-State ist minimal: aktive Nutzer-ID (localStorage + Event), geladene Daten
-(lokaler useState). Kein globaler State nötig. `useCurrentUser`-Hook reicht.
+Der App-State ist minimal: Identität kommt einmal pro Navigation aus dem
+Session-Context (`SessionProvider`), Seitendaten leben in lokalem `useState`.
+Kein globaler State nötig.
 
 ---
 
@@ -100,4 +102,4 @@ Der App-State ist minimal: aktive Nutzer-ID (localStorage + Event), geladene Dat
 
 
 ---
-*Automatisch generiert am 02.07.2026, 23:22 · [Quellcode](https://github.com/your-org/prompt-arena)*
+*Automatisch generiert am 02.07.2026, 23:45 · [Quellcode](https://github.com/your-org/prompt-arena)*

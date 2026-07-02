@@ -1,27 +1,13 @@
 'use client';
 
 // @spec AC-11-001
-import { useState, useEffect } from 'react';
-import { USER_ID_KEY } from '@/lib/constants';
+import { useState } from 'react';
+import { useCurrentUser } from '@/hooks/useCurrentUser';
 import FeedbackModal from './FeedbackModal';
 
 export default function FeedbackButton() {
-  const [userId, setUserId] = useState<number | null>(null);
+  const userId = useCurrentUser();
   const [open, setOpen] = useState(false);
-
-  useEffect(() => {
-    const raw = localStorage.getItem(USER_ID_KEY);
-    const id = raw ? parseInt(raw, 10) : null;
-    setUserId(id && id > 0 ? id : null);
-
-    const handler = () => {
-      const updated = localStorage.getItem(USER_ID_KEY);
-      const uid = updated ? parseInt(updated, 10) : null;
-      setUserId(uid && uid > 0 ? uid : null);
-    };
-    window.addEventListener('storage', handler);
-    return () => window.removeEventListener('storage', handler);
-  }, []);
 
   if (!userId) return null;
 

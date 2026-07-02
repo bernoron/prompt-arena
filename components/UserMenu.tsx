@@ -1,69 +1,25 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { USER_ID_KEY } from '@/lib/constants';
-
-interface UserData {
-  id: number;
-  name: string;
-  avatarColor: string;
-}
+import { useSession } from './SessionProvider';
 
 function initials(name: string): string {
   return name.split(' ').filter(Boolean).map((n) => n[0]).join('').toUpperCase().slice(0, 2);
 }
 
 export default function UserMenu({ dark = false }: { dark?: boolean }) {
-  const [user, setUser]   = useState<UserData | null>(null);
-  const [open, setOpen]   = useState(false);
-  const menuRef           = useRef<HTMLDivElement>(null);
-  const router            = useRouter();
-
-  useEffect(() => {
-    // Read from localStorage first (set at login – no API call needed)
-    const id    = localStorage.getItem(USER_ID_KEY);
-    const name  = localStorage.getItem('promptarena_user_name');
-    const color = localStorage.getItem('promptarena_user_color');
-
-    if (id && name && color) {
-      setUser({ id: parseInt(id, 10), name, avatarColor: color });
-      return;
-    }
-
-    // Fallback: fetch session from server (handles hard-refresh without localStorage)
-    fetch('/api/auth/me')
-      .then((r) => r.json())
-      .then((data: { user: UserData | null }) => {
-        if (data.user) {
-          setUser(data.user);
-          localStorage.setItem(USER_ID_KEY,              String(data.user.id));
-          localStorage.setItem('promptarena_user_name',  data.user.name);
-          localStorage.setItem('promptarena_user_color', data.user.avatarColor);
-        }
-      })
-      .catch(() => {});
-  }, []);
+  const user               = useSession();
+  const [open, setOpen]     = useState(false);
+  const menuRef             = useRef<HTMLDivElement>(null);
+  const router              = useRouter();
 
   // Close on outside click
-  useEffect(() => {
-    function handleClick(e: MouseEvent) {
-      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
-        setOpen(false);
-      }
-    }
-    if (open) document.addEventListener('mousedown', handleClick);
-    return () => document.removeEventListener('mousedown', handleClick);
-  }, [open]);
+  useOutsideClick(menuRef, open, () => setOpen(false));
 
   const logout = async () => {
     await fetch('/api/auth/logout', { method: 'POST' }).catch(() => {});
-    // Clear all promptarena keys from localStorage
-    Object.keys(localStorage)
-      .filter((k) => k.startsWith('promptarena_'))
-      .forEach((k) => localStorage.removeItem(k));
-    localStorage.removeItem(USER_ID_KEY);
     router.push('/login');
   };
 
@@ -124,4 +80,15 @@ export default function UserMenu({ dark = false }: { dark?: boolean }) {
       )}
     </div>
   );
+}
+
+/** Closes an open dropdown when the user clicks outside of `ref`. */
+function useOutsideClick(ref: React.RefObject<HTMLElement>, active: boolean, onOutside: () => void) {
+  useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) onOutside();
+    }
+    if (active) document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, [active, onOutside, ref]);
 }

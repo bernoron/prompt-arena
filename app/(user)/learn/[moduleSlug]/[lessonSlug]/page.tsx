@@ -8,8 +8,8 @@ import LessonFeedback from '@/components/LessonFeedback';
 import TopicSuggestionModal from '@/components/TopicSuggestionModal';
 import { triggerFloat } from '@/components/FloatingPoints';
 import type { LessonDetail } from '@/lib/types';
-import { USER_ID_KEY } from '@/lib/constants';
 import { POINTS } from '@/lib/points';
+import { useCurrentUser } from '@/hooks/useCurrentUser';
 
 // @spec AC-08-011
 export default function LessonPage({
@@ -17,20 +17,18 @@ export default function LessonPage({
 }: {
   params: { moduleSlug: string; lessonSlug: string };
 }) {
+  const userId = useCurrentUser() ?? 0;
   const [lesson, setLesson]               = useState<LessonDetail | null>(null);
   const [loading, setLoading]             = useState(true);
   const [completing, setCompleting]       = useState(false);
-  const [userId, setUserId]               = useState<number>(0);
   const [showSuggest, setShowSuggest]     = useState(false);
 
   useEffect(() => {
-    const uid = Number(localStorage.getItem(USER_ID_KEY) ?? '0');
-    setUserId(uid);
-    fetch(`/api/learn/${params.moduleSlug}/${params.lessonSlug}?userId=${uid}`)
+    fetch(`/api/learn/${params.moduleSlug}/${params.lessonSlug}?userId=${userId}`)
       .then((r) => r.json())
       .then((data) => { setLesson(data); setLoading(false); })
       .catch(() => setLoading(false));
-  }, [params.moduleSlug, params.lessonSlug]);
+  }, [params.moduleSlug, params.lessonSlug, userId]);
 
   // @spec AC-08-008
   const handleComplete = useCallback(async () => {

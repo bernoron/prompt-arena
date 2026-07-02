@@ -1,11 +1,12 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import LevelBadge from '@/components/LevelBadge';
 import CategoryBadge from '@/components/CategoryBadge';
 import DifficultyBadge from '@/components/DifficultyBadge';
 import type { LevelName, Category } from '@/lib/types';
 import { getLevelProgress } from '@/lib/points';
+import { useCurrentUser } from '@/hooks/useCurrentUser';
 
 interface UserProfile {
   id: number; name: string; avatarColor: string;
@@ -28,39 +29,24 @@ const BADGES = [
 
 // @spec AC-10-002, AC-10-003, AC-10-004, AC-10-005
 export default function ProfilePage() {
+  const currentUserId = useCurrentUser();
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const loadProfile = useCallback(() => {
-    const uid = localStorage.getItem('promptarena_user_id');
-    if (!uid) {
+  useEffect(() => {
+    if (!currentUserId) {
       setLoading(false);
       return;
     }
-    loadById(parseInt(uid));
-  }, []);
-
-  const loadById = (id: number) => {
     setLoading(true);
-    fetch(`/api/users/${id}`).then(r => r.json()).then((data: UserProfile) => {
+    fetch(`/api/users/${currentUserId}`).then(r => r.json()).then((data: UserProfile) => {
       setProfile(data);
       setLoading(false);
     });
-  };
-
-  useEffect(() => {
-    loadProfile();
-    const handler = () => {
-      const uid = localStorage.getItem('promptarena_user_id');
-      if (uid) loadById(parseInt(uid));
-    };
-    window.addEventListener('userChanged', handler);
-    return () => window.removeEventListener('userChanged', handler);
-  }, [loadProfile]);
+  }, [currentUserId]);
 
   if (!loading && !profile) {
-    const uid = typeof window !== 'undefined' ? localStorage.getItem('promptarena_user_id') : null;
-    if (!uid) {
+    if (!currentUserId) {
       return (
         <div className="text-center py-20">
           <p className="text-4xl mb-4">👤</p>

@@ -360,6 +360,7 @@ KOMPONENTEN (components/)
 - Navigation.tsx
 - PromptCard.tsx
 - PromptModal.tsx
+- SessionProvider.tsx
 - TopicSuggestionModal.tsx
 - UserMenu.tsx
 - WeeklyChallengeCard.tsx
@@ -370,14 +371,13 @@ Navigation:
   - Links: Dashboard, Bibliothek, Rangliste, Profil
   - Aktiver Link: bg-emerald-500/20 text-emerald-400
   - Submit-Button mit Gradient linear-gradient(135deg, #059669, #0891b2)
-  - UserPicker rechts mit dark=true Prop
+  - UserMenu rechts mit dark=true Prop
 
-UserPicker:
+UserMenu:
   - dark Prop für Navbar-Kontext
-  - Lädt Nutzerliste beim Öffnen neu (frische Punkte)
-  - Register-Formular eingebettet im Dropdown
-  - localStorage-Key: 'promptarena_user_id'
-  - Cross-Component-Sync via window.dispatchEvent(new CustomEvent('userChanged'))
+  - Liest den Nutzer aus useSession() (React Context, siehe SessionProvider)
+  - Zeigt Avatar + Name, Dropdown mit Profil-Link und Abmelden
+  - Kein eigener Datenzugriff — die Identität kommt vom (user)-Layout
 
 PromptCard:
   - Farbiger border-t-4 oben je nach Kategorie (accentBorder aus CATEGORY_CONFIG)
@@ -394,8 +394,8 @@ HOOKS (hooks/)
 ════════════════════════════════════════════════════════════
 useCurrentUser.ts:
   'use client' hook
-  - Liest userId aus localStorage('promptarena_user_id')
-  - Abonniert window-Event 'userChanged' für Cross-Component-Sync
+  - Liest die Nutzer-ID aus dem SessionProvider-Context (components/SessionProvider.tsx)
+  - Kein localStorage, kein Event-Bus — die Session kommt vom (user)-Layout
   - Gibt number | null zurück
 
 ════════════════════════════════════════════════════════════
@@ -468,7 +468,6 @@ LIB-DATEIEN (lib/)
 ════════════════════════════════════════════════════════════
 
 constants.ts – SINGLE SOURCE OF TRUTH für alle Magic Values:
-  USER_ID_KEY = 'promptarena_user_id'
   AVATAR_COLORS = ['#1D9E75', '#3B82F6', '#F59E0B', '#8B5CF6', '#EF4444',
                    '#EC4899', '#14B8A6', '#F97316', '#6366F1', '#84CC16']
   CATEGORY_CONFIG = {
@@ -574,4 +573,4 @@ SETUP-REIHENFOLGE
 
 
 ---
-*Automatisch generiert am 02.07.2026, 23:22 · [Quellcode](https://github.com/your-org/prompt-arena)*
+*Automatisch generiert am 02.07.2026, 23:45 · [Quellcode](https://github.com/your-org/prompt-arena)*

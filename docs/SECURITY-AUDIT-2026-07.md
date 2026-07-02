@@ -100,7 +100,7 @@ Arbitrary File Read im Dev-Server) aktualisiert. 20 → 6 offene Findings.
 
 | # | Restrisiko | Empfehlung | Priorität |
 |---|---|---|---|
-| 1 | **Next.js 14.2.x Advisories** (DoS über RSC-Deserialisierung, Cache-Poisoning, Request-Smuggling in Rewrites u.a.) — Fixes erst in Next 16 | Framework-Upgrade auf Next 16 als eigener Change Request (Breaking Change). Übergangsweise mitigiert: Image-Optimizer aus, keine Rewrites/i18n, WAF/CDN (z.B. Cloudflare) vorschalten | Hoch (planen) |
+| 1 | **Framework-/Dependency-Advisories** können zwischen Releases neu auftauchen und müssen vor jedem Deploy sichtbar werden | Umgesetzt: `npm run security:deps` blockt High/Critical-Advisories in Produktionsabhängigkeiten in CI; Dependabot erstellt wöchentliche PRs für npm- und GitHub-Actions-Updates. Next-Upgrades weiter als eigene Change Requests behandeln. | Hoch |
 | 2 | CSP enthält `script-src 'unsafe-inline'` (von Next.js-Hydration benötigt) | Nonce-basierte CSP via Middleware evaluieren (erfordert dynamisches Rendering aller Seiten) | Mittel |
 | 3 | Admin-Sessions stateless → kein serverseitiger Widerruf vor 7-Tage-Ablauf | Bei Bedarf: Token-Denylist in DB/Redis; kurzfristig `ADMIN_SECRET` rotieren (invalidiert alle Admin-Sessions sofort) | Mittel |
 | 4 | Rate Limiter prozesslokal | Bei Multi-Replica-Deployment auf Redis-basierten Limiter wechseln | Niedrig (aktuell Single Instance) |
@@ -113,6 +113,7 @@ Arbitrary File Read im Dev-Server) aktualisiert. 20 → 6 offene Findings.
 
 - `npm run test:unit`: **110/110 bestanden** (inkl. 7 neuer Security-Tests für
   IP-Ermittlung, Limiter-Bounding, Token-Ablauf, Legacy-Token-Ablehnung)
+- `npm run security:deps`: CI-Gate für High/Critical-Advisories in Produktionsabhängigkeiten
 - `npm run test:e2e`: **17/17 bestanden** (Produktions-Standalone-Build)
 - Live-Verifikation gegen den Produktions-Build: Security-Header vollständig,
   Auth-Limiter greift nach 10 Versuchen (429), neues Session-Format aktiv,

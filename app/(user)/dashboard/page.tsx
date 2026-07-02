@@ -11,6 +11,7 @@ import NextLessonWidget from '@/components/dashboard/NextLessonWidget';
 import type { WeeklyChallengeData, UserWithStats, LevelName, PromptWithDetails, RankedUser, RankDiff, LearningModuleWithProgress } from '@/lib/types';
 import { getLevelProgress, POINTS } from '@/lib/points';
 import { LEVEL_CONFIG, POINTS_GUIDE } from '@/lib/constants';
+import { useCurrentUser } from '@/hooks/useCurrentUser';
 
 // ─── Local types ──────────────────────────────────────────────────────────────
 
@@ -85,6 +86,7 @@ function computeDiff(
 
 // @spec AC-04-004, AC-04-005
 export default function DashboardPage() {
+  const currentUserId = useCurrentUser();
   const [challenges,     setChallenges]     = useState<WeeklyChallengeData[]>([]);
   const [currentUser,    setCurrentUser]    = useState<UserWithStats | null>(null);
   const [allUsers,       setAllUsers]       = useState<UserWithStats[]>([]);
@@ -95,8 +97,7 @@ export default function DashboardPage() {
   const [apiError,       setApiError]       = useState<string | null>(null);
 
   const loadData = useCallback(() => {
-    const uid    = localStorage.getItem('promptarena_user_id');
-    const uidNum = uid ? parseInt(uid) : null;
+    const uidNum = currentUserId;
 
     setApiError(null);
 
@@ -145,12 +146,10 @@ export default function DashboardPage() {
       setApiError('Dashboard-Daten konnten nicht geladen werden. Bitte die Seite neu laden.');
       setLoading(false);
     });
-  }, []);
+  }, [currentUserId]);
 
   useEffect(() => {
     loadData();
-    window.addEventListener('userChanged', loadData);
-    return () => window.removeEventListener('userChanged', loadData);
   }, [loadData]);
 
   const rank = useMemo(

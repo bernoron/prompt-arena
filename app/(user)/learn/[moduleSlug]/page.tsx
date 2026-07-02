@@ -4,15 +4,15 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import ProgressRing from '@/components/learn/ProgressRing';
 import type { LearningModuleWithProgress } from '@/lib/types';
-import { USER_ID_KEY } from '@/lib/constants';
+import { useCurrentUser } from '@/hooks/useCurrentUser';
 
 // @spec AC-08-005
 export default function ModulePage({ params }: { params: { moduleSlug: string } }) {
+  const userId = useCurrentUser() ?? 0;
   const [mod, setMod] = useState<LearningModuleWithProgress | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const userId = localStorage.getItem(USER_ID_KEY) ?? '0';
     fetch(`/api/learn?userId=${userId}`)
       .then((r) => r.json())
       .then((data: LearningModuleWithProgress[]) => {
@@ -21,7 +21,7 @@ export default function ModulePage({ params }: { params: { moduleSlug: string } 
         setLoading(false);
       })
       .catch(() => setLoading(false));
-  }, [params.moduleSlug]);
+  }, [params.moduleSlug, userId]);
 
   if (loading) {
     return (
