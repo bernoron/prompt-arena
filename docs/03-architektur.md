@@ -41,9 +41,24 @@ integrierten API-Layer. Frontend und Backend laufen als einziger Prozess.
 | Route | Datei |
 |---|---|
 | `/` | app/page.tsx (Redirect → /dashboard) |
-| `/(user)` | app/(user)/page.tsx |
-| `/login` | app/login/page.tsx |
-| `/register` | app/register/page.tsx |
+| `/login` | app/(auth)/login/page.tsx |
+| `/register` | app/(auth)/register/page.tsx |
+| `/dashboard` | app/(user)/dashboard/page.tsx |
+| `/favorites` | app/(user)/favorites/page.tsx |
+| `/leaderboard` | app/(user)/leaderboard/page.tsx |
+| `/learn` | app/(user)/learn/page.tsx |
+| `/learn/[moduleSlug]` | app/(user)/learn/[moduleSlug]/page.tsx |
+| `/learn/[moduleSlug]/[lessonSlug]` | app/(user)/learn/[moduleSlug]/[lessonSlug]/page.tsx |
+| `/library` | app/(user)/library/page.tsx |
+| `/profile` | app/(user)/profile/page.tsx |
+| `/submit` | app/(user)/submit/page.tsx |
+| `/admin` | app/admin/(panel)/page.tsx |
+| `/admin/challenges` | app/admin/(panel)/challenges/page.tsx |
+| `/admin/feedback` | app/admin/(panel)/feedback/page.tsx |
+| `/admin/feedback/suggestions` | app/admin/(panel)/feedback/suggestions/page.tsx |
+| `/admin/prompts` | app/admin/(panel)/prompts/page.tsx |
+| `/admin/users` | app/admin/(panel)/users/page.tsx |
+| `/admin/login` | app/admin/login/page.tsx |
 
 ---
 
@@ -152,4 +167,4 @@ die eigentliche Autorisierung erfolgt serverseitig über den signierten Cookie
 
 
 ---
-*Automatisch generiert am 02.07.2026, 22:42 · [Quellcode](https://github.com/your-org/prompt-arena)*
+*Automatisch generiert am 02.07.2026, 23:12 · [Quellcode](https://github.com/your-org/prompt-arena)*

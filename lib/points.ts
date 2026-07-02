@@ -27,13 +27,26 @@ export const POINTS = {
 
 // ─── Level Thresholds ────────────────────────────────────────────────────────
 
-/** Minimum points required to reach each level. */
-const THRESHOLDS: { min: number; level: LevelName }[] = [
-  { min: 600, level: 'KI-Botschafter'    },
-  { min: 300, level: 'Prompt-Schmied'    },
-  { min: 100, level: 'Prompt-Handwerker' },
+/**
+ * Minimum points required to reach each level, ascending order.
+ * Single source of truth for both getLevel() and getLevelProgress() —
+ * band widths for the progress bar are derived from the gaps between
+ * consecutive entries instead of being duplicated as literals.
+ */
+const LEVELS: { min: number; level: LevelName }[] = [
   { min:   0, level: 'Prompt-Lehrling'   },
+  { min: 100, level: 'Prompt-Handwerker' },
+  { min: 300, level: 'Prompt-Schmied'    },
+  { min: 600, level: 'KI-Botschafter'    },
 ];
+
+/** Index of the highest level whose threshold `points` has reached. */
+function currentLevelIndex(points: number): number {
+  for (let i = LEVELS.length - 1; i >= 0; i--) {
+    if (points >= LEVELS[i].min) return i;
+  }
+  return 0;
+}
 
 /**
  * Returns the level name for a given total-points value.
@@ -41,7 +54,7 @@ const THRESHOLDS: { min: number; level: LevelName }[] = [
  */
 // @spec AC-04-002
 export function getLevel(points: number): LevelName {
-  return THRESHOLDS.find((t) => points >= t.min)!.level;
+  return LEVELS[currentLevelIndex(points)].level;
 }
 
 // ─── Progress Calculation ────────────────────────────────────────────────────
@@ -62,19 +75,27 @@ export interface LevelProgress {
  * Calculates how far a user has progressed within their current level band.
  * Used by the Dashboard and Profile progress bars.
  *
+ * Band width and next-level name are derived from LEVELS so a threshold
+ * change in one place can never desync getLevel() and getLevelProgress().
+ *
  * @param points - The user's total accumulated points.
  */
 // @spec AC-04-003
 export function getLevelProgress(points: number): LevelProgress {
-  if (points >= 600) {
-    return { level: 'KI-Botschafter', current: points - 600, max: 0, percentage: 100, nextLevel: null };
-  }
-  if (points >= 300) {
-    return { level: 'Prompt-Schmied',    current: points - 300, max: 300, percentage: Math.round(((points - 300) / 300) * 100), nextLevel: 'KI-Botschafter'    };
-  }
-  if (points >= 100) {
-    return { level: 'Prompt-Handwerker', current: points - 100, max: 200, percentage: Math.round(((points - 100) / 200) * 100), nextLevel: 'Prompt-Schmied'    };
-  }
-  return   { level: 'Prompt-Lehrling',   current: points,       max: 100, percentage: Math.round((points / 100) * 100),         nextLevel: 'Prompt-Handwerker' };
+  const idx     = currentLevelIndex(points);
+  const current = LEVELS[idx];
+  const next    = LEVELS[idx + 1] ?? null;
+
+  const currentInBand = points - current.min;
+  const bandWidth      = next ? next.min - current.min : 0;
+  const percentage     = bandWidth > 0 ? Math.round((currentInBand / bandWidth) * 100) : 100;
+
+  return {
+    level:      current.level,
+    current:    currentInBand,
+    max:        bandWidth,
+    percentage,
+    nextLevel:  next?.level ?? null,
+  };
 }
 

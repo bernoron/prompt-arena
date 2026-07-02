@@ -179,22 +179,37 @@ function extractPointsConfig(): PointsConfig {
   return { actions, levels };
 }
 
-/** Liest alle Seiten aus app/ */
+/**
+ * Recursively walks app/ to find every page.tsx, matching Next.js App Router
+ * conventions: route groups `(name)` contribute a folder but not a URL
+ * segment; dynamic segments `[slug]` are kept as-is for readability.
+ */
 function extractPages(): { route: string; component: string }[] {
   const appDir = path.join(ROOT, 'app');
   const pages: { route: string; component: string }[] = [
-    { route: '/',             component: 'app/page.tsx (Redirect → /dashboard)' },
+    { route: '/', component: 'app/page.tsx (Redirect → /dashboard)' },
   ];
 
-  for (const dir of readDir(appDir)) {
-    if (['api', 'fonts', 'generated'].includes(dir)) continue;
-    const full = path.join(appDir, dir);
-    try {
-      if (fs.statSync(full).isDirectory() && fs.existsSync(path.join(full, 'page.tsx'))) {
-        pages.push({ route: `/${dir}`, component: `app/${dir}/page.tsx` });
+  function walk(dir: string, urlPath: string, relPath: string) {
+    for (const entry of readDir(dir)) {
+      if (['api', 'fonts', 'generated'].includes(entry) || entry.startsWith('_')) continue;
+      const full = path.join(dir, entry);
+      let stat: fs.Stats;
+      try { stat = fs.statSync(full); } catch { continue; }
+      if (!stat.isDirectory()) continue;
+
+      const isGroup    = entry.startsWith('(') && entry.endsWith(')');
+      const nextUrl    = isGroup ? urlPath : `${urlPath}/${entry}`;
+      const nextRel    = `${relPath}/${entry}`;
+
+      if (fs.existsSync(path.join(full, 'page.tsx'))) {
+        pages.push({ route: nextUrl || '/', component: `${nextRel}/page.tsx` });
       }
-    } catch { /* ignore */ }
+      walk(full, nextUrl, nextRel);
+    }
   }
+
+  walk(appDir, '', 'app');
   return pages;
 }
 

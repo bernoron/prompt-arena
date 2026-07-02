@@ -92,13 +92,16 @@ Layer 3 – Code            // @spec AC-XX-NNN              Implementation
 
 ---
 
-### Auto-Tagging (automatisch)
-Nach jedem `git push origin main` wird automatisch:
-1. Semver-Bump aus Conventional Commits berechnet (`feat`→minor, `fix`→patch)
-2. `package.json` Version erhöht
-3. Annotierter Git-Tag erstellt und gepusht
+### Versionierung (automatisch via Release-Please)
+Nach jedem `git push origin main` öffnet oder aktualisiert der `Release Please`-GitHub-Actions-Workflow
+eine Release-PR mit Semver-Bump aus Conventional Commits (`feat`→minor, `fix`→patch, `feat!`/`BREAKING CHANGE`→major).
+Nach Merge dieser PR erstellt Release Please Tag + GitHub-Release.
 
-Manual: `node scripts/auto-tag.mjs`
+Es gibt bewusst **nur diesen einen** automatischen Mechanismus — vorher lief zusätzlich ein lokaler
+Post-Push-Hook (`scripts/hooks/post-push-auto-tag.mjs`), der unabhängig vom PR-Review sofort taggte
+und dabei mit Release-Please um dieselbe Versionsnummer konkurrierte. Der Hook wurde aus
+`.claude/settings.json` entfernt; `scripts/auto-tag.mjs` bleibt als manueller Fallback erhalten,
+falls Release-Please einmal nicht erreichbar ist: `node scripts/auto-tag.mjs`
 
 ---
 

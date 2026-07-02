@@ -28,7 +28,14 @@ interface RateLimiterOptions {
   max: number;
 }
 
-interface RateLimiter {
+/**
+ * Shared shape for anything that can gate a request by key.
+ *
+ * Exported so a future multi-instance deployment can swap in a Redis-backed
+ * implementation (e.g. `createRedisRateLimiter(opts): RateLimiter`) without
+ * touching call sites — every route only depends on this interface.
+ */
+export interface RateLimiter {
   /** Returns true if the request is allowed, false if it should be rejected. */
   check: (key: string) => boolean;
 }
