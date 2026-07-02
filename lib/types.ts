@@ -44,7 +44,6 @@ export type LevelName =
 export interface UserWithStats {
   id: number;
   name: string;
-  department: string;
   avatarColor: string;
   totalPoints: number;
   level: LevelName;
@@ -72,7 +71,6 @@ export interface PromptWithDetails {
     id: number;
     name: string;
     avatarColor: string;
-    department: string;
   };
   avgRating: number;           // 0–5, rounded to one decimal place
   voteCount: number;

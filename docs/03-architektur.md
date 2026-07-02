@@ -95,20 +95,21 @@ Nutzer-Aktion (z.B. Prompt bewerten)
 
 ---
 
-## 5. Authentifizierung (Mock-Auth)
+## 5. Authentifizierung
 
-Die App nutzt **localStorage-basierte Mock-Authentifizierung** – konzipiert für den
-internen Einsatz ohne IT-Infrastruktur-Overhead.
+Nutzer melden sich mit E-Mail und Passwort an. Das Backend setzt einen
+HMAC-signierten, HttpOnly-Cookie (`user_session`); Passwörter werden mit
+scrypt gehasht. Die Client-ID wird zusätzlich im `localStorage` gespiegelt,
+damit die UI ohne Server-Roundtrip sofort den aktiven Nutzer anzeigen kann:
 
 ```
-localStorage['promptarena_user_id'] = "42"   // gespeicherte Nutzer-ID
+localStorage['promptarena_user_id'] = "42"   // Anzeige-Cache, kein Security-Mechanismus
 window.dispatchEvent(new CustomEvent('userChanged'))  // cross-component sync
 ```
 
-Der `useCurrentUser`-Hook abstrahiert dieses Pattern in allen Client-Komponenten.
-
-> **Hinweis für Produktivbetrieb:** Für sensiblere Daten sollte eine
-> NextAuth.js- oder SSO-Integration ergänzt werden.
+Der `useCurrentUser`-Hook abstrahiert dieses Pattern in allen Client-Komponenten;
+die eigentliche Autorisierung erfolgt serverseitig über den signierten Cookie
+(siehe Sicherheitsarchitektur unten).
 
 ---
 
@@ -151,4 +152,4 @@ Der `useCurrentUser`-Hook abstrahiert dieses Pattern in allen Client-Komponenten
 
 
 ---
-*Automatisch generiert am 02.07.2026, 07:22 · [Quellcode](https://github.com/your-org/prompt-arena)*
+*Automatisch generiert am 02.07.2026, 22:42 · [Quellcode](https://github.com/your-org/prompt-arena)*

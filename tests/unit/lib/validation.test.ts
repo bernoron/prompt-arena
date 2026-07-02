@@ -3,15 +3,15 @@ import { CreateUserSchema, CreatePromptSchema, VoteSchema, UsageSchema } from '.
 
 describe('CreateUserSchema', () => {
   it('accepts valid input', () => {
-    const result = CreateUserSchema.safeParse({ name: 'Anna', department: 'IT' });
+    const result = CreateUserSchema.safeParse({ name: 'Anna' });
     expect(result.success).toBe(true);
   });
   it('rejects empty name', () => {
-    const result = CreateUserSchema.safeParse({ name: '', department: 'IT' });
+    const result = CreateUserSchema.safeParse({ name: '' });
     expect(result.success).toBe(false);
   });
   it('rejects missing name', () => {
-    const result = CreateUserSchema.safeParse({ department: 'IT' });
+    const result = CreateUserSchema.safeParse({});
     expect(result.success).toBe(false);
   });
 });

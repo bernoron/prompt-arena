@@ -20,7 +20,6 @@ export async function GET(req: NextRequest) {
       select: {
         id: true,
         name: true,
-        department: true,
         avatarColor: true,
         totalPoints: true,
         level: true,

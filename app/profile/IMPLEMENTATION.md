@@ -30,7 +30,6 @@ Check if `GET /api/users/[id]` already returns:
 {
   "id": 42,
   "name": "Alice",
-  "department": "Engineering",
   "totalPoints": 285,
   "level": "Prompt-Schmied",
   "rank": 3,

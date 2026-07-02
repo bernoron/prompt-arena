@@ -34,7 +34,6 @@ export async function GET(
       select: {
         id: true,
         name: true,
-        department: true,
         avatarColor: true,
         totalPoints: true,
         level: true,
@@ -76,7 +75,6 @@ export async function GET(
     return NextResponse.json({
       id: user.id,
       name: user.name,
-      department: user.department,
       avatarColor: user.avatarColor,
       totalPoints: user.totalPoints,
       level: user.level,

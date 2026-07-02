@@ -135,7 +135,6 @@ export default function PromptModal({
               </span>
               <div>
                 <p className="text-sm font-bold text-slate-800">{prompt.author.name}</p>
-                <p className="text-xs text-slate-400">{prompt.author.department}</p>
               </div>
             </div>
             <div className="text-right">

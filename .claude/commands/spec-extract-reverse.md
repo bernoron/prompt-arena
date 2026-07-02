@@ -35,7 +35,7 @@ Example output:
 
 ## What the Code Does
 The profile page shows:
-- User name, department, avatar, points, level, rank
+- User name, avatar, points, level, rank
 - All prompts the user submitted (sorted by usage)
 - 7 badges earned based on achievement milestones
 

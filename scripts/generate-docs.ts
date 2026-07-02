@@ -210,7 +210,7 @@ function extractComponents(): string[] {
 function genIndex(pkg: PackageInfo): string {
   return `# PromptArena – Dokumentation
 
-> Version ${pkg.version} · Interne Unternehmensanwendung
+> Version ${pkg.version} · Öffentliche Web-Anwendung
 
 Diese Dokumentation wird **automatisch aus dem Quellcode generiert** und ist stets aktuell.
 
@@ -233,7 +233,7 @@ Diese Dokumentation wird **automatisch aus dem Quellcode generiert** und ist ste
 
 ## Schnellübersicht
 
-**PromptArena** ist eine gamifizierte interne Webanwendung, die Mitarbeitende motiviert,
+**PromptArena** ist eine gamifizierte öffentliche Webanwendung, die Nutzer:innen motiviert,
 KI-Prompts zu teilen, zu bewerten und weiterzuentwickeln.
 
 ### Tech-Stack
@@ -255,14 +255,14 @@ function genKonzept(): string {
 ## 1. Konzept
 
 ### Idee
-PromptArena ist eine interne Webanwendung für Mitarbeitende eines grossen Versicherungsunternehmens.
-Ziel ist es, den unternehmensweiten Wissensaustausch rund um KI-Prompts zu fördern –
+PromptArena ist eine öffentliche Webanwendung für alle, die ihr Wissen rund um KI-Prompts
+teilen möchten. Ziel ist es, den Wissensaustausch rund um effektive KI-Nutzung zu fördern –
 durch Gamification, soziale Interaktion und einfachen Zugang zu bewährten Prompts.
 
 ### Problem
-Mitarbeitende entwickeln wertvolle KI-Prompts für ihren Arbeitsalltag, teilen diese aber kaum
-mit Kolleginnen und Kollegen. Das Wissen bleibt in Silos, Arbeit wird doppelt gemacht und
-das KI-Potenzial im Unternehmen wird nicht ausgeschöpft.
+Nutzer:innen entwickeln wertvolle KI-Prompts für ihren Alltag, teilen diese aber kaum
+mit anderen. Das Wissen bleibt verstreut, Arbeit wird doppelt gemacht und
+das KI-Potenzial wird nicht ausgeschöpft.
 
 ### Lösung
 Eine zentrale Prompt-Bibliothek mit Gamification-Elementen (Punkte, Level, Leaderboard,
@@ -273,24 +273,24 @@ spass­bringend und sichtbar.
 
 ## 2. Nutzen
 
-### Für Mitarbeitende
-- Zugang zu bewährten Prompts für alle Arbeitsbereiche
+### Für Nutzer:innen
+- Zugang zu bewährten Prompts für alle Anwendungsbereiche
 - Sichtbarkeit der eigenen Beiträge durch Rangliste und Profilseite
 - Motivation durch Punkte, Level und wöchentliche Challenges
 - Zweisprachige Prompts (Deutsch / Englisch)
 
-### Für das Unternehmen
+### Für die Plattform
 - Strukturiertes Wissensmanagement für KI-Nutzung
-- Messbarer KI-Adoption-Fortschritt über Abteilungen hinweg
-- Bottom-up Wissenstransfer ohne IT-Overhead
-- Förderung einer KI-affinen Unternehmenskultur
+- Messbarer Fortschritt bei der KI-Adoption der Community
+- Bottom-up Wissenstransfer ohne redaktionellen Overhead
+- Förderung einer aktiven, KI-affinen Community
 
 ---
 
 ## 3. Use Cases
 
 ### UC-01: Prompt suchen und nutzen
-**Akteur:** Mitarbeitende/r
+**Akteur:** Nutzer:in
 **Ablauf:**
 1. Öffnet die Bibliotheksseite (/library)
 2. Filtert nach Kategorie oder sucht per Freitext
@@ -299,7 +299,7 @@ spass­bringend und sichtbar.
 5. Bestätigt die Nutzung → Autor erhält +5 Punkte
 
 ### UC-02: Neuen Prompt einreichen
-**Akteur:** Mitarbeitende/r
+**Akteur:** Nutzer:in
 **Ablauf:**
 1. Öffnet die Einreich-Seite (/submit)
 2. Füllt Titel, Prompt-Text, Kategorie und Schwierigkeit aus (DE obligatorisch, EN optional)
@@ -307,22 +307,21 @@ spass­bringend und sichtbar.
 4. Klickt «Einreichen» → +20 Punkte, optional +30 für Challenge
 
 ### UC-03: Prompt bewerten
-**Akteur:** Mitarbeitende/r
+**Akteur:** Nutzer:in
 **Ablauf:**
 1. Öffnet einen Prompt in der Bibliothek
 2. Vergibt 1–5 Sterne
 3. Bewertung wird gespeichert → +3 Punkte (nur beim ersten Bewerten)
 
 ### UC-04: Rangliste einsehen
-**Akteur:** Mitarbeitende/r
+**Akteur:** Nutzer:in
 **Ablauf:**
 1. Öffnet /leaderboard
 2. Sieht Top 10 + Podium für Top 3
 3. Findet eigene Position (auch ausserhalb Top 10 angezeigt)
-4. Sieht Abteilungsvergleich
 
 ### UC-05: Eigenes Profil verwalten
-**Akteur:** Mitarbeitende/r
+**Akteur:** Nutzer:in
 **Ablauf:**
 1. Öffnet /profile
 2. Sieht eigene Punkte, Level, XP-Fortschrittsbalken
@@ -330,19 +329,18 @@ spass­bringend und sichtbar.
 4. Sieht erreichbare Badges und aktuellen Rang
 
 ### UC-06: An Wochen-Challenge teilnehmen
-**Akteur:** Mitarbeitende/r
+**Akteur:** Nutzer:in
 **Ablauf:**
 1. Sieht die aktive Challenge auf dem Dashboard (/dashboard)
 2. Reicht einen Prompt über /submit ein und verknüpft ihn mit der Challenge
 3. Erhält +30 Zusatzpunkte bei Einreichung, +100 bei Gewinn
 
 ### UC-07: Nutzer registrieren
-**Akteur:** Neue Mitarbeitende/r
+**Akteur:** Neue:r Nutzer:in
 **Ablauf:**
-1. Öffnet die App erstmalig
-2. Klickt auf den Nutzer-Picker oben rechts
-3. Gibt Name und Abteilung ein
-4. Wird als «Prompt-Lehrling» angelegt und direkt ausgewählt
+1. Öffnet die Registrierungsseite
+2. Gibt Name, E-Mail und Passwort ein
+3. Wird als «Prompt-Lehrling» angelegt und automatisch eingeloggt
 
 ---
 
@@ -350,7 +348,7 @@ spass­bringend und sichtbar.
 
 | ID | Anforderung | Priorität |
 |---|---|---|
-| FA-01 | Mitarbeitende können Prompts erstellen, kategorisieren und veröffentlichen | Muss |
+| FA-01 | Nutzer:innen können Prompts erstellen, kategorisieren und veröffentlichen | Muss |
 | FA-02 | Jeder Prompt kann eine deutsche und englische Version haben (EN optional) | Muss |
 | FA-03 | Prompts sind nach Kategorie und per Freitext filterbar | Muss |
 | FA-04 | Bewertungen von 1–5 Sternen sind pro Nutzer und Prompt möglich | Muss |
@@ -360,8 +358,7 @@ spass­bringend und sichtbar.
 | FA-08 | Jede Woche kann eine Challenge mit Bonus-Punkten aktiviert sein | Soll |
 | FA-09 | Prompts können als «genutzt» markiert werden (Autor erhält Punkte) | Soll |
 | FA-10 | Das Profil zeigt eigene Prompts, Punkte und Fortschritt | Soll |
-| FA-11 | Abteilungsvergleich auf der Rangliste | Kann |
-| FA-12 | Profilbild als farbiger Avatar (automatische Farbzuweisung) | Kann |
+| FA-11 | Profilbild als farbiger Avatar (automatische Farbzuweisung) | Kann |
 
 ---
 
@@ -369,12 +366,12 @@ spass­bringend und sichtbar.
 
 | ID | Anforderung | Messgrösse |
 |---|---|---|
-| NFA-01 | **Performance** – Seiten laden schnell | Erste Renderzeit < 2 s auf internem Netz |
+| NFA-01 | **Performance** – Seiten laden schnell | Erste Renderzeit < 2 s |
 | NFA-02 | **Usability** – Bedienbar ohne Schulung | Neue Nutzer finden Kernfunktionen innerhalb 2 Minuten |
 | NFA-03 | **Responsiveness** – Mobile-tauglich | Volle Funktionalität auf Smartphones (min. 375 px) |
 | NFA-04 | **Sicherheit** – Eingaben validiert | Alle API-Inputs durch Zod-Schemas validiert |
 | NFA-05 | **Sicherheit** – Security Headers | CSP, X-Frame-Options, Referrer-Policy auf jeder Antwort |
-| NFA-06 | **Verfügbarkeit** – Interne Verfügbarkeit | 99 % während Geschäftszeiten |
+| NFA-06 | **Verfügbarkeit** | 99 % Uptime |
 | NFA-07 | **Wartbarkeit** – Einfache Erweiterung | Neue Kategorie in einer Datei ergänzbar (lib/constants.ts) |
 | NFA-08 | **Internationaliserung** – Zweisprachigkeit | UI Deutsch, Prompts optional auch Englisch |
 | NFA-09 | **Rate Limiting** – Schutz vor Missbrauch | Max. 30 Schreib- / 120 Leseanfragen pro Minute und IP |
@@ -389,18 +386,14 @@ function genNutzerdoku(): string {
 ## Erste Schritte
 
 ### Registrierung
-1. Öffne PromptArena im Browser (internen Link vom IT-Team anfragen)
-2. Klicke oben rechts auf den **Nutzer-Picker** (blaues Feld mit Pfeiltaste)
-3. Wähle «Neu registrieren»
-4. Trage deinen Vor- und Nachnamen sowie deine Abteilung ein
-5. Klicke «Registrieren» – du wirst automatisch eingeloggt
+1. Öffne PromptArena im Browser
+2. Klicke auf «Registrieren»
+3. Trage Name, E-Mail-Adresse und Passwort ein
+4. Klicke «Konto erstellen» – du wirst automatisch eingeloggt
 
-> **Hinweis:** Es gibt kein Passwort. Die App merkt sich deinen Nutzer im Browser.
-> Wenn du ein neues Gerät oder einen anderen Browser nutzt, wähle deinen Namen
-> einfach erneut aus der Liste aus.
-
-### Nutzer wechseln
-Klicke oben rechts auf deinen Namen → Dropdown öffnet sich → anderen Nutzer auswählen.
+### Anmelden
+Auf der Login-Seite mit E-Mail und Passwort anmelden. Die Sitzung bleibt im Browser
+gespeichert, bis du dich abmeldest.
 
 ---
 
@@ -446,7 +439,6 @@ deinen Prompt damit verknüpfst, kommen **+30 Bonus-Punkte** dazu.
 - **Podium**: Top 3 mit speziellen Auszeichnungen (👑 🥇 🥈 🥉)
 - **Tabelle**: Plätze 4–10 mit Level-Badges
 - **Mein Rang**: Deine Position wird immer angezeigt, auch wenn du nicht in den Top 10 bist
-- **Abteilungsvergleich**: Kumulierte Punkte aller Abteilungen als Balkendiagramm
 
 ### Profil (/profile)
 - Zeigt alle deine eingereichten Prompts
@@ -485,11 +477,11 @@ Aktuell nicht. Reiche bei Bedarf eine verbesserte Version als neuen Prompt ein.
 **Kann ich meinen Account löschen?**
 Wende dich an den App-Administrator.
 
-**Die App merkt sich meinen Nutzer nicht mehr – was tun?**
-Klicke oben rechts auf den Nutzer-Picker und wähle deinen Namen erneut aus der Liste.
+**Ich wurde ausgeloggt – was tun?**
+Melde dich erneut mit deiner E-Mail-Adresse und deinem Passwort an.
 
-**Ich habe versehentlich einen falschen Nutzer gewählt – was tun?**
-Klicke oben rechts auf deinen Namen und wähle den richtigen Nutzer aus.
+**Ich habe mein Passwort vergessen – was tun?**
+Wende dich an den App-Administrator.
 
 ${FOOTER}`;
 }
@@ -586,20 +578,21 @@ Nutzer-Aktion (z.B. Prompt bewerten)
 
 ---
 
-## 5. Authentifizierung (Mock-Auth)
+## 5. Authentifizierung
 
-Die App nutzt **localStorage-basierte Mock-Authentifizierung** – konzipiert für den
-internen Einsatz ohne IT-Infrastruktur-Overhead.
+Nutzer melden sich mit E-Mail und Passwort an. Das Backend setzt einen
+HMAC-signierten, HttpOnly-Cookie (\`user_session\`); Passwörter werden mit
+scrypt gehasht. Die Client-ID wird zusätzlich im \`localStorage\` gespiegelt,
+damit die UI ohne Server-Roundtrip sofort den aktiven Nutzer anzeigen kann:
 
 \`\`\`
-localStorage['promptarena_user_id'] = "42"   // gespeicherte Nutzer-ID
+localStorage['promptarena_user_id'] = "42"   // Anzeige-Cache, kein Security-Mechanismus
 window.dispatchEvent(new CustomEvent('userChanged'))  // cross-component sync
 \`\`\`
 
-Der \`useCurrentUser\`-Hook abstrahiert dieses Pattern in allen Client-Komponenten.
-
-> **Hinweis für Produktivbetrieb:** Für sensiblere Daten sollte eine
-> NextAuth.js- oder SSO-Integration ergänzt werden.
+Der \`useCurrentUser\`-Hook abstrahiert dieses Pattern in allen Client-Komponenten;
+die eigentliche Autorisierung erfolgt serverseitig über den signierten Cookie
+(siehe Sicherheitsarchitektur unten).
 
 ---
 
@@ -803,8 +796,9 @@ prompt-arena/
 1. Wert in \`lib/points.ts → POINTS\` anpassen
 2. Beschriftung in \`lib/constants.ts → POINTS_GUIDE\` synchronisieren
 
-### Mock-Auth erweitern
-Die Nutzer-ID liegt in \`localStorage['promptarena_user_id']\`.
+### Client-seitigen Nutzerstatus erweitern
+Die Nutzer-ID liegt zur schnellen UI-Anzeige in \`localStorage['promptarena_user_id']\`
+(die eigentliche Auth läuft über den signierten \`user_session\`-Cookie).
 Änderungen werden via \`window.dispatchEvent(new CustomEvent('userChanged'))\` gebroadcastet.
 Der \`useCurrentUser\`-Hook in \`hooks/useCurrentUser.ts\` abonniert dieses Event.
 
@@ -1118,7 +1112,7 @@ Gamification-Funktionen auszuprobieren.
 | Einen neuen API-Endpunkt bauen | \`app/api/<name>/route.ts\` + Zod-Schema |
 | Die Datenbank ändern | \`prisma/schema.prisma\` → \`npm run db:migrate\` |
 | Komponenten anpassen | \`components/<Name>.tsx\` |
-| Mock-Auth verstehen | \`hooks/useCurrentUser.ts\` |
+| Client-Auth-State verstehen | \`hooks/useCurrentUser.ts\` |
 | Die Doku regenerieren | \`npm run docs\` |
 | Seed-Daten ändern | \`prisma/seed.ts\` → \`npm run db:reset\` |
 
@@ -1127,14 +1121,15 @@ Gamification-Funktionen auszuprobieren.
 ## Wichtige Architekturentscheidungen
 
 ### Warum SQLite?
-Für ein internes Tool ohne Cloud-Infrastruktur ist SQLite die einfachste Option –
+Für eine schlanke Web-App ohne Cloud-Infrastruktur ist SQLite die einfachste Option –
 kein Datenbankserver nötig, kein Verbindungs-Pooling. Für Skalierung einfach
 \`schema.prisma\` auf PostgreSQL umstellen (Prisma macht den Rest).
 
-### Warum localStorage statt echte Auth?
-Die App ist für vertrauenswürdiges Intranet konzipiert. Echter Login-Overhead
-(NextAuth, SSO) wäre für den Anwendungsfall überdimensioniert. Die User-ID im
-localStorage ist kein Security-Mechanismus, sondern Convenience.
+### Warum kein NextAuth / SSO?
+Login läuft über E-Mail + Passwort mit einem eigenen, schlanken Cookie-basierten
+Session-Mechanismus (scrypt-Hashing, HMAC-signierter Cookie). Für den Umfang der
+App wäre eine volle Auth-Library wie NextAuth überdimensioniert; die localStorage-
+Kopie der User-ID dient nur der schnellen UI-Anzeige, nicht der Security.
 
 ### Warum Zod?
 TypeScript prüft Typen nur zur Compile-Zeit. Zur Laufzeit können API-Clients beliebige
@@ -1153,7 +1148,7 @@ Der App-State ist minimal: aktive Nutzer-ID (localStorage + Event), geladene Dat
 2. **Datenbankschema lesen** (\`prisma/schema.prisma\`) – 5 Modelle, klare Relationen
 3. **Eine API-Route lesen** (\`app/api/prompts/route.ts\`) – zeigt das Muster: Rate-Limit → Validierung → DB
 4. **\`lib/constants.ts\` lesen** – alle Magic Values, verstehe die Struktur
-5. **Eine kleine Änderung testen**: Füge eine neue Abteilung in \`DEPARTMENTS\` ein und registriere einen Testnutzer
+5. **Eine kleine Änderung testen**: Füge eine neue Kategorie in \`lib/constants.ts\` hinzu und registriere einen Testnutzer
 
 ---
 
@@ -1228,9 +1223,8 @@ function genRekonstruktionsPrompt(
 ---
 
 \`\`\`
-Baue eine vollständige Next.js 14 App namens "PromptArena" – eine gamifizierte interne
-Webanwendung für Mitarbeitende eines Unternehmens zum Teilen, Bewerten und Entdecken
-von KI-Prompts.
+Baue eine vollständige Next.js 14 App namens "PromptArena" – eine gamifizierte öffentliche
+Webanwendung zum Teilen, Bewerten und Entdecken von KI-Prompts.
 
 ════════════════════════════════════════════════════════════
 TECH-STACK
@@ -1239,7 +1233,7 @@ TECH-STACK
 - React 18, Tailwind CSS
 - Prisma 5 ORM mit SQLite (DATABASE_URL="file:./dev.db")
 - Zod für API-Input-Validierung
-- Keine Auth-Library – Mock-Auth via localStorage
+- Keine Auth-Library – eigener Cookie-basierter Login (E-Mail + Passwort, scrypt-Hashing, HMAC-signierter Session-Cookie)
 
 ABHÄNGIGKEITEN (package.json dependencies):
 ${depsLines}
@@ -1292,7 +1286,6 @@ Rangliste (/leaderboard):
   - Podium für Top 3 (👑 #1 mit Goldring, 🥈 #2, 🥉 #3)
   - Tabelle Rang 4–10
   - Eigener Rang immer sichtbar, auch wenn ausserhalb Top 10
-  - Abteilungsvergleich als horizontale Balken rechts
 
 Profil (/profile):
   - Dark hero mit farbigem Avatar, Name, Level-Badge
@@ -1368,7 +1361,6 @@ constants.ts – SINGLE SOURCE OF TRUTH für alle Magic Values:
   USER_ID_KEY = 'promptarena_user_id'
   AVATAR_COLORS = ['#1D9E75', '#3B82F6', '#F59E0B', '#8B5CF6', '#EF4444',
                    '#EC4899', '#14B8A6', '#F97316', '#6366F1', '#84CC16']
-  DEPARTMENTS = ['Schaden', 'Vertrieb', 'IT', 'HR', 'Finanzen', 'Recht', 'Marketing', 'Aktuariat']
   CATEGORY_CONFIG = {
     Writing:  { icon: '✍️', bg: 'bg-teal-50',   text: 'text-teal-700',   border: 'border-teal-200',   accentBorder: 'border-t-teal-400'   },
     Email:    { icon: '📧', bg: 'bg-indigo-50', text: 'text-indigo-700', border: 'border-indigo-200', accentBorder: 'border-t-indigo-400' },
@@ -1384,7 +1376,7 @@ constants.ts – SINGLE SOURCE OF TRUTH für alle Magic Values:
   POINTS_GUIDE = [{ icon, action, pts }]
 
 validation.ts – Zod-Schemas:
-  CreateUserSchema:   { name: string min2 max80, department: string }
+  CreateUserSchema:   { name: string min2 max80 }
   CreatePromptSchema: { title: min3 max120, titleEn?: max120, content: min10 max4000,
                         contentEn?: max4000, category: enum, difficulty: enum,
                         authorId: positiveInt, challengeId?: positiveInt }

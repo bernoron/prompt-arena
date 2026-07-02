@@ -6,7 +6,7 @@
  *   - On login, a random session payload is HMAC-signed with ADMIN_SECRET.
  *   - Middleware verifies the signature and the max session age.
  *
- * This is safe for a small internal tool:
+ * This is safe for a single-admin setup:
  *   - The raw secret never leaves the server or appears in logs.
  *   - The cookie does not contain a reusable hash of the admin password.
  *   - The cookie cannot be read by JS (httpOnly).

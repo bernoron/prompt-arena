@@ -49,7 +49,7 @@ Gamification-Funktionen auszuprobieren.
 | Einen neuen API-Endpunkt bauen | `app/api/<name>/route.ts` + Zod-Schema |
 | Die Datenbank ändern | `prisma/schema.prisma` → `npm run db:migrate` |
 | Komponenten anpassen | `components/<Name>.tsx` |
-| Mock-Auth verstehen | `hooks/useCurrentUser.ts` |
+| Client-Auth-State verstehen | `hooks/useCurrentUser.ts` |
 | Die Doku regenerieren | `npm run docs` |
 | Seed-Daten ändern | `prisma/seed.ts` → `npm run db:reset` |
 
@@ -58,14 +58,15 @@ Gamification-Funktionen auszuprobieren.
 ## Wichtige Architekturentscheidungen
 
 ### Warum SQLite?
-Für ein internes Tool ohne Cloud-Infrastruktur ist SQLite die einfachste Option –
+Für eine schlanke Web-App ohne Cloud-Infrastruktur ist SQLite die einfachste Option –
 kein Datenbankserver nötig, kein Verbindungs-Pooling. Für Skalierung einfach
 `schema.prisma` auf PostgreSQL umstellen (Prisma macht den Rest).
 
-### Warum localStorage statt echte Auth?
-Die App ist für vertrauenswürdiges Intranet konzipiert. Echter Login-Overhead
-(NextAuth, SSO) wäre für den Anwendungsfall überdimensioniert. Die User-ID im
-localStorage ist kein Security-Mechanismus, sondern Convenience.
+### Warum kein NextAuth / SSO?
+Login läuft über E-Mail + Passwort mit einem eigenen, schlanken Cookie-basierten
+Session-Mechanismus (scrypt-Hashing, HMAC-signierter Cookie). Für den Umfang der
+App wäre eine volle Auth-Library wie NextAuth überdimensioniert; die localStorage-
+Kopie der User-ID dient nur der schnellen UI-Anzeige, nicht der Security.
 
 ### Warum Zod?
 TypeScript prüft Typen nur zur Compile-Zeit. Zur Laufzeit können API-Clients beliebige
@@ -84,7 +85,7 @@ Der App-State ist minimal: aktive Nutzer-ID (localStorage + Event), geladene Dat
 2. **Datenbankschema lesen** (`prisma/schema.prisma`) – 5 Modelle, klare Relationen
 3. **Eine API-Route lesen** (`app/api/prompts/route.ts`) – zeigt das Muster: Rate-Limit → Validierung → DB
 4. **`lib/constants.ts` lesen** – alle Magic Values, verstehe die Struktur
-5. **Eine kleine Änderung testen**: Füge eine neue Abteilung in `DEPARTMENTS` ein und registriere einen Testnutzer
+5. **Eine kleine Änderung testen**: Füge eine neue Kategorie in `lib/constants.ts` hinzu und registriere einen Testnutzer
 
 ---
 
@@ -99,4 +100,4 @@ Der App-State ist minimal: aktive Nutzer-ID (localStorage + Event), geladene Dat
 
 
 ---
-*Automatisch generiert am 02.07.2026, 07:22 · [Quellcode](https://github.com/your-org/prompt-arena)*
+*Automatisch generiert am 02.07.2026, 22:42 · [Quellcode](https://github.com/your-org/prompt-arena)*

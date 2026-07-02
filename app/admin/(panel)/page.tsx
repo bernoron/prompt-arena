@@ -6,7 +6,7 @@ import Link from 'next/link';
 interface Stats {
   totals: { users: number; prompts: number; votes: number; usages: number };
   topPrompts: { id: number; title: string; category: string; usageCount: number; author: string }[];
-  recentUsers: { id: number; name: string; department: string; totalPoints: number; createdAt: string }[];
+  recentUsers: { id: number; name: string; totalPoints: number; createdAt: string }[];
   categoryBreakdown: { category: string; count: number }[];
 }
 
@@ -123,7 +123,6 @@ export default function AdminOverview() {
             <div key={u.id} className="flex items-center gap-3 px-5 py-3 hover:bg-slate-50">
               <div className="flex-1">
                 <p className="text-sm font-semibold text-slate-800">{u.name}</p>
-                <p className="text-xs text-slate-400">{u.department}</p>
               </div>
               <span className="text-xs font-bold text-emerald-600">{u.totalPoints} Pts</span>
               <span className="text-xs text-slate-400">

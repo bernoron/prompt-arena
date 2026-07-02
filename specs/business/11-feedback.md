@@ -17,7 +17,7 @@ Nutzer haben keine Möglichkeit, schnell Feedback zu geben. Wenn etwas auffällt
 
 ## Who Benefits?
 
-**Mitarbeiter** können in Sekunden Feedback geben, ohne Unterbrechung. **Der Admin** bekommt strukturiertes, kontextgebundenes Feedback gesammelt und kann gezielt verbessern.
+**Nutzer** können in Sekunden Feedback geben, ohne Unterbrechung. **Der Admin** bekommt strukturiertes, kontextgebundenes Feedback gesammelt und kann gezielt verbessern.
 
 ---
 

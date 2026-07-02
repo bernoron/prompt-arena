@@ -53,7 +53,7 @@
 ## 5. Sicherheit
 
 - Admin-Routen: immer durch `middleware.ts` geschützt (Session-Cookie-Check)
-- Kein Passwort-Hashing für Admin nötig (internes Tool, einzelner Admin-User)
+- Kein Passwort-Hashing für Admin nötig (einzelner Admin-User)
 - User-IDs: immer positiv, immer via `PathId.safeParse()` validiert
 - Keine sensiblen Daten in Logs (kein Passwort, kein Cookie-Wert)
 

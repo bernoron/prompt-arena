@@ -180,7 +180,7 @@ const FavoriteSchema = z.object({
 
 - [x] Input-Validierung via Zod
 - [x] Rate-Limiting auf POST /api/favorites
-- [x] `userId` wird gegen Datenbank validiert — kein Spoofing fremder User-IDs möglich (Vertrauensbasis: internes Tool)
+- [x] `userId` wird gegen die signierte Session validiert (`resolveUserId`) — kein Spoofing fremder User-IDs über den Body möglich
 
 ---
 

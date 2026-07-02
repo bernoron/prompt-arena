@@ -1,24 +1,24 @@
 # Produkt-Spec – PromptArena
 
 ## Vision
-PromptArena ist eine interne Web-Plattform für Unternehmens-Mitarbeiter, auf der KI-Prompts geteilt, bewertet und gesammelt werden. Ziel: kollektives Wissen über effektive KI-Nutzung im Unternehmen aufbauen und gamifiziert zugänglich machen.
+PromptArena ist eine öffentliche Web-Plattform, auf der Nutzer:innen KI-Prompts teilen, bewerten und sammeln. Ziel: kollektives Wissen über effektive KI-Nutzung aufbauen und gamifiziert zugänglich machen.
 
 ## Nutzer
-- **Mitarbeiter**: Registrieren sich selbst (kein Passwort), wählen Abteilung, teilen und nutzen Prompts
-- **Admin**: Einzelner interner Admin (Passwort geschützt), verwaltet Inhalte und Challenges
+- **Community-Mitglieder**: Registrieren sich selbst mit E-Mail und Passwort, teilen und nutzen Prompts
+- **Admin**: Einzelner Admin (Passwort geschützt), verwaltet Inhalte und Challenges
 
 ## Kernszenarien
 
-### Als Mitarbeiter will ich…
-- mich mit Name und Abteilung registrieren, um eine Identität in der Plattform zu haben
-- Prompts anderer Mitarbeiter in der Bibliothek durchsuchen und filtern, um schnell nützliche Prompts zu finden
+### Als Nutzer:in will ich…
+- mich mit E-Mail und Passwort registrieren, um eine Identität in der Plattform zu haben
+- Prompts anderer Nutzer:innen in der Bibliothek durchsuchen und filtern, um schnell nützliche Prompts zu finden
 - Prompts nach Kategorie (Writing, Email, Analyse, Excel) und Schwierigkeit filtern
 - einen Prompt als „benutzt" markieren, damit der Autor Punkte bekommt und der Prompt aufsteigt
 - Prompts mit 1–5 Sternen bewerten, um Qualitätssignale zu setzen
 - eigene Prompts einreichen (deutsch + englisch), um Wissen zu teilen und Punkte zu sammeln
 - Prompts favorisieren und in meiner persönlichen Bibliothek abrufen
 - meinen Fortschritt auf dem Dashboard sehen (Punkte, Level, Rang, Trend)
-- die Rangliste aller Mitarbeiter sehen, um mich zu vergleichen
+- die Rangliste aller Nutzer:innen sehen, um mich zu vergleichen
 - an wöchentlichen Challenges teilnehmen, um Bonus-Punkte zu verdienen
 
 ### Als Admin will ich…
@@ -35,6 +35,6 @@ PromptArena ist eine interne Web-Plattform für Unternehmens-Mitarbeiter, auf de
 - Prompt-Ausführung direkt in der App
 
 ## Erfolgsmetriken
-- Monatlich aktive Nutzer > 50% der Belegschaft
-- Durchschnittliche Bewertung eingreichter Prompts > 3.5 Sterne
+- Monatlich aktive Nutzer:innen > 50% der registrierten Community
+- Durchschnittliche Bewertung eingereichter Prompts > 3.5 Sterne
 - Mind. 10 neue Prompts pro Woche

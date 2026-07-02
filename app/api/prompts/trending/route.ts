@@ -47,7 +47,7 @@ async function fetchPrompts(orderBy: Prisma.PromptOrderByWithRelationInput[]) {
     take: 5,
     orderBy,
     include: {
-      author: { select: { id: true, name: true, avatarColor: true, department: true } },
+      author: { select: { id: true, name: true, avatarColor: true } },
     },
   });
 }

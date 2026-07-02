@@ -51,7 +51,7 @@ export async function GET(req: NextRequest) {
       include: {
         prompt: {
           include: {
-            author: { select: { id: true, name: true, avatarColor: true, department: true } },
+            author: { select: { id: true, name: true, avatarColor: true } },
           },
         },
       },

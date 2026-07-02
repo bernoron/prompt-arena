@@ -1,31 +1,9 @@
 'use client';
 
-import { useState, useEffect, useMemo, memo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import LevelBadge from '@/components/LevelBadge';
 import type { UserWithStats, LevelName, PromptWithDetails } from '@/lib/types';
 import { useCurrentUser } from '@/hooks/useCurrentUser';
-
-const DeptBar = memo(function DeptBar({ dept, points, max }: { dept: string; points: number; max: number }) {
-  const pct = max > 0 ? Math.round((points / max) * 100) : 0;
-  const COLORS: Record<string, string> = {
-    Schaden: 'from-emerald-500 to-teal-500',
-    Vertrieb: 'from-blue-500 to-indigo-500',
-    IT: 'from-amber-500 to-orange-500',
-  };
-  const gradient = COLORS[dept] ?? 'from-slate-400 to-slate-500';
-  return (
-    <div className="space-y-1.5">
-      <div className="flex items-center justify-between text-sm">
-        <span className="font-medium text-slate-700">{dept}</span>
-        <span className="font-bold text-slate-800">{points} Pts</span>
-      </div>
-      <div className="w-full bg-slate-100 rounded-full h-2.5">
-        <div className={`bg-gradient-to-r ${gradient} h-2.5 rounded-full transition-all duration-700`}
-          style={{ width: `${pct}%` }} />
-      </div>
-    </div>
-  );
-});
 
 // @spec AC-04-006
 export default function LeaderboardPage() {
@@ -49,13 +27,7 @@ export default function LeaderboardPage() {
     });
   }, []);
 
-  const deptTotals = useMemo(() => {
-    const totals: Record<string, number> = {};
-    users.forEach((u) => { totals[u.department] = (totals[u.department] ?? 0) + u.totalPoints; });
-    return totals;
-  }, [users]);
-  const maxDept = useMemo(() => Math.max(...Object.values(deptTotals), 1), [deptTotals]);
-  const top10   = useMemo(() => users.slice(0, 10), [users]);
+  const top10 = useMemo(() => users.slice(0, 10), [users]);
   const [top1, top2, top3, ...rest] = top10;
 
   return (
@@ -67,7 +39,7 @@ export default function LeaderboardPage() {
           style={{ background: 'radial-gradient(circle, #7C3AED, transparent)', transform: 'translate(30%,-30%)' }} />
         <p className="text-slate-400 text-sm font-medium uppercase tracking-widest mb-1">Leaderboard</p>
         <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">Rangliste</h1>
-        <p className="text-slate-400 mt-1 text-sm">Die besten Prompt-Schreiber des Unternehmens.</p>
+        <p className="text-slate-400 mt-1 text-sm">Die besten Prompt-Schreiber der Community.</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -131,7 +103,6 @@ export default function LeaderboardPage() {
                             <span className="font-semibold text-slate-900 text-sm">{user.name}</span>
                             {isMe && <span className="text-xs text-emerald-600 font-bold bg-emerald-100 px-1.5 py-0.5 rounded-full">Du</span>}
                           </div>
-                          <p className="text-xs text-slate-400">{user.department}</p>
                         </div>
                         <LevelBadge level={user.level as LevelName} size="sm" />
                         <div className="text-right flex-shrink-0">
@@ -170,17 +141,6 @@ export default function LeaderboardPage() {
 
         {/* Right column */}
         <div className="space-y-5">
-          <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 sm:p-6">
-            <h2 className="font-bold text-slate-800 mb-4">🏢 Abteilungen</h2>
-            <div className="space-y-4">
-              {Object.entries(deptTotals)
-                .sort(([, a], [, b]) => b - a)
-                .map(([dept, pts]) => (
-                  <DeptBar key={dept} dept={dept} points={pts} max={maxDept} />
-                ))}
-            </div>
-          </div>
-
           {topPrompt && (
             <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 sm:p-6">
               <div className="flex items-center gap-2 mb-4">

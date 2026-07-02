@@ -20,7 +20,7 @@ export async function GET(req: NextRequest) {
 
   try {
     const suggestions = await prisma.topicSuggestion.findMany({
-      include: { user: { select: { name: true, department: true } } },
+      include: { user: { select: { name: true } } },
       orderBy: { createdAt: 'desc' },
     });
 

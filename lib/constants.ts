@@ -2,7 +2,7 @@
  * Application-wide constants for PromptArena.
  *
  * Centralising all magic values here makes the codebase easier to maintain:
- * add a new category or department in one place and the whole app picks it up.
+ * add a new category in one place and the whole app picks it up.
  */
 
 // ─── Auth / Storage ──────────────────────────────────────────────────────────
@@ -20,14 +20,6 @@ export const USER_ID_KEY = 'promptarena_user_id';
 export const AVATAR_COLORS = [
   '#1D9E75', '#3B82F6', '#F59E0B', '#8B5CF6', '#EF4444',
   '#EC4899', '#14B8A6', '#F97316', '#6366F1', '#84CC16',
-] as const;
-
-/**
- * Departments shown in the self-registration dropdown.
- * "__other__" is a special sentinel rendered as a free-text input.
- */
-export const DEPARTMENTS = [
-  'Schaden', 'Vertrieb', 'IT', 'HR', 'Finanzen', 'Recht', 'Marketing', 'Aktuariat',
 ] as const;
 
 // ─── Prompts ─────────────────────────────────────────────────────────────────

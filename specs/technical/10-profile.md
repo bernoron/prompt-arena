@@ -11,11 +11,11 @@
 
 ## Technische Akzeptanzkriterien
 
-- [x] **AC-10-001**: `GET /api/users/[id]` gibt vollständige Profildaten zurück: `id`, `name`, `department`, `avatarColor`, `totalPoints`, `level`, `rank` (Position in Gesamtliste), `prompts[]` (eigene Prompts mit `usageCount`, `avgRating`).
+- [x] **AC-10-001**: `GET /api/users/[id]` gibt vollständige Profildaten zurück: `id`, `name`, `avatarColor`, `totalPoints`, `level`, `rank` (Position in Gesamtliste), `prompts[]` (eigene Prompts mit `usageCount`, `avgRating`).
   - **Referenz**: BAC-10-001
   - **Testbar durch**: E2E
 
-- [x] **AC-10-002**: Seite `/profile/[id]` zeigt Hero-Sektion mit Name, Avatar (Farbe + Initialen), Level-Badge, Punkte, Rang und Abteilung.
+- [x] **AC-10-002**: Seite `/profile/[id]` zeigt Hero-Sektion mit Name, Avatar (Farbe + Initialen), Level-Badge, Punkte und Rang.
   - **Referenz**: BAC-10-001, BAC-10-002
   - **Testbar durch**: E2E, Manual
 
@@ -43,7 +43,6 @@
 {
   "id": 1,
   "name": "Max Mustermann",
-  "department": "IT",
   "avatarColor": "#6366f1",
   "totalPoints": 350,
   "level": "Prompt-Schmied",

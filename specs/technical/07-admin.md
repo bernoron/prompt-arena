@@ -89,7 +89,7 @@
 ### GET /api/admin/prompts
 **Geschützt durch:** Middleware
 
-**Response `200`:** Alle Prompts mit `author: { id, name, department }`
+**Response `200`:** Alle Prompts mit `author: { id, name }`
 
 ---
 
@@ -127,7 +127,7 @@
 ### PUT /api/admin/users/[id]
 **Geschützt durch:** Middleware
 
-**Body:** Partial User (`name`, `department` editierbar)
+**Body:** Partial User (`name` editierbar)
 
 **Response `200`:** Aktualisierter User
 
@@ -226,7 +226,7 @@ const UpdatePromptSchema = z.object({
 - [x] Cookie `HttpOnly` — kein JavaScript-Zugriff auf Session-Token
 - [x] Cookie `SameSite=Strict` — CSRF-Schutz
 - [x] `middleware.ts` schützt alle `/admin/*`-Routen ausser `/admin/login`
-- [x] Kein Passwort-Hashing nötig (einzelner Admin, internes Tool — kein Angriffsszenario für Brute-Force aus dem Unternehmensnetz)
+- [x] Kein Passwort-Hashing nötig (einzelner Admin, Passwort nur als Umgebungsvariable, Rate-Limiting gegen Brute-Force)
 - [x] Rate-Limiting auf `POST /api/admin/login`
 - [x] Keine sensiblen Daten in Logs (`lib/logger.ts`)
 

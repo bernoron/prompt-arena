@@ -164,6 +164,7 @@ Vorhandene Migrationen:
 - `20260628084928_add_password_hash`
 - `20260628090125_add_email_fields`
 - `20260628193000_add_usage_events`
+- `20260702200000_remove_department`
 
 ### Backup (SQLite)
 
@@ -209,4 +210,4 @@ Empfohlene externe Uptime-Monitore (alle mit Gratis-Tier verfügbar): **UptimeRo
 
 
 ---
-*Automatisch generiert am 02.07.2026, 07:22 · [Quellcode](https://github.com/your-org/prompt-arena)*
+*Automatisch generiert am 02.07.2026, 22:42 · [Quellcode](https://github.com/your-org/prompt-arena)*

@@ -3,18 +3,14 @@
 ## Erste Schritte
 
 ### Registrierung
-1. Öffne PromptArena im Browser (internen Link vom IT-Team anfragen)
-2. Klicke oben rechts auf den **Nutzer-Picker** (blaues Feld mit Pfeiltaste)
-3. Wähle «Neu registrieren»
-4. Trage deinen Vor- und Nachnamen sowie deine Abteilung ein
-5. Klicke «Registrieren» – du wirst automatisch eingeloggt
+1. Öffne PromptArena im Browser
+2. Klicke auf «Registrieren»
+3. Trage Name, E-Mail-Adresse und Passwort ein
+4. Klicke «Konto erstellen» – du wirst automatisch eingeloggt
 
-> **Hinweis:** Es gibt kein Passwort. Die App merkt sich deinen Nutzer im Browser.
-> Wenn du ein neues Gerät oder einen anderen Browser nutzt, wähle deinen Namen
-> einfach erneut aus der Liste aus.
-
-### Nutzer wechseln
-Klicke oben rechts auf deinen Namen → Dropdown öffnet sich → anderen Nutzer auswählen.
+### Anmelden
+Auf der Login-Seite mit E-Mail und Passwort anmelden. Die Sitzung bleibt im Browser
+gespeichert, bis du dich abmeldest.
 
 ---
 
@@ -60,7 +56,6 @@ deinen Prompt damit verknüpfst, kommen **+30 Bonus-Punkte** dazu.
 - **Podium**: Top 3 mit speziellen Auszeichnungen (👑 🥇 🥈 🥉)
 - **Tabelle**: Plätze 4–10 mit Level-Badges
 - **Mein Rang**: Deine Position wird immer angezeigt, auch wenn du nicht in den Top 10 bist
-- **Abteilungsvergleich**: Kumulierte Punkte aller Abteilungen als Balkendiagramm
 
 ### Profil (/profile)
 - Zeigt alle deine eingereichten Prompts
@@ -99,13 +94,13 @@ Aktuell nicht. Reiche bei Bedarf eine verbesserte Version als neuen Prompt ein.
 **Kann ich meinen Account löschen?**
 Wende dich an den App-Administrator.
 
-**Die App merkt sich meinen Nutzer nicht mehr – was tun?**
-Klicke oben rechts auf den Nutzer-Picker und wähle deinen Namen erneut aus der Liste.
+**Ich wurde ausgeloggt – was tun?**
+Melde dich erneut mit deiner E-Mail-Adresse und deinem Passwort an.
 
-**Ich habe versehentlich einen falschen Nutzer gewählt – was tun?**
-Klicke oben rechts auf deinen Namen und wähle den richtigen Nutzer aus.
+**Ich habe mein Passwort vergessen – was tun?**
+Wende dich an den App-Administrator.
 
 
 
 ---
-*Automatisch generiert am 02.07.2026, 07:22 · [Quellcode](https://github.com/your-org/prompt-arena)*
+*Automatisch generiert am 02.07.2026, 22:42 · [Quellcode](https://github.com/your-org/prompt-arena)*

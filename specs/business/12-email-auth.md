@@ -23,7 +23,7 @@ Das Registrierungsformular fragt künftig nach **Name**, **E-Mail** und **Passwo
 
 Administratoren können im Admin-Panel die E-Mail-Adresse eines Nutzers einsehen (der Server entschlüsselt sie für Admins).
 
-Bestehende Nutzerkonten sind von dieser Änderung nicht betroffen.
+Bestehende Nutzerkonten sind von dieser Änderung nicht betroffen. Das nun ungenutzte Abteilungsfeld wurde inzwischen vollständig aus der Datenbank entfernt.
 
 ---
 
@@ -45,7 +45,6 @@ Bestehende Nutzerkonten sind von dieser Änderung nicht betroffen.
 
 - Kein Passwort-Reset per E-Mail (separates Feature)
 - Keine E-Mail-Verifikation (Bestätigungsmail)
-- Keine Änderung der bestehenden Abteilungsdaten — sie bleiben in der DB, werden aber nicht mehr abgefragt
 - Migration bestehender Nutzer: Sie erhalten kein E-Mail-Feld rückwirkend
 
 ---

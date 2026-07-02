@@ -224,12 +224,13 @@ Admin-Vergleich, Zod-Validierung + Rate-Limiting auf allen Routen,
 serverseitige Selbst-Vote-Sperre, Health-Endpoint ohne Fehler-Leak,
 keine Secrets im Image (`.dockerignore`).
 
-**Bewusste Einschränkungen für ein internes Tool (kein Blocker, ggf. später):**
+**Bewusste Einschränkungen (kein Blocker, ggf. später):**
 - Rate-Limiter ist In-Memory (pro Instanz) – ausreichend bei einer Instanz.
-- „User-Login" ist Identitätsauswahl ohne Passwort – kein Schutz gegen das
-  Auswählen einer fremden Identität (per Design für ein internes Gamification-Tool).
 - `POST /api/usage` kann pro Aufruf Punkte vergeben; bei Missbrauchsverdacht
   später eine „einmal pro User"-Regel als Change Request ergänzen.
+
+> Aktueller Stand des Auth-Modells (E-Mail + Passwort, signierte Sessions) und
+> des vollständigen Security-Audits: siehe `docs/SECURITY-AUDIT-2026-07.md`.
 
 ### Leak-Audit – Ergebnis
 
@@ -237,8 +238,8 @@ Gezielte Prüfung auf Daten-/Secret-Lecks. **Keine kritischen Lecks gefunden.**
 
 Verifiziert *sauber*:
 - **Keine Secrets in der Git-History** (alle Treffer sind Platzhalter/Doku); weder
-  `.env` noch `*.db` wurden je committet. Datenmodell enthält **keine** Passwörter,
-  E-Mails oder Tokens – nur Name, Abteilung, Punkte.
+  `.env` noch `*.db` wurden je committet. Passwörter sind gehasht (scrypt) und
+  E-Mails verschlüsselt (AES-256-GCM) gespeichert – nie im Klartext.
 - **Keine `NEXT_PUBLIC_`-Variablen** → es gelangt keine Server-Konfiguration in den
   Browser. Alle `ADMIN_SECRET`/`USER_SECRET`-Zugriffe liegen in Server-Modulen.
 - **Keine Browser-Source-Maps** im Build, **kein `public/`-Verzeichnis**, keine
@@ -260,9 +261,6 @@ Produktions-Secrets mitschleppen. Der Docker-Weg in dieser Anleitung ist sicher
 Image). Für manuelle Builds: Secrets ausschliesslich über echte Umgebungsvariablen
 setzen und `.next/standalone/.env` vor dem Ausliefern löschen.
 
-**Privacy-Hinweis (per Design, kein Secret-Leak):** Da „Login" passwortlos ist und
-`GET /api/favorites?userId=` / `GET /api/prompts?userId=` die `userId` als Parameter
-akzeptieren, kann jeder die Favoriten/Bewertungen eines beliebigen (öffentlich
-sichtbaren) Users abfragen. Für ein internes Tool akzeptiert; soll das vertraulich
-sein, ist eine session-gebundene Zugriffskontrolle nötig (Change Request, da es den
-dokumentierten API-Vertrag AC-05-004 ändert).
+**Privacy-Hinweis:** `GET /api/favorites?userId=` / `GET /api/prompts?userId=` akzeptieren
+`userId` als Query-Parameter, aber die zurückgegebenen `userVote`/`userFavorite`-Felder
+werden serverseitig gegen die signierte Session validiert (kein IDOR über den Parameter).

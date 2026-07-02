@@ -13,7 +13,7 @@ interface FeedbackEntry {
   contextLabel: string | null;
   status: string;
   createdAt: string;
-  user: { name: string; department: string };
+  user: { name: string };
 }
 
 const CATEGORY_META: Record<string, { icon: string; label: string; color: string }> = {
@@ -141,7 +141,7 @@ export default function AdminFeedbackPage() {
                     </div>
                     <p className="text-sm text-slate-700 line-clamp-3">{entry.text}</p>
                     <p className="text-xs text-slate-400 mt-1">
-                      {entry.user.name} · {entry.user.department} · {new Date(entry.createdAt).toLocaleDateString('de-CH')}
+                      {entry.user.name} · {new Date(entry.createdAt).toLocaleDateString('de-CH')}
                     </p>
                   </div>
 

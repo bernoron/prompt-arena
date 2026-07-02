@@ -7,9 +7,8 @@
 ---
 
 ```
-Baue eine vollständige Next.js 14 App namens "PromptArena" – eine gamifizierte interne
-Webanwendung für Mitarbeitende eines Unternehmens zum Teilen, Bewerten und Entdecken
-von KI-Prompts.
+Baue eine vollständige Next.js 14 App namens "PromptArena" – eine gamifizierte öffentliche
+Webanwendung zum Teilen, Bewerten und Entdecken von KI-Prompts.
 
 ════════════════════════════════════════════════════════════
 TECH-STACK
@@ -18,7 +17,7 @@ TECH-STACK
 - React 18, Tailwind CSS
 - Prisma 5 ORM mit SQLite (DATABASE_URL="file:./dev.db")
 - Zod für API-Input-Validierung
-- Keine Auth-Library – Mock-Auth via localStorage
+- Keine Auth-Library – eigener Cookie-basierter Login (E-Mail + Passwort, scrypt-Hashing, HMAC-signierter Session-Cookie)
 
 ABHÄNGIGKEITEN (package.json dependencies):
   "@prisma/client": "^5.22.0",
@@ -47,7 +46,6 @@ datasource db {
 model User {
   id           Int      @id @default(autoincrement())
   name           String
-  department     String   @default("")
   avatarColor    String
   passwordHash   String?
   emailHash      String?  @unique
@@ -326,7 +324,6 @@ Rangliste (/leaderboard):
   - Podium für Top 3 (👑 #1 mit Goldring, 🥈 #2, 🥉 #3)
   - Tabelle Rang 4–10
   - Eigener Rang immer sichtbar, auch wenn ausserhalb Top 10
-  - Abteilungsvergleich als horizontale Balken rechts
 
 Profil (/profile):
   - Dark hero mit farbigem Avatar, Name, Level-Badge
@@ -389,26 +386,26 @@ useCurrentUser.ts:
 ════════════════════════════════════════════════════════════
 API-ROUTEN (app/api/)
 ════════════════════════════════════════════════════════════
-- PATCH /api/admin/categories/[id]
-- DELETE /api/admin/categories/[id]
 - GET /api/admin/categories
 - POST /api/admin/categories
-- PATCH /api/admin/challenges/[id]
-- DELETE /api/admin/challenges/[id]
+- PATCH /api/admin/categories/[id]
+- DELETE /api/admin/categories/[id]
 - GET /api/admin/challenges
 - POST /api/admin/challenges
+- PATCH /api/admin/challenges/[id]
+- DELETE /api/admin/challenges/[id]
+- GET /api/admin/feedback
+- GET /api/admin/feedback/suggestions
+- PATCH /api/admin/feedback/suggestions/[id]
 - PATCH /api/admin/feedback/[id]
 - DELETE /api/admin/feedback/[id]
-- GET /api/admin/feedback
-- PATCH /api/admin/feedback/suggestions/[id]
-- GET /api/admin/feedback/suggestions
 - POST /api/admin/login
 - POST /api/admin/logout
 - DELETE /api/admin/prompts/[id]
 - GET /api/admin/stats
+- GET /api/admin/users
 - PATCH /api/admin/users/[id]
 - DELETE /api/admin/users/[id]
-- GET /api/admin/users
 - POST /api/auth/login
 - POST /api/auth/logout
 - GET /api/auth/me
@@ -417,22 +414,22 @@ API-ROUTEN (app/api/)
 - GET /api/challenges
 - GET /api/favorites
 - POST /api/favorites
-- PUT /api/feedback/lesson/[id]
 - GET /api/feedback/lesson
 - POST /api/feedback/lesson
+- PUT /api/feedback/lesson/[id]
 - POST /api/feedback
 - POST /api/feedback/suggestions
 - GET /api/health
+- GET /api/learn
 - POST /api/learn/[moduleSlug]/[lessonSlug]/complete
 - GET /api/learn/[moduleSlug]/[lessonSlug]
-- GET /api/learn
 - GET /api/prompts
 - POST /api/prompts
 - GET /api/prompts/trending
 - POST /api/usage
-- GET /api/users/[id]
 - GET /api/users
 - POST /api/users
+- GET /api/users/[id]
 - POST /api/votes
 
 Jede Route folgt diesem Muster:
@@ -459,7 +456,6 @@ constants.ts – SINGLE SOURCE OF TRUTH für alle Magic Values:
   USER_ID_KEY = 'promptarena_user_id'
   AVATAR_COLORS = ['#1D9E75', '#3B82F6', '#F59E0B', '#8B5CF6', '#EF4444',
                    '#EC4899', '#14B8A6', '#F97316', '#6366F1', '#84CC16']
-  DEPARTMENTS = ['Schaden', 'Vertrieb', 'IT', 'HR', 'Finanzen', 'Recht', 'Marketing', 'Aktuariat']
   CATEGORY_CONFIG = {
     Writing:  { icon: '✍️', bg: 'bg-teal-50',   text: 'text-teal-700',   border: 'border-teal-200',   accentBorder: 'border-t-teal-400'   },
     Email:    { icon: '📧', bg: 'bg-indigo-50', text: 'text-indigo-700', border: 'border-indigo-200', accentBorder: 'border-t-indigo-400' },
@@ -475,7 +471,7 @@ constants.ts – SINGLE SOURCE OF TRUTH für alle Magic Values:
   POINTS_GUIDE = [{ icon, action, pts }]
 
 validation.ts – Zod-Schemas:
-  CreateUserSchema:   { name: string min2 max80, department: string }
+  CreateUserSchema:   { name: string min2 max80 }
   CreatePromptSchema: { title: min3 max120, titleEn?: max120, content: min10 max4000,
                         contentEn?: max4000, category: enum, difficulty: enum,
                         authorId: positiveInt, challengeId?: positiveInt }
@@ -563,4 +559,4 @@ SETUP-REIHENFOLGE
 
 
 ---
-*Automatisch generiert am 02.07.2026, 07:22 · [Quellcode](https://github.com/your-org/prompt-arena)*
+*Automatisch generiert am 02.07.2026, 22:42 · [Quellcode](https://github.com/your-org/prompt-arena)*

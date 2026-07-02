@@ -12,7 +12,7 @@
 
 ## Geschäftlicher Kontext
 
-In einer wachsenden Bibliothek mit Dutzenden oder Hunderten von Prompts verliert ein Mitarbeiter schnell den Überblick über die Prompts, die er persönlich als besonders wertvoll empfindet. Die Favoriten-Funktion erlaubt es jedem Mitarbeiter, seine persönliche Shortlist anzulegen und direkt aufzurufen — ähnlich wie Lesezeichen im Browser. Das erstmalige Favorisieren eines Prompts belohnt ausserdem den Autor mit Punkten, was den Anreiz zur Einreichung hochwertiger Prompts weiter stärkt.
+In einer wachsenden Bibliothek mit Dutzenden oder Hunderten von Prompts verliert ein Nutzer schnell den Überblick über die Prompts, die er persönlich als besonders wertvoll empfindet. Die Favoriten-Funktion erlaubt es jedem Nutzer, seine persönliche Shortlist anzulegen und direkt aufzurufen — ähnlich wie Lesezeichen im Browser. Das erstmalige Favorisieren eines Prompts belohnt ausserdem den Autor mit Punkten, was den Anreiz zur Einreichung hochwertiger Prompts weiter stärkt.
 
 ---
 
@@ -20,23 +20,23 @@ In einer wachsenden Bibliothek mit Dutzenden oder Hunderten von Prompts verliert
 
 | Rolle | Beschreibung | Hauptnutzen |
 |-------|-------------|-------------|
-| Mitarbeiter | Nutzt die Plattform regelmässig und hat persönliche LieblingsPrompts | Greift in seiner persönlichen Bibliothek sofort auf bewährte Prompts zu |
-| Autor | Hat Prompts eingereicht | Erhält Punkte, wenn Kollegen seinen Prompt als wertvoll genug zum Merken erachten |
+| Nutzer | Nutzt die Plattform regelmässig und hat persönliche LieblingsPrompts | Greift in seiner persönlichen Bibliothek sofort auf bewährte Prompts zu |
+| Autor | Hat Prompts eingereicht | Erhält Punkte, wenn andere Nutzer seinen Prompt als wertvoll genug zum Merken erachten |
 
 ---
 
 ## User Stories
 
-- Als **Mitarbeiter** will ich einen Prompt mit einem Klick als Favorit markieren, damit ich ihn später ohne Suchen schnell wiederfinden kann.
-- Als **Mitarbeiter** will ich alle meine Favoriten auf einer eigenen Seite sehen und darin suchen können, damit ich meinen persönlichen Fundus verwalten kann.
-- Als **Mitarbeiter** will ich einen Prompt wieder aus meinen Favoriten entfernen können, wenn er für mich nicht mehr relevant ist.
+- Als **Nutzer** will ich einen Prompt mit einem Klick als Favorit markieren, damit ich ihn später ohne Suchen schnell wiederfinden kann.
+- Als **Nutzer** will ich alle meine Favoriten auf einer eigenen Seite sehen und darin suchen können, damit ich meinen persönlichen Fundus verwalten kann.
+- Als **Nutzer** will ich einen Prompt wieder aus meinen Favoriten entfernen können, wenn er für mich nicht mehr relevant ist.
 - Als **Autor** will ich erfahren, wenn jemand meinen Prompt zum ersten Mal favorisiert, damit ich weiss, dass mein Beitrag wertgeschätzt wird (durch Punkte-Benachrichtigung).
 
 ---
 
 ## Business-Akzeptanzkriterien
 
-- [ ] **BAC-05-001**: Ein Mitarbeiter kann jeden Prompt als Favorit markieren; ein erneuter Klick hebt den Favorit-Status wieder auf.
+- [ ] **BAC-05-001**: Ein Nutzer kann jeden Prompt als Favorit markieren; ein erneuter Klick hebt den Favorit-Status wieder auf.
   - **Messgrösse**: Nach dem Favorisieren erscheint der Prompt auf der persönlichen Favoriten-Seite; nach dem Entfernen verschwindet er von dort.
   - **Geschäftsregel**: Der Favorit-Status ist benutzerspezifisch — die Markierung ist nur für denjenigen sichtbar, der sie gesetzt hat.
 
@@ -52,7 +52,7 @@ In einer wachsenden Bibliothek mit Dutzenden oder Hunderten von Prompts verliert
   - **Messgrösse**: Alle favoritisierten Prompts des aktiven Users erscheinen auf der Seite; die Suche filtert die Liste korrekt.
   - **Geschäftsregel**: Die Suche auf der Favoriten-Seite filtert nur innerhalb der Favoriten-Liste, nicht in der Gesamtbibliothek.
 
-- [ ] **BAC-05-005**: Bei einer leeren Favoriten-Liste sieht der Mitarbeiter einen hilfreichen Hinweis und einen direkten Link zur Bibliothek.
+- [ ] **BAC-05-005**: Bei einer leeren Favoriten-Liste sieht der Nutzer einen hilfreichen Hinweis und einen direkten Link zur Bibliothek.
   - **Messgrösse**: Leerer Zustand ist sichtbar und klar verständlich; der Link zur Bibliothek funktioniert.
   - **Geschäftsregel**: Kein User-Account aktiv oder Account hat keine Favoriten → Hinweis auf Leeren Zustand erscheint.
 
@@ -63,7 +63,7 @@ In einer wachsenden Bibliothek mit Dutzenden oder Hunderten von Prompts verliert
 - Geteilte oder öffentliche Favoriten-Listen (Favoriten sind privat)
 - Favoriten-Ordner oder Kategorien
 - Exportieren der Favoriten-Liste
-- Benachrichtigung an den Mitarbeiter, wenn ein favorisierter Prompt bearbeitet wurde
+- Benachrichtigung an den Nutzer, wenn ein favorisierter Prompt bearbeitet wurde
 - Sortierung der Favoriten-Liste (sie erscheint nach Einreichungsdatum)
 
 ---
@@ -82,8 +82,8 @@ In einer wachsenden Bibliothek mit Dutzenden oder Hunderten von Prompts verliert
 
 | # | Beschreibung | Wahrscheinlichkeit | Massnahme |
 |---|-------------|-------------------|-----------|
-| R1 | Mitarbeiter nutzen Favoriten nicht, weil sie die Funktion übersehen | niedrig | Stern-Icon ist prominent im Modal platziert; Onboarding weist darauf hin |
-| A1 | Mitarbeiter wollen ihre Favoriten nicht mit anderen teilen | hoch | Favoriten bleiben privat; kein Feature zum Teilen geplant |
+| R1 | Nutzer nutzen Favoriten nicht, weil sie die Funktion übersehen | niedrig | Stern-Icon ist prominent im Modal platziert; Onboarding weist darauf hin |
+| A1 | Nutzer wollen ihre Favoriten nicht mit anderen teilen | hoch | Favoriten bleiben privat; kein Feature zum Teilen geplant |
 
 ---
 

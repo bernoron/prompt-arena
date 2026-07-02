@@ -11,7 +11,7 @@ interface Prompt {
   avgRating: number;
   voteCount: number;
   createdAt: string;
-  author: { name: string; department: string; avatarColor: string };
+  author: { name: string; avatarColor: string };
 }
 
 const CATEGORY_COLORS: Record<string, string> = {
@@ -106,7 +106,7 @@ export default function AdminPrompts() {
                   {/* Title & author */}
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-semibold text-slate-800 truncate">{p.title}</p>
-                    <p className="text-xs text-slate-400">{p.author.name} · {p.author.department}</p>
+                    <p className="text-xs text-slate-400">{p.author.name}</p>
                   </div>
 
                   {/* Stats */}

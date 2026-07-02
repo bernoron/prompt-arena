@@ -3,14 +3,14 @@
 ## 1. Konzept
 
 ### Idee
-PromptArena ist eine interne Webanwendung für Mitarbeitende eines grossen Versicherungsunternehmens.
-Ziel ist es, den unternehmensweiten Wissensaustausch rund um KI-Prompts zu fördern –
+PromptArena ist eine öffentliche Webanwendung für alle, die ihr Wissen rund um KI-Prompts
+teilen möchten. Ziel ist es, den Wissensaustausch rund um effektive KI-Nutzung zu fördern –
 durch Gamification, soziale Interaktion und einfachen Zugang zu bewährten Prompts.
 
 ### Problem
-Mitarbeitende entwickeln wertvolle KI-Prompts für ihren Arbeitsalltag, teilen diese aber kaum
-mit Kolleginnen und Kollegen. Das Wissen bleibt in Silos, Arbeit wird doppelt gemacht und
-das KI-Potenzial im Unternehmen wird nicht ausgeschöpft.
+Nutzer:innen entwickeln wertvolle KI-Prompts für ihren Alltag, teilen diese aber kaum
+mit anderen. Das Wissen bleibt verstreut, Arbeit wird doppelt gemacht und
+das KI-Potenzial wird nicht ausgeschöpft.
 
 ### Lösung
 Eine zentrale Prompt-Bibliothek mit Gamification-Elementen (Punkte, Level, Leaderboard,
@@ -21,24 +21,24 @@ spass­bringend und sichtbar.
 
 ## 2. Nutzen
 
-### Für Mitarbeitende
-- Zugang zu bewährten Prompts für alle Arbeitsbereiche
+### Für Nutzer:innen
+- Zugang zu bewährten Prompts für alle Anwendungsbereiche
 - Sichtbarkeit der eigenen Beiträge durch Rangliste und Profilseite
 - Motivation durch Punkte, Level und wöchentliche Challenges
 - Zweisprachige Prompts (Deutsch / Englisch)
 
-### Für das Unternehmen
+### Für die Plattform
 - Strukturiertes Wissensmanagement für KI-Nutzung
-- Messbarer KI-Adoption-Fortschritt über Abteilungen hinweg
-- Bottom-up Wissenstransfer ohne IT-Overhead
-- Förderung einer KI-affinen Unternehmenskultur
+- Messbarer Fortschritt bei der KI-Adoption der Community
+- Bottom-up Wissenstransfer ohne redaktionellen Overhead
+- Förderung einer aktiven, KI-affinen Community
 
 ---
 
 ## 3. Use Cases
 
 ### UC-01: Prompt suchen und nutzen
-**Akteur:** Mitarbeitende/r
+**Akteur:** Nutzer:in
 **Ablauf:**
 1. Öffnet die Bibliotheksseite (/library)
 2. Filtert nach Kategorie oder sucht per Freitext
@@ -47,7 +47,7 @@ spass­bringend und sichtbar.
 5. Bestätigt die Nutzung → Autor erhält +5 Punkte
 
 ### UC-02: Neuen Prompt einreichen
-**Akteur:** Mitarbeitende/r
+**Akteur:** Nutzer:in
 **Ablauf:**
 1. Öffnet die Einreich-Seite (/submit)
 2. Füllt Titel, Prompt-Text, Kategorie und Schwierigkeit aus (DE obligatorisch, EN optional)
@@ -55,22 +55,21 @@ spass­bringend und sichtbar.
 4. Klickt «Einreichen» → +20 Punkte, optional +30 für Challenge
 
 ### UC-03: Prompt bewerten
-**Akteur:** Mitarbeitende/r
+**Akteur:** Nutzer:in
 **Ablauf:**
 1. Öffnet einen Prompt in der Bibliothek
 2. Vergibt 1–5 Sterne
 3. Bewertung wird gespeichert → +3 Punkte (nur beim ersten Bewerten)
 
 ### UC-04: Rangliste einsehen
-**Akteur:** Mitarbeitende/r
+**Akteur:** Nutzer:in
 **Ablauf:**
 1. Öffnet /leaderboard
 2. Sieht Top 10 + Podium für Top 3
 3. Findet eigene Position (auch ausserhalb Top 10 angezeigt)
-4. Sieht Abteilungsvergleich
 
 ### UC-05: Eigenes Profil verwalten
-**Akteur:** Mitarbeitende/r
+**Akteur:** Nutzer:in
 **Ablauf:**
 1. Öffnet /profile
 2. Sieht eigene Punkte, Level, XP-Fortschrittsbalken
@@ -78,19 +77,18 @@ spass­bringend und sichtbar.
 4. Sieht erreichbare Badges und aktuellen Rang
 
 ### UC-06: An Wochen-Challenge teilnehmen
-**Akteur:** Mitarbeitende/r
+**Akteur:** Nutzer:in
 **Ablauf:**
 1. Sieht die aktive Challenge auf dem Dashboard (/dashboard)
 2. Reicht einen Prompt über /submit ein und verknüpft ihn mit der Challenge
 3. Erhält +30 Zusatzpunkte bei Einreichung, +100 bei Gewinn
 
 ### UC-07: Nutzer registrieren
-**Akteur:** Neue Mitarbeitende/r
+**Akteur:** Neue:r Nutzer:in
 **Ablauf:**
-1. Öffnet die App erstmalig
-2. Klickt auf den Nutzer-Picker oben rechts
-3. Gibt Name und Abteilung ein
-4. Wird als «Prompt-Lehrling» angelegt und direkt ausgewählt
+1. Öffnet die Registrierungsseite
+2. Gibt Name, E-Mail und Passwort ein
+3. Wird als «Prompt-Lehrling» angelegt und automatisch eingeloggt
 
 ---
 
@@ -98,7 +96,7 @@ spass­bringend und sichtbar.
 
 | ID | Anforderung | Priorität |
 |---|---|---|
-| FA-01 | Mitarbeitende können Prompts erstellen, kategorisieren und veröffentlichen | Muss |
+| FA-01 | Nutzer:innen können Prompts erstellen, kategorisieren und veröffentlichen | Muss |
 | FA-02 | Jeder Prompt kann eine deutsche und englische Version haben (EN optional) | Muss |
 | FA-03 | Prompts sind nach Kategorie und per Freitext filterbar | Muss |
 | FA-04 | Bewertungen von 1–5 Sternen sind pro Nutzer und Prompt möglich | Muss |
@@ -108,8 +106,7 @@ spass­bringend und sichtbar.
 | FA-08 | Jede Woche kann eine Challenge mit Bonus-Punkten aktiviert sein | Soll |
 | FA-09 | Prompts können als «genutzt» markiert werden (Autor erhält Punkte) | Soll |
 | FA-10 | Das Profil zeigt eigene Prompts, Punkte und Fortschritt | Soll |
-| FA-11 | Abteilungsvergleich auf der Rangliste | Kann |
-| FA-12 | Profilbild als farbiger Avatar (automatische Farbzuweisung) | Kann |
+| FA-11 | Profilbild als farbiger Avatar (automatische Farbzuweisung) | Kann |
 
 ---
 
@@ -117,12 +114,12 @@ spass­bringend und sichtbar.
 
 | ID | Anforderung | Messgrösse |
 |---|---|---|
-| NFA-01 | **Performance** – Seiten laden schnell | Erste Renderzeit < 2 s auf internem Netz |
+| NFA-01 | **Performance** – Seiten laden schnell | Erste Renderzeit < 2 s |
 | NFA-02 | **Usability** – Bedienbar ohne Schulung | Neue Nutzer finden Kernfunktionen innerhalb 2 Minuten |
 | NFA-03 | **Responsiveness** – Mobile-tauglich | Volle Funktionalität auf Smartphones (min. 375 px) |
 | NFA-04 | **Sicherheit** – Eingaben validiert | Alle API-Inputs durch Zod-Schemas validiert |
 | NFA-05 | **Sicherheit** – Security Headers | CSP, X-Frame-Options, Referrer-Policy auf jeder Antwort |
-| NFA-06 | **Verfügbarkeit** – Interne Verfügbarkeit | 99 % während Geschäftszeiten |
+| NFA-06 | **Verfügbarkeit** | 99 % Uptime |
 | NFA-07 | **Wartbarkeit** – Einfache Erweiterung | Neue Kategorie in einer Datei ergänzbar (lib/constants.ts) |
 | NFA-08 | **Internationaliserung** – Zweisprachigkeit | UI Deutsch, Prompts optional auch Englisch |
 | NFA-09 | **Rate Limiting** – Schutz vor Missbrauch | Max. 30 Schreib- / 120 Leseanfragen pro Minute und IP |
@@ -131,4 +128,4 @@ spass­bringend und sichtbar.
 
 
 ---
-*Automatisch generiert am 02.07.2026, 07:22 · [Quellcode](https://github.com/your-org/prompt-arena)*
+*Automatisch generiert am 02.07.2026, 22:42 · [Quellcode](https://github.com/your-org/prompt-arena)*

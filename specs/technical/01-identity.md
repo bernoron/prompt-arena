@@ -7,11 +7,13 @@
 - **Abgeleitet von**: `specs/business/01-identity.md` v1.0
 - **Letzte Änderung**: 2026-04-22
 
+> **Hinweis**: E-Mail + Passwort und die Entfernung von `department` wurden seither über `specs/technical/12-email-auth.md` eingeführt. Details unten sind teilweise historisch.
+
 ---
 
 ## Technische Akzeptanzkriterien
 
-- [x] **AC-01-001**: `POST /api/users` erstellt einen neuen User mit `name`, `department`, berechnet `avatarColor` (Round-Robin aus Palette) und gibt `UserWithStats` mit Status 201 zurück.
+- [x] **AC-01-001**: `POST /api/users` erstellt einen neuen User mit `name`, berechnet `avatarColor` (Round-Robin aus Palette) und gibt `UserWithStats` mit Status 201 zurück.
   - **Referenz**: BAC-01-001
   - **Testbar durch**: E2E, Unit
 
@@ -60,7 +62,6 @@
   {
     "id": 1,
     "name": "Max Mustermann",
-    "department": "IT",
     "avatarColor": "#6366f1",
     "totalPoints": 150,
     "level": "Prompt-Handwerker",
@@ -83,7 +84,6 @@
 | Feld | Typ | Pflicht | Beschreibung |
 |------|-----|---------|-------------|
 | `name` | string | ja | Min 2, max 60 Zeichen |
-| `department` | string | ja | Abteilungsname |
 
 **Response `201`:** `UserWithStats`
 
@@ -103,7 +103,6 @@
 {
   "id": 1,
   "name": "Max Mustermann",
-  "department": "IT",
   "avatarColor": "#6366f1",
   "totalPoints": 150,
   "level": "Prompt-Handwerker",
@@ -127,7 +126,6 @@
 model User {
   id          Int      @id @default(autoincrement())
   name        String
-  department  String
   avatarColor String
   totalPoints Int      @default(0)
   level       String   @default("Prompt-Lehrling")
@@ -178,7 +176,6 @@ lib/
 // lib/validation.ts
 const CreateUserSchema = z.object({
   name: z.string().min(2).max(60),
-  department: z.string().min(1),
 });
 
 // lib/constants.ts
@@ -213,7 +210,7 @@ export const AVATAR_COLORS = [
 ## Tests
 
 ### Unit-Tests (`tests/unit/`)
-- [ ] `validation.test.ts`: `CreateUserSchema` — valide und invalide Inputs (leerer Name, zu langer Name, fehlende Abteilung)
+- [ ] `validation.test.ts`: `CreateUserSchema` — valide und invalide Inputs (leerer Name, zu langer Name)
 - [ ] `constants.test.ts`: `AVATAR_COLORS` — Array nicht leer, alle Werte valide Hex-Codes
 
 ### E2E-Tests (`tests/e2e/`)

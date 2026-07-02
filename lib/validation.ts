@@ -11,7 +11,6 @@
  */
 
 import { z } from 'zod';
-import { DEPARTMENTS } from '@/lib/constants';
 
 // ─── Shared primitives ────────────────────────────────────────────────────────
 
@@ -33,13 +32,10 @@ const DIFFICULTIES = ['Einstieg', 'Fortgeschritten'] as const;
 
 /**
  * POST /api/users – Self-registration body.
- * Name ≤ 80 chars, department must be one of the allowed values.
+ * Name ≤ 80 chars.
  */
 export const CreateUserSchema = z.object({
-  name:       z.string().trim().min(2).max(80),
-  department: z.enum([...DEPARTMENTS, '__other__'] as [string, ...string[]]).or(
-    z.string().trim().min(2).max(50)
-  ),
+  name: z.string().trim().min(2).max(80),
 });
 
 /** POST /api/auth/login */

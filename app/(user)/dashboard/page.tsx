@@ -363,7 +363,6 @@ export default function DashboardPage() {
                   </span>
                   <div>
                     <p className="font-bold text-slate-900 leading-tight">{currentUser.name}</p>
-                    <p className="text-xs text-slate-500">{currentUser.department}</p>
                   </div>
                 </div>
                 <LevelBadge level={currentUser.level as LevelName} />

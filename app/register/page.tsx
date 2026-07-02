@@ -3,7 +3,6 @@
 /**
  * Public registration page.
  * Fields: name, email, password, confirm password.
- * No department field (irrelevant for public users).
  *
  * @spec AC-12-005
  */

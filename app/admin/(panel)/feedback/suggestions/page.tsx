@@ -9,7 +9,7 @@ interface Suggestion {
   description: string | null;
   status: string;
   createdAt: string;
-  user: { name: string; department: string };
+  user: { name: string };
 }
 
 const STATUS_META: Record<string, { label: string; color: string }> = {
@@ -80,7 +80,7 @@ export default function AdminSuggestionsPage() {
                       <p className="text-sm text-slate-500 mt-0.5 line-clamp-2">{s.description}</p>
                     )}
                     <p className="text-xs text-slate-400 mt-1">
-                      {s.user.name} · {s.user.department} · {new Date(s.createdAt).toLocaleDateString('de-CH')}
+                      {s.user.name} · {new Date(s.createdAt).toLocaleDateString('de-CH')}
                     </p>
                   </div>
 

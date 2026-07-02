@@ -12,7 +12,7 @@
 
 ## Geschäftlicher Kontext
 
-Nachdem die ersten 5 Lernmodule die Grundlagen des Promptings abdecken, brauchen fortgeschrittene Mitarbeiter eine Möglichkeit, ihr Wissen weiter zu vertiefen. Die 5 neuen Module adressieren konkrete Anwendungsfelder: Bilder und Dokumente in Prompts einbinden, Code mit KI schreiben und debuggen, grosse Dateien verarbeiten, Sicherheitsrisiken erkennen und das richtige Modell für den jeweiligen Anwendungsfall wählen. Da die technische Infrastruktur des Lernpfads bereits steht, erfordern diese Module keine Änderungen am System — nur neue Inhalte.
+Nachdem die ersten 5 Lernmodule die Grundlagen des Promptings abdecken, brauchen fortgeschrittene Nutzer eine Möglichkeit, ihr Wissen weiter zu vertiefen. Die 5 neuen Module adressieren konkrete Anwendungsfelder: Bilder und Dokumente in Prompts einbinden, Code mit KI schreiben und debuggen, grosse Dateien verarbeiten, Sicherheitsrisiken erkennen und das richtige Modell für den jeweiligen Anwendungsfall wählen. Da die technische Infrastruktur des Lernpfads bereits steht, erfordern diese Module keine Änderungen am System — nur neue Inhalte.
 
 ---
 
@@ -20,19 +20,19 @@ Nachdem die ersten 5 Lernmodule die Grundlagen des Promptings abdecken, brauchen
 
 | Rolle | Beschreibung | Hauptnutzen |
 |-------|-------------|-------------|
-| Mitarbeiter (Fortgeschrittene) | Hat die ersten 5 Module abgeschlossen und will Spezialkenntnisse aufbauen | Lernt praxisnahe Techniken für Bild-, Code-, Datei- und Sicherheitsszenarien |
-| Mitarbeiter (IT/Entwicklung) | Hat technischen Hintergrund und will KI gezielt für Entwicklungsaufgaben nutzen | Findet spezifische Anleitungen für Code-Prompting und Dateiverarbeitung |
-| Mitarbeiter (alle) | Möchte wissen, wann welches KI-Modell sinnvoll ist | Kann fundierte Modellentscheidungen treffen |
+| Nutzer (Fortgeschrittene) | Hat die ersten 5 Module abgeschlossen und will Spezialkenntnisse aufbauen | Lernt praxisnahe Techniken für Bild-, Code-, Datei- und Sicherheitsszenarien |
+| Nutzer (IT/Entwicklung) | Hat technischen Hintergrund und will KI gezielt für Entwicklungsaufgaben nutzen | Findet spezifische Anleitungen für Code-Prompting und Dateiverarbeitung |
+| Nutzer (alle) | Möchte wissen, wann welches KI-Modell sinnvoll ist | Kann fundierte Modellentscheidungen treffen |
 
 ---
 
 ## User Stories
 
-- Als **Mitarbeiter** will ich lernen, wie ich Bilder und Dokumente in meine Prompts einbinden kann, damit ich KI-Assistenten für visuelle Aufgaben einsetze.
-- Als **Mitarbeiter** will ich lernen, KI gezielt für das Schreiben, Debuggen und Refaktorieren von Code einzusetzen, damit ich meine Entwicklungsarbeit effizienter gestalte.
-- Als **Mitarbeiter** will ich lernen, wie ich grosse Dateien (CSV, PDF, Excel) sinnvoll an KI übergebe, damit ich Datenanalysen schneller durchführen kann.
-- Als **Mitarbeiter** will ich lernen, Sicherheitsrisiken beim Einsatz von KI zu erkennen, damit ich sensible Daten schütze und ethische Grenzen einhalte.
-- Als **Mitarbeiter** will ich verstehen, wann ich welches KI-Modell verwenden sollte, damit ich für jede Aufgabe das passende Werkzeug wähle.
+- Als **Nutzer** will ich lernen, wie ich Bilder und Dokumente in meine Prompts einbinden kann, damit ich KI-Assistenten für visuelle Aufgaben einsetze.
+- Als **Nutzer** will ich lernen, KI gezielt für das Schreiben, Debuggen und Refaktorieren von Code einzusetzen, damit ich meine Entwicklungsarbeit effizienter gestalte.
+- Als **Nutzer** will ich lernen, wie ich grosse Dateien (CSV, PDF, Excel) sinnvoll an KI übergebe, damit ich Datenanalysen schneller durchführen kann.
+- Als **Nutzer** will ich lernen, Sicherheitsrisiken beim Einsatz von KI zu erkennen, damit ich sensible Daten schütze und ethische Grenzen einhalte.
+- Als **Nutzer** will ich verstehen, wann ich welches KI-Modell verwenden sollte, damit ich für jede Aufgabe das passende Werkzeug wähle.
 
 ---
 
@@ -59,7 +59,7 @@ Nachdem die ersten 5 Lernmodule die Grundlagen des Promptings abdecken, brauchen
   - **Geschäftsregel**: Jede Lektion enthält mindestens 3 verwendbare Muster und 2 reale Alltagsbeispiele.
 
 - [ ] **BAC-09-006**: Die neuen Module erscheinen automatisch auf der Lernübersicht, ohne dass Programmierer tätig werden müssen — ausschliesslich durch Hinzufügen der Inhalte zur Datenbank.
-  - **Messgrösse**: Nach dem Befüllen der Datenbank mit den neuen Modulen erscheinen diese vollständig in der Lernübersicht für alle Mitarbeiter.
+  - **Messgrösse**: Nach dem Befüllen der Datenbank mit den neuen Modulen erscheinen diese vollständig in der Lernübersicht für alle Nutzer.
   - **Geschäftsregel**: Die Module erhalten die Ordnungsnummern 6–10 (nach den bestehenden Modulen 1–5). Slugs der neuen Module: vision, coding, files, security, model-choice.
 
 ---

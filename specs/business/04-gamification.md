@@ -12,7 +12,7 @@
 
 ## Geschäftlicher Kontext
 
-Mitarbeiter sollen langfristig motiviert sein, die Plattform aktiv zu nutzen — Prompts einzureichen, zu bewerten und Lektionen abzuschliessen. Das Gamification-System wandelt jede dieser Aktionen in sichtbaren Fortschritt um: Punkte, Level und eine öffentliche Rangliste schaffen gesunden Wettbewerb und ein Gefühl der Anerkennung. Wer seinen Kollegen auf der Rangliste überholen möchte, wird immer wieder auf die Plattform zurückkehren.
+Nutzer sollen langfristig motiviert sein, die Plattform aktiv zu nutzen — Prompts einzureichen, zu bewerten und Lektionen abzuschliessen. Das Gamification-System wandelt jede dieser Aktionen in sichtbaren Fortschritt um: Punkte, Level und eine öffentliche Rangliste schaffen gesunden Wettbewerb und ein Gefühl der Anerkennung. Wer andere Nutzer auf der Rangliste überholen möchte, wird immer wieder auf die Plattform zurückkehren.
 
 ---
 
@@ -20,18 +20,18 @@ Mitarbeiter sollen langfristig motiviert sein, die Plattform aktiv zu nutzen —
 
 | Rolle | Beschreibung | Hauptnutzen |
 |-------|-------------|-------------|
-| Mitarbeiter | Alle Plattformnutzer | Sieht eigenen Fortschritt, Level-Aufstieg und Rang gegenüber Kollegen |
+| Nutzer | Alle Plattformnutzer | Sieht eigenen Fortschritt, Level-Aufstieg und Rang gegenüber anderen Nutzern |
 | Admin | Plattformverwalter | Kann Rangliste einsehen und Trends beobachten |
 
 ---
 
 ## User Stories
 
-- Als **Mitarbeiter** will ich für jede nützliche Aktion automatisch Punkte erhalten, damit sich mein Engagement messbar lohnt.
-- Als **Mitarbeiter** will ich mein Level und meinen Fortschritt zum nächsten Level-Aufstieg sehen, damit ich weiss, wie nah ich dem nächsten Meilenstein bin.
-- Als **Mitarbeiter** will ich benachrichtigt werden, wenn ich ein neues Level erreiche, damit der Aufstieg ein besonderes Erlebnis ist.
-- Als **Mitarbeiter** will ich auf der Rangliste meinen Rang unter allen Kollegen sehen, damit ich meine Aktivität einordnen kann.
-- Als **Mitarbeiter** will ich auf meinem Dashboard auf einen Blick sehen, wie ich auf der Plattform stehe.
+- Als **Nutzer** will ich für jede nützliche Aktion automatisch Punkte erhalten, damit sich mein Engagement messbar lohnt.
+- Als **Nutzer** will ich mein Level und meinen Fortschritt zum nächsten Level-Aufstieg sehen, damit ich weiss, wie nah ich dem nächsten Meilenstein bin.
+- Als **Nutzer** will ich benachrichtigt werden, wenn ich ein neues Level erreiche, damit der Aufstieg ein besonderes Erlebnis ist.
+- Als **Nutzer** will ich auf der Rangliste meinen Rang unter allen Nutzern sehen, damit ich meine Aktivität einordnen kann.
+- Als **Nutzer** will ich auf meinem Dashboard auf einen Blick sehen, wie ich auf der Plattform stehe.
 
 ---
 
@@ -39,9 +39,9 @@ Mitarbeiter sollen langfristig motiviert sein, die Plattform aktiv zu nutzen —
 
 - [ ] **BAC-04-001**: Für definierte Aktionen werden automatisch Punkte vergeben — ohne manuelle Bestätigung.
   - **Messgrösse**: Nach jeder punkteauslösenden Aktion steigt der Punktestand des betreffenden Nutzers sofort um den korrekten Betrag.
-  - **Geschäftsregel**: Punkte werden einmalig pro Auslöser vergeben. Das Rückgängigmachen einer Aktion (z. B. Favorit entfernen) gibt keine Punkte zurück. Punktetabelle: Prompt einreichen +10000, Prompt wird benutzt +5 (an Autor), Prompt bewerten +3, Prompt favorisiert (erstmalig) +10 (an Autor), Challenge-Einreichung +30, Challenge gewonnen +100, Lektion abschliessen +15.
+  - **Geschäftsregel**: Punkte werden einmalig pro Auslöser vergeben. Das Rückgängigmachen einer Aktion (z. B. Favorit entfernen) gibt keine Punkte zurück. Punktetabelle: Prompt einreichen +20, Prompt wird benutzt +5 (an Autor), Prompt bewerten +3, Prompt favorisiert (erstmalig) +10 (an Autor), Challenge-Einreichung +30, Challenge gewonnen +100, Lektion abschliessen +15.
 
-- [ ] **BAC-04-002**: Das Level eines Mitarbeiters wird nach jeder Punktevergabe automatisch aktualisiert.
+- [ ] **BAC-04-002**: Das Level eines Nutzers wird nach jeder Punktevergabe automatisch aktualisiert.
   - **Messgrösse**: Das angezeigte Level stimmt jederzeit mit dem aktuellen Punktestand überein.
   - **Geschäftsregel**: Level-Schwellen — 0 Punkte: „Prompt-Lehrling", ab 100: „Prompt-Handwerker", ab 300: „Prompt-Schmied", ab 600: „KI-Botschafter". Level kann nicht sinken.
 
@@ -53,7 +53,7 @@ Mitarbeiter sollen langfristig motiviert sein, die Plattform aktiv zu nutzen —
   - **Messgrösse**: Alle vier Kennzahlen sind auf dem Dashboard sichtbar und entsprechen den aktuellen Datenbankwerten.
   - **Geschäftsregel**: Der Fortschrittsbalken zeigt den prozentualen Fortschritt zwischen dem aktuellen und dem nächsten Level-Schwellenwert.
 
-- [ ] **BAC-04-005**: Die Rangliste zeigt alle Mitarbeiter sortiert nach Gesamtpunkten, mit Hervorhebung des eigenen Eintrags.
+- [ ] **BAC-04-005**: Die Rangliste zeigt alle Nutzer sortiert nach Gesamtpunkten, mit Hervorhebung des eigenen Eintrags.
   - **Messgrösse**: Die Rangliste enthält alle registrierten User; der eigene Eintrag ist visuell unterscheidbar; die Sortierung ist korrekt absteigend nach Punkten.
   - **Geschäftsregel**: Bei Punktegleichstand entscheidet das Einreibedatum (früher registriert = höherer Rang).
 
@@ -91,8 +91,8 @@ Mitarbeiter sollen langfristig motiviert sein, die Plattform aktiv zu nutzen —
 
 | # | Beschreibung | Wahrscheinlichkeit | Massnahme |
 |---|-------------|-------------------|-----------|
-| R1 | Mitarbeiter „farmen" Punkte durch massenhaftes Einreichen von Niedrigqualitäts-Prompts | niedrig | Admin kann Prompts löschen; Bewertungssystem reguliert Sichtbarkeit |
-| R2 | Die Rangliste demotiviert Mitarbeiter am Ende der Liste | mittel | Level-Anzeige zeigt persönlichen Fortschritt unabhängig vom Rang |
+| R1 | Nutzer „farmen" Punkte durch massenhaftes Einreichen von Niedrigqualitäts-Prompts | niedrig | Admin kann Prompts löschen; Bewertungssystem reguliert Sichtbarkeit |
+| R2 | Die Rangliste demotiviert Nutzer am Ende der Liste | mittel | Level-Anzeige zeigt persönlichen Fortschritt unabhängig vom Rang |
 | A1 | Gamification steigert die Plattformnutzung messbar | hoch | KPI-Tracking nach 4 Wochen auswerten |
 
 ---

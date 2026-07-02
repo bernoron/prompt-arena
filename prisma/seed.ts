@@ -217,11 +217,10 @@ async function main() {
       prisma.user.create({
         data: {
           name: 'Alicia',
-          department: 'IT',
           avatarColor: AVATAR_COLORS[1],
           passwordHash: pwA,
-          emailHash: hashEmail('a@b.c'),
-          emailEncrypted: encryptEmail('a@b.c'),
+          emailHash: hashEmail('alicia@example.com'),
+          emailEncrypted: encryptEmail('alicia@example.com'),
           totalPoints: 120,
           level: getLevel(120),
         },
@@ -229,11 +228,10 @@ async function main() {
       prisma.user.create({
         data: {
           name: 'Bruno',
-          department: 'Vertrieb',
           avatarColor: AVATAR_COLORS[2],
           passwordHash: pwB,
-          emailHash: hashEmail('b@c.d'),
-          emailEncrypted: encryptEmail('b@c.d'),
+          emailHash: hashEmail('bruno@example.com'),
+          emailEncrypted: encryptEmail('bruno@example.com'),
           totalPoints: 60,
           level: getLevel(60),
         },
@@ -249,7 +247,7 @@ async function main() {
     await prisma.challengeSubmission.create({
       data: { challengeId: challenge.id, promptId: prompts[6].id, userId: userA.id },
     });
-    console.log(`   👥 Dev users: a@b.c / b@c.d (password: test123)`);
+    console.log(`   👥 Dev users: alicia@example.com / bruno@example.com (password: test123)`);
   }
 
   // ─── LEARNING PATH ─────────────────────────────────────────────────────────

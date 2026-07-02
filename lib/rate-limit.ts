@@ -13,7 +13,7 @@
  * Limitations:
  *   State lives in the Node.js process. In a multi-replica deployment each
  *   replica has its own counter, so the effective limit is max × replicas.
- *   For this single-server internal tool that is acceptable.
+ *   For this single-server deployment that is acceptable.
  *
  * Usage:
  *   const limiter = createRateLimiter({ windowMs: 60_000, max: 20 });

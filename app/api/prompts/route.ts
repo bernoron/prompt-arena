@@ -84,7 +84,7 @@ export async function GET(req: NextRequest) {
         } : {}),
       },
       include: {
-        author: { select: { id: true, name: true, avatarColor: true, department: true } },
+        author: { select: { id: true, name: true, avatarColor: true } },
       },
       orderBy: sortBy === 'most-used'
         ? [{ usageCount: 'desc' }, { id: 'desc' }]
@@ -212,7 +212,7 @@ export async function POST(req: NextRequest) {
       data: { title, titleEn: titleEn ?? title, content, contentEn: contentEn ?? content, category, difficulty, authorId },
       include: {
         author: {
-          select: { id: true, name: true, department: true, avatarColor: true },
+          select: { id: true, name: true, avatarColor: true },
         },
       },
     });

@@ -8,7 +8,7 @@ import type { LevelName, Category } from '@/lib/types';
 import { getLevelProgress } from '@/lib/points';
 
 interface UserProfile {
-  id: number; name: string; department: string; avatarColor: string;
+  id: number; name: string; avatarColor: string;
   totalPoints: number; level: string; createdAt: string; rank: number;
   prompts: {
     id: number; title: string; titleEn: string; category: string;
@@ -103,7 +103,7 @@ export default function ProfilePage() {
                 <h1 className="text-xl sm:text-2xl font-extrabold text-white leading-tight">{profile.name}</h1>
                 <LevelBadge level={profile.level as LevelName} />
               </div>
-              <p className="text-slate-400 text-sm">{profile.department} · Rang #{profile.rank}</p>
+              <p className="text-slate-400 text-sm">Rang #{profile.rank}</p>
             </div>
           </div>
           {/* XP bar */}

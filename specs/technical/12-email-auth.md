@@ -17,7 +17,7 @@
   - **Referenz**: BAC-12-003
   - **Testbar durch**: Unit-Test
 
-- [x] **AC-12-002**: Prisma-Schema: `User.emailHash String? @unique` (HMAC-Blind-Index für Uniqueness-Check) und `User.emailEncrypted String?` (AES-Ciphertext). `User.department` behält `String @default("")` — wird nicht mehr bei Registrierung gesetzt, bleibt für Bestandsdaten erhalten.
+- [x] **AC-12-002**: Prisma-Schema: `User.emailHash String? @unique` (HMAC-Blind-Index für Uniqueness-Check) und `User.emailEncrypted String?` (AES-Ciphertext). `User.department` wurde in einer Folge-Migration (`remove_department`) vollständig entfernt.
   - **Referenz**: BAC-12-001, BAC-12-003, BAC-12-004
   - **Testbar durch**: Migration + DB-Inspect
 
@@ -95,7 +95,6 @@ Gibt zusätzlich pro User:
 model User {
   id              Int      @id @default(autoincrement())
   name            String
-  department      String   @default("")   // kept for legacy, no longer set on register
   avatarColor     String
   passwordHash    String?
   emailHash       String?  @unique        // HMAC-SHA256 blind index

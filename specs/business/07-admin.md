@@ -12,7 +12,7 @@
 
 ## Geschäftlicher Kontext
 
-Damit die Plattform qualitativ hochwertig bleibt, braucht es eine Vertrauensperson, die bei Bedarf eingreifen kann: unangemessene Prompts entfernen, Challenges steuern und den Zustand der Plattform im Überblick behalten. Das Admin-Panel ist ein internes Verwaltungswerkzeug, das nur dem designierten Plattformverantwortlichen zugänglich ist. Da es sich um ein internes Tool handelt, genügt ein einfacher Passwortschutz — kein Multi-User-Admin-System ist nötig.
+Damit die Plattform qualitativ hochwertig bleibt, braucht es eine Vertrauensperson, die bei Bedarf eingreifen kann: unangemessene Prompts entfernen, Challenges steuern und den Zustand der Plattform im Überblick behalten. Das Admin-Panel ist ein Verwaltungswerkzeug, das nur dem designierten Plattformverantwortlichen zugänglich ist. Ein einfacher Passwortschutz genügt — kein Multi-User-Admin-System ist nötig.
 
 ---
 
@@ -20,13 +20,13 @@ Damit die Plattform qualitativ hochwertig bleibt, braucht es eine Vertrauenspers
 
 | Rolle | Beschreibung | Hauptnutzen |
 |-------|-------------|-------------|
-| Admin | Einzelner interner Plattformverantwortlicher | Vollständige Kontrolle über Inhalte, Challenges und Nutzerverwaltung |
+| Admin | Einzelner Plattformverantwortlicher | Vollständige Kontrolle über Inhalte, Challenges und Nutzerverwaltung |
 
 ---
 
 ## User Stories
 
-- Als **Admin** will ich mich mit einem Passwort sicher anmelden, damit Mitarbeiter keinen Zugang zum Verwaltungsbereich haben.
+- Als **Admin** will ich mich mit einem Passwort sicher anmelden, damit Nutzer keinen Zugang zum Verwaltungsbereich haben.
 - Als **Admin** will ich auf einem übersichtlichen Dashboard die wichtigsten Plattform-Kennzahlen sehen, damit ich den Gesundheitszustand der Plattform schnell einschätzen kann.
 - Als **Admin** will ich alle Prompts einsehen, bearbeiten und bei Bedarf löschen können, damit die Bibliothek sauber und qualitativ bleibt.
 - Als **Admin** will ich Challenges erstellen, aktivieren und beenden können, damit das wöchentliche Programm funktioniert.
@@ -54,7 +54,7 @@ Damit die Plattform qualitativ hochwertig bleibt, braucht es eine Vertrauenspers
   - **Geschäftsregel**: Das Löschen eines Prompts entfernt auch alle zugehörigen Bewertungen und Favoriten. Es gibt keine Papierkorb-Funktion — Löschungen sind endgültig.
 
 - [ ] **BAC-07-005**: Der Admin kann Challenges erstellen, aktivieren und beenden.
-  - **Messgrösse**: Neu erstellte Challenges erscheinen sofort in der Admin-Übersicht; aktivierte Challenges sind sofort für Mitarbeiter sichtbar.
+  - **Messgrösse**: Neu erstellte Challenges erscheinen sofort in der Admin-Übersicht; aktivierte Challenges sind sofort für Nutzer sichtbar.
   - **Geschäftsregel**: Nur eine Challenge kann gleichzeitig aktiv sein. Aktivierung einer Challenge deaktiviert automatisch alle anderen.
 
 - [ ] **BAC-07-006**: Der Admin kann Nutzerkonten einsehen und verwalten.

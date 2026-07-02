@@ -37,7 +37,7 @@ export async function GET(req: NextRequest) {
     prisma.user.findMany({
       orderBy: { createdAt: 'desc' },
       take: 5,
-      select: { id: true, name: true, department: true, totalPoints: true, createdAt: true },
+      select: { id: true, name: true, totalPoints: true, createdAt: true },
     }),
     prisma.prompt.groupBy({ by: ['category'], _count: { id: true } }),
   ]);

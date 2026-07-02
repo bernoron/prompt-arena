@@ -60,8 +60,9 @@ prompt-arena/
 1. Wert in `lib/points.ts → POINTS` anpassen
 2. Beschriftung in `lib/constants.ts → POINTS_GUIDE` synchronisieren
 
-### Mock-Auth erweitern
-Die Nutzer-ID liegt in `localStorage['promptarena_user_id']`.
+### Client-seitigen Nutzerstatus erweitern
+Die Nutzer-ID liegt zur schnellen UI-Anzeige in `localStorage['promptarena_user_id']`
+(die eigentliche Auth läuft über den signierten `user_session`-Cookie).
 Änderungen werden via `window.dispatchEvent(new CustomEvent('userChanged'))` gebroadcastet.
 Der `useCurrentUser`-Hook in `hooks/useCurrentUser.ts` abonniert dieses Event.
 
@@ -119,4 +120,4 @@ Der `useCurrentUser`-Hook in `hooks/useCurrentUser.ts` abonniert dieses Event.
 
 
 ---
-*Automatisch generiert am 02.07.2026, 07:22 · [Quellcode](https://github.com/your-org/prompt-arena)*
+*Automatisch generiert am 02.07.2026, 22:42 · [Quellcode](https://github.com/your-org/prompt-arena)*

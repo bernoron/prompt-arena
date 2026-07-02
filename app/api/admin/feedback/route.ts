@@ -33,7 +33,7 @@ export async function GET(req: NextRequest) {
         ...(status && { status }),
       },
       include: {
-        user: { select: { name: true, department: true } },
+        user: { select: { name: true } },
       },
       orderBy: { createdAt: 'desc' },
     });

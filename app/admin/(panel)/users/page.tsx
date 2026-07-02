@@ -6,7 +6,6 @@ import { useEffect, useState } from 'react';
 interface User {
   id: number;
   name: string;
-  department: string;
   avatarColor: string;
   totalPoints: number;
   level: string;

@@ -28,7 +28,7 @@ export async function GET(req: NextRequest) {
   const users = await prisma.user.findMany({
     orderBy: { totalPoints: 'desc' },
     select: {
-      id: true, name: true, department: true, avatarColor: true,
+      id: true, name: true, avatarColor: true,
       totalPoints: true, level: true, createdAt: true,
       emailEncrypted: true, // needed for decryption; stripped from response below
     },
@@ -46,7 +46,7 @@ export async function GET(req: NextRequest) {
       }
     }
     return {
-      id: u.id, name: u.name, department: u.department,
+      id: u.id, name: u.name,
       avatarColor: u.avatarColor, totalPoints: u.totalPoints,
       level: u.level, createdAt: u.createdAt, emailDecrypted,
       // emailEncrypted intentionally omitted from response

@@ -54,7 +54,7 @@ app/
 
 | Datei | Zweck |
 |-------|-------|
-| `lib/constants.ts` | Alle Magic Values: Kategorien, Level, Farben, Departments |
+| `lib/constants.ts` | Alle Magic Values: Kategorien, Level, Farben |
 | `lib/points.ts` | Gamification-Logik: Punkte-Konstanten, Level-Berechnung |
 | `lib/types.ts` | Shared TypeScript-Interfaces für API-Responses |
 | `lib/validation.ts` | Alle Zod-Schemas für POST-Bodies |
