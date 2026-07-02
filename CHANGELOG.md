@@ -1,5 +1,16 @@
 # Changelog
 
+## [8.0.0](https://github.com/bernoron/prompt-arena/compare/v7.1.1...v8.0.0) (2026-07-02)
+
+
+### ⚠ BREAKING CHANGES
+
+* API responses for users and prompt authors no longer include a `department` field.
+
+### Features
+
+* reposition PromptArena as a public platform, drop department field ([3fb875d](https://github.com/bernoron/prompt-arena/commit/3fb875d93331fc44163a55449acd5702dea3f396))
+
 ## [7.1.1](https://github.com/bernoron/prompt-arena/compare/v7.1.0...v7.1.1) (2026-07-02)
 
 
