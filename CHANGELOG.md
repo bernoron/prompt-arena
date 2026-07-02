@@ -1,5 +1,15 @@
 # Changelog
 
+## [7.1.1](https://github.com/bernoron/prompt-arena/compare/v7.1.0...v7.1.1) (2026-07-02)
+
+
+### Bug Fixes
+
+* harden user and admin security boundaries ([18702e9](https://github.com/bernoron/prompt-arena/commit/18702e98977be2d421160f41f2a51247de54aac8))
+* harden user and admin security boundaries ([7497ccf](https://github.com/bernoron/prompt-arena/commit/7497ccf1b4e2e4a1d577ddd2ea5e95a7a4be00f1))
+* harden user and admin security boundaries ([87ae6d7](https://github.com/bernoron/prompt-arena/commit/87ae6d798d8643391321847b4fb66c11a2c59e5a))
+* **security:** harden app for public internet exposure (audit 2026-07) ([b47aeaa](https://github.com/bernoron/prompt-arena/commit/b47aeaafcbf3cab91b031dd27f5c98223d4c0721))
+
 ## [7.1.0](https://github.com/bernoron/prompt-arena/compare/v7.0.0...v7.1.0) (2026-06-28)
 
 
