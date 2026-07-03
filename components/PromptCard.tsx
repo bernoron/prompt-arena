@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import type { PromptWithDetails, Category } from '@/lib/types';
 import { CATEGORY_CONFIG, getRarity, RARITY_CONFIG } from '@/lib/constants';
 import CategoryBadge from './CategoryBadge';
@@ -43,6 +44,17 @@ export default function PromptCard({ prompt, onClick }: Props) {
       {prompt.userFavorite && (
         <span className="absolute top-2 left-2 text-amber-400 text-base leading-none" title="In deinen Favoriten">★</span>
       )}
+
+      {/* Permalink — a real, indexable/shareable URL; stops propagation so
+          it navigates instead of also opening the modal. */}
+      <Link
+        href={`/library/${prompt.id}`}
+        onClick={(e) => e.stopPropagation()}
+        title="Direktlink zu diesem Prompt"
+        className="absolute top-2 right-2 text-slate-300 hover:text-emerald-500 transition-colors text-sm leading-none z-10"
+      >
+        🔗
+      </Link>
 
       {/* Header */}
       <div className="flex items-start justify-between gap-2 mb-3">

@@ -31,6 +31,9 @@ const SILENT: string[] = ['/_next/', '/favicon'];
 const ADMIN_PREFIX = (process.env.ADMIN_PATH ?? 'admin').replace(/^\/+|\/+$/g, '');
 const CUSTOM_ADMIN = ADMIN_PREFIX !== 'admin';
 
+/** Individual prompt detail pages are public so they can be indexed by search engines and shared as links. */
+const PROMPT_DETAIL_PATH = /^\/library\/\d+$/;
+
 /** Paths that do NOT require a user session. */
 function isPublicPath(pathname: string): boolean {
   return (
@@ -40,7 +43,8 @@ function isPublicPath(pathname: string): boolean {
     pathname.startsWith('/register/') ||
     pathname.startsWith('/admin') ||
     pathname.startsWith(`/${ADMIN_PREFIX}`) ||
-    pathname.startsWith('/api/')
+    pathname.startsWith('/api/') ||
+    PROMPT_DETAIL_PATH.test(pathname)
   );
 }
 

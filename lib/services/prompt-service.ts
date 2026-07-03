@@ -42,6 +42,32 @@ export async function getUserFavoriteSet(
   return new Set(favorites.map((f) => f.promptId));
 }
 
+// ─── Single prompt (Server Component detail page) ─────────────────────────────
+
+export async function getPromptById(id: number, resolvedUserId: number | null) {
+  const prompt = await prisma.prompt.findUnique({
+    where: { id },
+    include: { author: { select: AUTHOR_SELECT } },
+  });
+  if (!prompt) return null;
+
+  const [ratings, userVoteMap, favSet] = await Promise.all([
+    getRatingsMap([id]),
+    getUserVoteMap(resolvedUserId, [id]),
+    getUserFavoriteSet(resolvedUserId, [id]),
+  ]);
+  const rating = getRating(ratings, id);
+
+  return {
+    ...prompt,
+    avgRating:    rating.avgRating,
+    voteCount:    rating.voteCount,
+    userVote:     resolvedUserId ? (userVoteMap.get(id) ?? null) : null,
+    userFavorite: resolvedUserId ? favSet.has(id) : undefined,
+    createdAt:    prompt.createdAt.toISOString(),
+  };
+}
+
 // ─── List (GET /api/prompts) ───────────────────────────────────────────────────
 
 export interface ListPromptsParams {

@@ -3,7 +3,7 @@ import './globals.css';
 
 export const metadata: Metadata = {
   title: 'PromptArena – KI-Prompts entdecken & teilen',
-  description: 'Die gamifizierte Prompt-Bibliothek für den internen Gebrauch.',
+  description: 'Die gamifizierte Prompt-Bibliothek zum Entdecken, Teilen und Bewerten von KI-Prompts.',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

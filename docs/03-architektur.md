@@ -50,6 +50,7 @@ integrierten API-Layer. Frontend und Backend laufen als einziger Prozess.
 | `/learn/[moduleSlug]` | app/(user)/learn/[moduleSlug]/page.tsx |
 | `/learn/[moduleSlug]/[lessonSlug]` | app/(user)/learn/[moduleSlug]/[lessonSlug]/page.tsx |
 | `/library` | app/(user)/library/page.tsx |
+| `/library/[id]` | app/(user)/library/[id]/page.tsx |
 | `/profile` | app/(user)/profile/page.tsx |
 | `/submit` | app/(user)/submit/page.tsx |
 | `/admin` | app/admin/(panel)/page.tsx |
@@ -74,6 +75,7 @@ integrierten API-Layer. Frontend und Backend laufen als einziger Prozess.
 - **LevelUpModal**
 - **Navigation**
 - **PromptCard**
+- **PromptDetailActions**
 - **PromptModal**
 - **SessionProvider**
 - **TopicSuggestionModal**
@@ -175,4 +177,4 @@ den Cookie neu auswertet — ein manueller Sync-Mechanismus ist dafür nicht nö
 
 
 ---
-*Automatisch generiert am 03.07.2026, 05:29 · [Quellcode](https://github.com/your-org/prompt-arena)*
+*Automatisch generiert am 03.07.2026, 05:38 · [Quellcode](https://github.com/your-org/prompt-arena)*

@@ -327,6 +327,7 @@ SEITEN (app/ mit App Router)
 - /learn/[moduleSlug] → app/(user)/learn/[moduleSlug]/page.tsx
 - /learn/[moduleSlug]/[lessonSlug] → app/(user)/learn/[moduleSlug]/[lessonSlug]/page.tsx
 - /library → app/(user)/library/page.tsx
+- /library/[id] → app/(user)/library/[id]/page.tsx
 - /profile → app/(user)/profile/page.tsx
 - /submit → app/(user)/submit/page.tsx
 - /admin → app/admin/(panel)/page.tsx
@@ -383,6 +384,7 @@ KOMPONENTEN (components/)
 - LevelUpModal.tsx
 - Navigation.tsx
 - PromptCard.tsx
+- PromptDetailActions.tsx
 - PromptModal.tsx
 - SessionProvider.tsx
 - TopicSuggestionModal.tsx
@@ -597,4 +599,4 @@ SETUP-REIHENFOLGE
 
 
 ---
-*Automatisch generiert am 03.07.2026, 05:29 · [Quellcode](https://github.com/your-org/prompt-arena)*
+*Automatisch generiert am 03.07.2026, 05:38 · [Quellcode](https://github.com/your-org/prompt-arena)*
