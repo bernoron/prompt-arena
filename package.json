@@ -24,7 +24,9 @@
     "test:e2e:headed": "playwright test --headed",
     "test": "npm run test:unit && npm run test:e2e",
     "test:e2e:install": "playwright install chromium",
-    "test:e2e:setup": "npm run test:e2e:install"
+    "test:e2e:setup": "npm run test:e2e:install",
+    "security:deps": "npm audit --omit=dev --audit-level=high",
+    "security:deps:all": "npm audit --audit-level=moderate"
   },
   "dependencies": {
     "@prisma/client": "^5.22.0",

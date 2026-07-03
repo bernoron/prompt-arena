@@ -19,8 +19,10 @@ produktiv ins Internet bringst.
 
 - [ ] Starke Secrets generiert (siehe unten) und beim Hoster als Secret hinterlegt
       – **niemals** im Code oder in `.env` committen.
-- [ ] `ADMIN_SECRET` gesetzt (Admin-Login-Passwort, ≥ 12 Zeichen).
+- [ ] Dependency-Security-Gate ist grün: `npm run security:deps`.
+- [ ] `ADMIN_SECRET` gesetzt (Admin-Login-Passwort, ≥ 32 Zeichen).
 - [ ] `USER_SECRET` gesetzt (HMAC-Signaturschlüssel, ≥ 32 Zeichen).
+- [ ] `EMAIL_SECRET` gesetzt (E-Mail-Verschlüsselung, ≥ 32 Zeichen).
 - [ ] `DATABASE_URL` zeigt auf den **persistenten** Pfad / die Remote-DB.
 - [ ] `NODE_ENV=production`.
 - [ ] Migrationen laufen beim Start (über `docker-entrypoint.sh` automatisch).
@@ -35,8 +37,11 @@ produktiv ins Internet bringst.
 # USER_SECRET (32 Byte hex):
 node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
 
-# ADMIN_SECRET (Admin-Passwort, z.B. 24 Byte base64):
-node -e "console.log(require('crypto').randomBytes(18).toString('base64url'))"
+# ADMIN_SECRET (Admin-Passwort, z.B. 32 Zeichen base64url):
+node -e "console.log(require('crypto').randomBytes(24).toString('base64url'))"
+
+# EMAIL_SECRET (32 Byte hex):
+node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
 ```
 
 Beim Start prüft `instrumentation.ts` die Konfiguration und **warnt im Log**,
@@ -66,8 +71,9 @@ fly volumes create data --size 1 --region fra
 
 # 4. Secrets setzen (werden verschlüsselt gespeichert, nicht im Image)
 fly secrets set \
-  ADMIN_SECRET="$(node -e "console.log(require('crypto').randomBytes(18).toString('base64url'))")" \
-  USER_SECRET="$(node -e "console.log(require('crypto').randomBytes(32).toString('hex'))")"
+  ADMIN_SECRET="$(node -e "console.log(require('crypto').randomBytes(24).toString('base64url'))")" \
+  USER_SECRET="$(node -e "console.log(require('crypto').randomBytes(32).toString('hex'))")" \
+  EMAIL_SECRET="$(node -e "console.log(require('crypto').randomBytes(32).toString('hex'))")"
 
 # 5. Deploy – migrate deploy läuft automatisch beim Containerstart
 fly deploy
@@ -99,6 +105,7 @@ NODE_ENV=production
 DATABASE_URL=file:/data/prod.db
 ADMIN_SECRET=__hier_einsetzen__
 USER_SECRET=__hier_einsetzen__
+EMAIL_SECRET=__hier_einsetzen__
 LOG_LEVEL=info
 EOF
 chmod 600 .env.production
@@ -163,7 +170,7 @@ Supabase bieten kostenlose Postgres-Tiers.
    rm -rf prisma/migrations
    DATABASE_URL="postgres://…neon…" npx prisma migrate dev --name init
    ```
-3. Auf Vercel `DATABASE_URL`, `ADMIN_SECRET`, `USER_SECRET` als Environment
+3. Auf Vercel `DATABASE_URL`, `ADMIN_SECRET`, `USER_SECRET`, `EMAIL_SECRET` als Environment
    Variables setzen.
 4. **Achtung:** Der In-Memory-Ratelimiter (`lib/rate-limit.ts`) zählt pro
    Instanz. Auf Serverless mit vielen Lambdas ist das Limit faktisch wirkungslos

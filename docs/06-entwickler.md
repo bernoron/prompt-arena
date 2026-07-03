@@ -108,6 +108,8 @@ Client-Komponenten weiter. `useCurrentUser()` (nur die ID) und `useSession()`
 | `npm run test` | `npm run test:unit && npm run test:e2e` |
 | `npm run test:e2e:install` | `playwright install chromium` |
 | `npm run test:e2e:setup` | `npm run test:e2e:install` |
+| `npm run security:deps` | `npm audit --omit=dev --audit-level=high` |
+| `npm run security:deps:all` | `npm audit --audit-level=moderate` |
 
 ---
 
@@ -123,4 +125,4 @@ Client-Komponenten weiter. `useCurrentUser()` (nur die ID) und `useSession()`
 
 
 ---
-*Automatisch generiert am 03.07.2026, 05:38 · [Quellcode](https://github.com/your-org/prompt-arena)*
+*Automatisch generiert am 03.07.2026, 05:46 · [Quellcode](https://github.com/your-org/prompt-arena)*
