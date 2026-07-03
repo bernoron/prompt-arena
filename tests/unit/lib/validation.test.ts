@@ -24,7 +24,6 @@ describe('CreatePromptSchema', () => {
     contentEn: 'This is the English content',
     category: 'Writing',
     difficulty: 'Einstieg',
-    authorId: 1,
   };
   it('accepts valid input', () => {
     expect(CreatePromptSchema.safeParse(valid).success).toBe(true);
@@ -42,14 +41,13 @@ describe('CreatePromptSchema', () => {
 });
 
 describe('VoteSchema', () => {
-  it('accepts value 1', () => expect(VoteSchema.safeParse({ promptId: 1, userId: 1, value: 1 }).success).toBe(true));
-  it('accepts value 5', () => expect(VoteSchema.safeParse({ promptId: 1, userId: 1, value: 5 }).success).toBe(true));
-  it('rejects value 0', () => expect(VoteSchema.safeParse({ promptId: 1, userId: 1, value: 0 }).success).toBe(false));
-  it('rejects value 6', () => expect(VoteSchema.safeParse({ promptId: 1, userId: 1, value: 6 }).success).toBe(false));
+  it('accepts value 1', () => expect(VoteSchema.safeParse({ promptId: 1, value: 1 }).success).toBe(true));
+  it('accepts value 5', () => expect(VoteSchema.safeParse({ promptId: 1, value: 5 }).success).toBe(true));
+  it('rejects value 0', () => expect(VoteSchema.safeParse({ promptId: 1, value: 0 }).success).toBe(false));
+  it('rejects value 6', () => expect(VoteSchema.safeParse({ promptId: 1, value: 6 }).success).toBe(false));
 });
 
 describe('UsageSchema', () => {
-  it('accepts valid promptId and userId', () => expect(UsageSchema.safeParse({ promptId: 1, userId: 1 }).success).toBe(true));
+  it('accepts valid promptId', () => expect(UsageSchema.safeParse({ promptId: 1 }).success).toBe(true));
   it('rejects missing promptId', () => expect(UsageSchema.safeParse({}).success).toBe(false));
-  it('rejects missing userId', () => expect(UsageSchema.safeParse({ promptId: 1 }).success).toBe(false));
 });

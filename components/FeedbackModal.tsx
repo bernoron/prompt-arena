@@ -14,13 +14,12 @@ const CATEGORIES: { value: Category; icon: string; label: string }[] = [
 ];
 
 interface Props {
-  userId: number;
   onClose: () => void;
   contextType?: 'GENERAL' | 'LESSON' | 'PROMPT';
   contextId?: number;
 }
 
-export default function FeedbackModal({ userId, onClose, contextType = 'GENERAL', contextId }: Props) {
+export default function FeedbackModal({ onClose, contextType = 'GENERAL', contextId }: Props) {
   const [category, setCategory] = useState<Category | null>(null);
   const [text, setText] = useState('');
   const [loading, setLoading] = useState(false);
@@ -36,7 +35,6 @@ export default function FeedbackModal({ userId, onClose, contextType = 'GENERAL'
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          userId,
           category,
           text: text.trim(),
           contextType,

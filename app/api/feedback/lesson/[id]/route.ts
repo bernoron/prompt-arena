@@ -6,7 +6,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { LessonFeedbackUpdateSchema, PathId, validationError } from '@/lib/validation';
 import { writeLimiter, getClientIp } from '@/lib/rate-limit';
-import { resolveUserId, USER_COOKIE } from '@/lib/user-auth';
+import { requireUser } from '@/lib/route-auth';
 import { logger, serializeError } from '@/lib/logger';
 
 // @spec AC-11-008
@@ -40,10 +40,9 @@ export async function PUT(
     return NextResponse.json({ error: 'Not found' }, { status: 404 });
   }
 
-  const resolved = await resolveUserId(req.cookies.get(USER_COOKIE)?.value, existing.userId);
-  if (typeof resolved === 'object' && 'error' in resolved) {
-    return NextResponse.json({ error: resolved.error }, { status: resolved.status });
-  }
+  // requireUser cross-checks the session against the record's owner (403 on mismatch)
+  const auth = await requireUser(req, existing.userId);
+  if ('response' in auth) return auth.response;
 
   try {
     await prisma.lessonFeedback.update({

@@ -59,7 +59,7 @@ export default function FavoritesPage() {
     fetch('/api/votes', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ promptId, userId: currentUserId, value }),
+      body: JSON.stringify({ promptId, value }),
     }).then(() => {
       fetchFavorites();
       checkLevelUp().then((newLevel) => { if (newLevel) setLevelUpName(newLevel); });
@@ -75,7 +75,7 @@ export default function FavoritesPage() {
     fetch('/api/usage', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ promptId, userId: currentUserId }),
+      body: JSON.stringify({ promptId }),
     }).then(() => {
       fetchFavorites();
       checkLevelUp().then((newLevel) => { if (newLevel) setLevelUpName(newLevel); });
@@ -87,7 +87,7 @@ export default function FavoritesPage() {
     const res = await fetch('/api/favorites', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ promptId, userId: currentUserId }),
+      body: JSON.stringify({ promptId }),
     });
     const data = await res.json() as { favorited: boolean };
     if (!data.favorited) {

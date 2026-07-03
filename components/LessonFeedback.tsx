@@ -53,7 +53,7 @@ export default function LessonFeedback({ lessonId, userId }: Props) {
         const res = await apiFetch<{ ok: boolean; id: number }>('/api/feedback/lesson', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ userId, lessonId, helpful: value }),
+          body: JSON.stringify({ lessonId, helpful: value }),
         });
         setExisting({ id: res.id, helpful: value, text: null });
       }

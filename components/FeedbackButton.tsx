@@ -24,7 +24,6 @@ export default function FeedbackButton() {
 
       {open && (
         <FeedbackModal
-          userId={userId}
           onClose={() => setOpen(false)}
         />
       )}

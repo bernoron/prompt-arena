@@ -14,8 +14,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { CreatePromptSchema, PathId, validationError } from '@/lib/validation';
 import { readLimiter, writeLimiter, getClientIp } from '@/lib/rate-limit';
-import { resolveUserId, USER_COOKIE } from '@/lib/user-auth';
-import { optionalUser } from '@/lib/route-auth';
+import { optionalUser, requireUser } from '@/lib/route-auth';
 import { logger, serializeError } from '@/lib/logger';
 import { listPrompts, createPrompt } from '@/lib/services/prompt-service';
 
@@ -105,12 +104,10 @@ export async function POST(req: NextRequest) {
 
   const reqId = req.headers.get('x-request-id') ?? undefined;
 
-  const resolved = await resolveUserId(req.cookies.get(USER_COOKIE)?.value, result.data.authorId);
-  if (typeof resolved === 'object' && 'error' in resolved) {
-    return NextResponse.json({ error: resolved.error }, { status: resolved.status });
-  }
+  const auth = await requireUser(req);
+  if ('response' in auth) return auth.response;
   const { title, titleEn, content, contentEn, category, difficulty, challengeId } = result.data;
-  const authorId = resolved;
+  const authorId = auth.userId;
 
   try {
     const created = await createPrompt({ title, titleEn, content, contentEn, category, difficulty, authorId, challengeId });

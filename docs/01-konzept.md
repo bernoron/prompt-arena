@@ -128,4 +128,4 @@ spass­bringend und sichtbar.
 
 
 ---
-*Automatisch generiert am 02.07.2026, 23:45 · [Quellcode](https://github.com/your-org/prompt-arena)*
+*Automatisch generiert am 03.07.2026, 05:20 · [Quellcode](https://github.com/your-org/prompt-arena)*

@@ -37,7 +37,7 @@ export default function LessonPage({
     try {
       const res = await fetch(
         `/api/learn/${params.moduleSlug}/${params.lessonSlug}/complete`,
-        { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ userId }) },
+        { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' },
       );
       const data = await res.json();
       if (data.ok && !data.alreadyCompleted) {
@@ -158,7 +158,7 @@ export default function LessonPage({
       <LessonNav prev={lesson.prev} next={lesson.next} moduleSlug={params.moduleSlug} />
 
       {showSuggest && userId > 0 && (
-        <TopicSuggestionModal userId={userId} onClose={() => setShowSuggest(false)} />
+        <TopicSuggestionModal onClose={() => setShowSuggest(false)} />
       )}
     </div>
   );

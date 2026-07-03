@@ -5,11 +5,10 @@ import { useState } from 'react';
 import { apiFetch } from '@/lib/api-client';
 
 interface Props {
-  userId: number;
   onClose: () => void;
 }
 
-export default function TopicSuggestionModal({ userId, onClose }: Props) {
+export default function TopicSuggestionModal({ onClose }: Props) {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [loading, setLoading] = useState(false);
@@ -25,7 +24,6 @@ export default function TopicSuggestionModal({ userId, onClose }: Props) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          userId,
           title: title.trim(),
           description: description.trim() || undefined,
         }),

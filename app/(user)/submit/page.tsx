@@ -81,7 +81,6 @@ export default function SubmitPage() {
         ...form,
         titleEn: form.titleEn.trim() || form.title,
         contentEn: form.contentEn.trim() || form.content,
-        authorId: currentUser.id,
         challengeId: linkChallenge && challenge ? challenge.id : undefined,
       }),
     });

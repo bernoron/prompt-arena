@@ -5,7 +5,7 @@
  * The first use per user/prompt increments usageCount and awards PROMPT_USED
  * points to the prompt author. Repeated uses by the same user are idempotent.
  *
- * Body: { promptId: number, userId: number }
+ * Body: { promptId: number } — the user comes from the session cookie.
  */
 
 import { NextRequest, NextResponse } from 'next/server';
@@ -15,7 +15,7 @@ import { awardPoints } from '@/lib/db-helpers';
 import { POINTS } from '@/lib/points';
 import { UsageSchema, validationError } from '@/lib/validation';
 import { writeLimiter, getClientIp } from '@/lib/rate-limit';
-import { resolveUserId, USER_COOKIE } from '@/lib/user-auth';
+import { requireUser } from '@/lib/route-auth';
 import { logger, serializeError } from '@/lib/logger';
 
 // @spec AC-04-008
@@ -36,11 +36,9 @@ export async function POST(req: NextRequest) {
   const { promptId } = result.data;
   const reqId = req.headers.get('x-request-id') ?? undefined;
 
-  const resolved = await resolveUserId(req.cookies.get(USER_COOKIE)?.value, result.data.userId);
-  if (typeof resolved === 'object' && 'error' in resolved) {
-    return NextResponse.json({ error: resolved.error }, { status: resolved.status });
-  }
-  const userId = resolved;
+  const auth = await requireUser(req);
+  if ('response' in auth) return auth.response;
+  const userId = auth.userId;
 
   try {
     const prompt = await prisma.$transaction(async (tx) => {

@@ -6,7 +6,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { FeedbackSchema, validationError } from '@/lib/validation';
 import { writeLimiter, getClientIp } from '@/lib/rate-limit';
-import { resolveUserId, USER_COOKIE } from '@/lib/user-auth';
+import { requireUser } from '@/lib/route-auth';
 import { logger, serializeError } from '@/lib/logger';
 
 // @spec AC-11-003, AC-11-004, AC-11-005
@@ -24,17 +24,16 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(errBody, { status });
   }
 
-  const resolved = await resolveUserId(req.cookies.get(USER_COOKIE)?.value, result.data.userId);
-  if (typeof resolved === 'object' && 'error' in resolved) {
-    return NextResponse.json({ error: resolved.error }, { status: resolved.status });
-  }
+  const auth = await requireUser(req);
+  if ('response' in auth) return auth.response;
+  const userId = auth.userId;
 
   const { category, text, contextType, contextId, contextPath } = result.data;
 
   try {
     await prisma.feedback.create({
       data: {
-        userId: resolved,
+        userId,
         category,
         text,
         contextType: contextType ?? 'GENERAL',
@@ -43,7 +42,7 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    logger.info('feedback submitted', { userId: resolved, category, contextType });
+    logger.info('feedback submitted', { userId, category, contextType });
     return NextResponse.json({ ok: true });
   } catch (err) {
     logger.error('feedback submit failed', serializeError(err));

@@ -41,7 +41,6 @@ test.describe('BAC-11 feedback system', () => {
     const res = await request.post('/api/feedback', {
       headers: { Cookie: cookie },
       data: {
-        userId,
         category: 'IDEA',
         text: 'It would be great to have dark mode',
         contextPath: '/dashboard',
@@ -56,7 +55,7 @@ test.describe('BAC-11 feedback system', () => {
 
     const res = await request.post('/api/feedback', {
       headers: { Cookie: cookie },
-      data: { userId, text: 'Some text without a category' },
+      data: { text: 'Some text without a category' },
     });
     expect(res.status()).toBe(400);
   });
@@ -66,7 +65,7 @@ test.describe('BAC-11 feedback system', () => {
 
     const res = await request.post('/api/feedback', {
       headers: { Cookie: cookie },
-      data: { userId, category: 'BUG', text: '' },
+      data: { category: 'BUG', text: '' },
     });
     expect(res.status()).toBe(400);
   });
@@ -84,7 +83,7 @@ test.describe('BAC-11 feedback system', () => {
 
     const postRes = await request.post('/api/feedback/lesson', {
       headers: { Cookie: cookie },
-      data: { userId, lessonId, helpful: true },
+      data: { lessonId, helpful: true },
     });
     expect(postRes.status()).toBe(200);
     const { id } = await postRes.json() as { ok: boolean; id: number };
@@ -122,11 +121,11 @@ test.describe('BAC-11 feedback system', () => {
 
     await request.post('/api/feedback/lesson', {
       headers: { Cookie: cookie },
-      data: { userId, lessonId, helpful: true },
+      data: { lessonId, helpful: true },
     });
     const res2 = await request.post('/api/feedback/lesson', {
       headers: { Cookie: cookie },
-      data: { userId, lessonId, helpful: false },
+      data: { lessonId, helpful: false },
     });
     expect(res2.status()).toBe(200);
 
@@ -144,7 +143,7 @@ test.describe('BAC-11 feedback system', () => {
     const title = `Suggestion ${Date.now()}`;
     const postRes = await request.post('/api/feedback/suggestions', {
       headers: { Cookie: cookie },
-      data: { userId, title, description: 'Would be very helpful for the team' },
+      data: { title, description: 'Would be very helpful for the team' },
     });
     expect(postRes.status()).toBe(200);
 
@@ -163,7 +162,7 @@ test.describe('BAC-11 feedback system', () => {
 
     const res = await request.post('/api/feedback/suggestions', {
       headers: { Cookie: cookie },
-      data: { userId, title: 'AB' },
+      data: { title: 'AB' },
     });
     expect(res.status()).toBe(400);
   });
@@ -175,7 +174,6 @@ test.describe('BAC-11 feedback system', () => {
     await request.post('/api/feedback', {
       headers: { Cookie: cookie },
       data: {
-        userId,
         category: 'BUG',
         text: 'Admin visibility test entry',
         contextPath: '/library',
@@ -199,7 +197,7 @@ test.describe('BAC-11 feedback system', () => {
 
     await request.post('/api/feedback', {
       headers: { Cookie: cookie },
-      data: { userId, category: 'PRAISE', text: 'Great platform!' },
+      data: { category: 'PRAISE', text: 'Great platform!' },
     });
 
     const listRes = await request.get('/api/admin/feedback', { headers: { Cookie: adminCookie } });
@@ -225,7 +223,7 @@ test.describe('BAC-11 feedback system', () => {
 
     await request.post('/api/feedback', {
       headers: { Cookie: cookie },
-      data: { userId, category: 'IMPROVEMENT', text: 'Delete me please' },
+      data: { category: 'IMPROVEMENT', text: 'Delete me please' },
     });
 
     const listRes = await request.get('/api/admin/feedback', { headers: { Cookie: adminCookie } });
@@ -250,7 +248,7 @@ test.describe('BAC-11 feedback system', () => {
     const title = `Status Test ${Date.now()}`;
     await request.post('/api/feedback/suggestions', {
       headers: { Cookie: cookie },
-      data: { userId, title },
+      data: { title },
     });
 
     const listRes = await request.get('/api/admin/feedback/suggestions', { headers: { Cookie: adminCookie } });

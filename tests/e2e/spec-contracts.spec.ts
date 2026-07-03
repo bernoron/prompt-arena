@@ -114,7 +114,6 @@ test.describe('PromptArena spec contracts', () => {
         contentEn: 'This is a spec contract prompt with enough content.',
         category: 'Writing',
         difficulty: 'Einstieg',
-        authorId: user.id,
       },
     });
     expect(createRes.status()).toBe(201);
@@ -124,29 +123,26 @@ test.describe('PromptArena spec contracts', () => {
     // AC-03-006: voting on your own prompt is rejected server-side (not just in the UI).
     const selfVoteRes = await request.post('/api/votes', {
       headers: { Cookie: cookie },
-      data: { promptId: prompt.id, userId: user.id, value: 5 },
+      data: { promptId: prompt.id, value: 5 },
     });
     expect(selfVoteRes.status()).toBe(403);
 
-    // A different user can vote legitimately (200).
+    // A different user can vote legitimately (200). The voter identity comes
+    // solely from their session cookie — there is no userId in the body to
+    // spoof, so the old "mismatched userId" 403 case is now structurally
+    // impossible rather than something validation needs to catch.
     const voter = await createAndLoginUser(request);
     const voterCookie = voter.cookie;
     const voteRes = await request.post('/api/votes', {
       headers: { Cookie: voterCookie },
-      data: { promptId: prompt.id, userId: voter.id, value: 5 },
+      data: { promptId: prompt.id, value: 5 },
     });
     expect(voteRes.status()).toBe(200);
     await expect(voteRes.json()).resolves.toMatchObject({ promptId: prompt.id, userId: voter.id, value: 5 });
 
-    const mismatchRes = await request.post('/api/votes', {
-      headers: { Cookie: cookie },
-      data: { promptId: prompt.id, userId: user.id + 99999, value: 4 },
-    });
-    expect(mismatchRes.status()).toBe(403);
-
     const favoriteRes = await request.post('/api/favorites', {
       headers: { Cookie: cookie },
-      data: { promptId: prompt.id, userId: user.id },
+      data: { promptId: prompt.id },
     });
     expect(favoriteRes.status()).toBe(200);
     await expect(favoriteRes.json()).resolves.toEqual({ favorited: true });
@@ -158,15 +154,9 @@ test.describe('PromptArena spec contracts', () => {
     const favorites = await favoritesRes.json() as Array<{ id: number; userFavorite: boolean }>;
     expect(favorites.some((p) => p.id === prompt.id && p.userFavorite)).toBe(true);
 
-    const usageMismatchRes = await request.post('/api/usage', {
-      headers: { Cookie: cookie },
-      data: { promptId: prompt.id, userId: user.id + 99999 },
-    });
-    expect(usageMismatchRes.status()).toBe(403);
-
     const usageRes = await request.post('/api/usage', {
       headers: { Cookie: cookie },
-      data: { promptId: prompt.id, userId: user.id },
+      data: { promptId: prompt.id },
     });
     expect(usageRes.status()).toBe(200);
     const usage = await usageRes.json() as { usageCount: number; alreadyRecorded: boolean };
@@ -175,7 +165,7 @@ test.describe('PromptArena spec contracts', () => {
 
     const usageAgainRes = await request.post('/api/usage', {
       headers: { Cookie: cookie },
-      data: { promptId: prompt.id, userId: user.id },
+      data: { promptId: prompt.id },
     });
     expect(usageAgainRes.status()).toBe(200);
     await expect(usageAgainRes.json()).resolves.toMatchObject({
@@ -230,14 +220,14 @@ test.describe('PromptArena spec contracts', () => {
 
     const completeRes = await request.post(`/api/learn/${moduleSlug}/${lessonSlug}/complete`, {
       headers: { Cookie: cookie },
-      data: { userId: user.id },
+      data: {},
     });
     expect(completeRes.status()).toBe(200);
     await expect(completeRes.json()).resolves.toMatchObject({ ok: true });
 
     const completeAgainRes = await request.post(`/api/learn/${moduleSlug}/${lessonSlug}/complete`, {
       headers: { Cookie: cookie },
-      data: { userId: user.id },
+      data: {},
     });
     expect(completeAgainRes.status()).toBe(200);
     await expect(completeAgainRes.json()).resolves.toMatchObject({

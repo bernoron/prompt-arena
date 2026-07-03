@@ -66,7 +66,6 @@ export const CreatePromptSchema = z.object({
   contentEn:   z.string().trim().max(4000).optional(),
   category:    z.string().trim().min(1).max(40).regex(/^[a-zA-Z0-9_-]+$/, 'Invalid category'),
   difficulty:  z.enum(DIFFICULTIES),
-  authorId:    PositiveInt,
   challengeId: PositiveInt.optional(),
 });
 
@@ -74,11 +73,11 @@ export const CreatePromptSchema = z.object({
 
 /**
  * POST /api/votes – Star rating body.
- * value must be an integer between 1 and 5.
+ * value must be an integer between 1 and 5. The author is always the
+ * signed-in session user — never trust a userId supplied by the client.
  */
 export const VoteSchema = z.object({
   promptId: PositiveInt,
-  userId:   PositiveInt,
   value:    z.number().int().min(1).max(5),
 });
 
@@ -89,7 +88,6 @@ export const VoteSchema = z.object({
  */
 export const UsageSchema = z.object({
   promptId: PositiveInt,
-  userId:   PositiveInt,
 });
 
 // ─── Favorites ────────────────────────────────────────────────────────────────
@@ -99,23 +97,20 @@ export const UsageSchema = z.object({
  */
 export const FavoriteSchema = z.object({
   promptId: PositiveInt,
-  userId:   PositiveInt,
 });
 
 // ─── Learning ─────────────────────────────────────────────────────────────────
 
 /**
  * POST /api/learn/[moduleSlug]/[lessonSlug]/complete
+ * No body fields — the user comes from the session cookie.
  */
-export const CompleteLessonSchema = z.object({
-  userId: PositiveInt,
-});
+export const CompleteLessonSchema = z.object({});
 
 // ─── Feedback ─────────────────────────────────────────────────────────────────
 
 // @spec AC-11-003
 export const FeedbackSchema = z.object({
-  userId:      PositiveInt,
   category:    z.enum(['BUG', 'IMPROVEMENT', 'IDEA', 'PRAISE']),
   text:        z.string().trim().min(1).max(500),
   contextType: z.enum(['GENERAL', 'LESSON', 'PROMPT']).default('GENERAL'),
@@ -125,7 +120,6 @@ export const FeedbackSchema = z.object({
 
 // @spec AC-11-007
 export const LessonFeedbackSchema = z.object({
-  userId:   PositiveInt,
   lessonId: PositiveInt,
   helpful:  z.boolean(),
   text:     z.string().trim().max(500).optional(),
@@ -138,7 +132,6 @@ export const LessonFeedbackUpdateSchema = z.object({
 
 // @spec AC-11-011
 export const TopicSuggestionSchema = z.object({
-  userId:      PositiveInt,
   title:       z.string().trim().min(3).max(200),
   description: z.string().trim().max(500).optional(),
 });

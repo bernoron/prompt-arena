@@ -162,7 +162,7 @@ export default function LearnPage() {
         </div>
       </div>
       {showSuggest && userId > 0 && (
-        <TopicSuggestionModal userId={userId} onClose={() => setShowSuggest(false)} />
+        <TopicSuggestionModal onClose={() => setShowSuggest(false)} />
       )}
     </div>
   );

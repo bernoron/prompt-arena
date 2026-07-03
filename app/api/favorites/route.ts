@@ -2,7 +2,7 @@
  * GET  /api/favorites?userId=<id>  – Fetch all favorited prompts for a user
  * POST /api/favorites               – Toggle a prompt as favorite (add / remove)
  *
- * POST body: { promptId: number, userId: number }
+ * POST body: { promptId: number } — the user comes from the session cookie.
  *
  * Idempotent point distribution:
  *   The FIRST time a user favorites a prompt the prompt author receives
@@ -18,7 +18,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { FavoriteSchema, validationError } from '@/lib/validation';
 import { writeLimiter, readLimiter, getClientIp } from '@/lib/rate-limit';
-import { resolveUserId, USER_COOKIE } from '@/lib/user-auth';
 import { parseOptionalPositiveInt, requireUser } from '@/lib/route-auth';
 import { logger, serializeError } from '@/lib/logger';
 import { listFavorites, toggleFavorite } from '@/lib/services/favorite-service';
@@ -71,12 +70,10 @@ export async function POST(req: NextRequest) {
 
   const reqId = req.headers.get('x-request-id') ?? undefined;
 
-  const resolved = await resolveUserId(req.cookies.get(USER_COOKIE)?.value, result.data.userId);
-  if (typeof resolved === 'object' && 'error' in resolved) {
-    return NextResponse.json({ error: resolved.error }, { status: resolved.status });
-  }
+  const auth = await requireUser(req);
+  if ('response' in auth) return auth.response;
   const { promptId } = result.data;
-  const userId = resolved;
+  const userId = auth.userId;
 
   try {
     const { favorited } = await toggleFavorite(promptId, userId);

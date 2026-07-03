@@ -7,7 +7,6 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { LessonFeedbackSchema, PathId, validationError } from '@/lib/validation';
 import { writeLimiter, readLimiter, getClientIp } from '@/lib/rate-limit';
-import { resolveUserId, USER_COOKIE } from '@/lib/user-auth';
 import { requireUser } from '@/lib/route-auth';
 import { logger, serializeError } from '@/lib/logger';
 
@@ -62,18 +61,17 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(errBody, { status });
   }
 
-  const resolved = await resolveUserId(req.cookies.get(USER_COOKIE)?.value, result.data.userId);
-  if (typeof resolved === 'object' && 'error' in resolved) {
-    return NextResponse.json({ error: resolved.error }, { status: resolved.status });
-  }
+  const auth = await requireUser(req);
+  if ('response' in auth) return auth.response;
+  const userId = auth.userId;
 
   const { lessonId, helpful, text } = result.data;
 
   try {
     const record = await prisma.lessonFeedback.upsert({
-      where: { userId_lessonId: { userId: resolved, lessonId } },
+      where: { userId_lessonId: { userId, lessonId } },
       update: { helpful, text: text ?? null },
-      create: { userId: resolved, lessonId, helpful, text: text ?? null },
+      create: { userId, lessonId, helpful, text: text ?? null },
     });
 
     return NextResponse.json({ ok: true, id: record.id });

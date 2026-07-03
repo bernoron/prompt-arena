@@ -13,7 +13,6 @@ import {
 
 describe('FeedbackSchema', () => {
   const valid = {
-    userId:   1,
     category: 'BUG' as const,
     text:     'Something is broken',
   };
@@ -63,16 +62,12 @@ describe('FeedbackSchema', () => {
   it('rejects invalid contextType', () => {
     expect(FeedbackSchema.safeParse({ ...valid, contextType: 'MODULE' }).success).toBe(false);
   });
-
-  it('rejects negative userId', () => {
-    expect(FeedbackSchema.safeParse({ ...valid, userId: -1 }).success).toBe(false);
-  });
 });
 
 // ─── LessonFeedbackSchema ─────────────────────────────────────────────────────
 
 describe('LessonFeedbackSchema', () => {
-  const valid = { userId: 1, lessonId: 2, helpful: true };
+  const valid = { lessonId: 2, helpful: true };
 
   it('accepts minimal valid input', () => {
     expect(LessonFeedbackSchema.safeParse(valid).success).toBe(true);
@@ -119,7 +114,7 @@ describe('LessonFeedbackUpdateSchema', () => {
 // ─── TopicSuggestionSchema ────────────────────────────────────────────────────
 
 describe('TopicSuggestionSchema', () => {
-  const valid = { userId: 1, title: 'Advanced RAG techniques' };
+  const valid = { title: 'Advanced RAG techniques' };
 
   it('accepts minimal valid input', () => {
     expect(TopicSuggestionSchema.safeParse(valid).success).toBe(true);
