@@ -89,7 +89,7 @@ Client-Komponenten weiter. `useCurrentUser()` (nur die ID) und `useSession()`
 | `npm run dev` | `next dev` |
 | `npm run build` | `next build` |
 | `npm run start` | `next start` |
-| `npm run lint` | `next lint` |
+| `npm run lint` | `eslint .` |
 | `npm run db:generate` | `prisma generate` |
 | `npm run db:migrate` | `prisma migrate dev --name init` |
 | `npm run db:seed` | `tsx prisma/seed.ts` |
@@ -125,4 +125,4 @@ Client-Komponenten weiter. `useCurrentUser()` (nur die ID) und `useSession()`
 
 
 ---
-*Automatisch generiert am 03.07.2026, 05:46 · [Quellcode](https://github.com/your-org/prompt-arena)*
+*Automatisch generiert am 03.07.2026, 06:34 · [Quellcode](https://github.com/your-org/prompt-arena)*

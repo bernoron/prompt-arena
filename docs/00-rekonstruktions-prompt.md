@@ -23,10 +23,10 @@ ABHÄNGIGKEITEN (package.json dependencies):
   "@prisma/client": "^5.22.0",
   "@types/canvas-confetti": "^1.9.0",
   "canvas-confetti": "^1.9.4",
-  "next": "14.2.35",
+  "next": "^16.2.10",
   "prisma": "^5.22.0",
-  "react": "^18",
-  "react-dom": "^18",
+  "react": "^19.2.7",
+  "react-dom": "^19.2.7",
   "tsx": "^4.21.0",
   "zod": "^3.23.8"
 
@@ -599,4 +599,4 @@ SETUP-REIHENFOLGE
 
 
 ---
-*Automatisch generiert am 03.07.2026, 05:46 · [Quellcode](https://github.com/your-org/prompt-arena)*
+*Automatisch generiert am 03.07.2026, 06:34 · [Quellcode](https://github.com/your-org/prompt-arena)*

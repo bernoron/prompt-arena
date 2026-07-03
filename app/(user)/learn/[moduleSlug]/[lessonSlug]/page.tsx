@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, use } from 'react';
 import Link from 'next/link';
 import ContentBlockRenderer from '@/components/learn/ContentBlock';
 import LessonNav from '@/components/learn/LessonNav';
@@ -15,8 +15,9 @@ import { useCurrentUser } from '@/hooks/useCurrentUser';
 export default function LessonPage({
   params,
 }: {
-  params: { moduleSlug: string; lessonSlug: string };
+  params: Promise<{ moduleSlug: string; lessonSlug: string }>;
 }) {
+  const { moduleSlug, lessonSlug } = use(params);
   const userId = useCurrentUser() ?? 0;
   const [lesson, setLesson]               = useState<LessonDetail | null>(null);
   const [loading, setLoading]             = useState(true);
@@ -24,11 +25,11 @@ export default function LessonPage({
   const [showSuggest, setShowSuggest]     = useState(false);
 
   useEffect(() => {
-    fetch(`/api/learn/${params.moduleSlug}/${params.lessonSlug}?userId=${userId}`)
+    fetch(`/api/learn/${moduleSlug}/${lessonSlug}?userId=${userId}`)
       .then((r) => r.json())
       .then((data) => { setLesson(data); setLoading(false); })
       .catch(() => setLoading(false));
-  }, [params.moduleSlug, params.lessonSlug, userId]);
+  }, [moduleSlug, lessonSlug, userId]);
 
   // @spec AC-08-008
   const handleComplete = useCallback(async () => {
@@ -36,7 +37,7 @@ export default function LessonPage({
     setCompleting(true);
     try {
       const res = await fetch(
-        `/api/learn/${params.moduleSlug}/${params.lessonSlug}/complete`,
+        `/api/learn/${moduleSlug}/${lessonSlug}/complete`,
         { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' },
       );
       const data = await res.json();
@@ -49,7 +50,7 @@ export default function LessonPage({
     } finally {
       setCompleting(false);
     }
-  }, [lesson, completing, userId, params.moduleSlug, params.lessonSlug]);
+  }, [lesson, completing, userId, moduleSlug, lessonSlug]);
 
   if (loading) {
     return (
@@ -82,7 +83,7 @@ export default function LessonPage({
       <nav className="flex items-center gap-2 text-sm text-slate-400 mb-6">
         <Link href="/learn" className="hover:text-slate-600 transition-colors">Lernen</Link>
         <span>›</span>
-        <Link href={`/learn/${params.moduleSlug}`} className="hover:text-slate-600 transition-colors">
+        <Link href={`/learn/${moduleSlug}`} className="hover:text-slate-600 transition-colors">
           {lesson.module.icon} {lesson.module.title}
         </Link>
         <span>›</span>
@@ -155,7 +156,7 @@ export default function LessonPage({
       )}
 
       {/* Prev / Next Navigation */}
-      <LessonNav prev={lesson.prev} next={lesson.next} moduleSlug={params.moduleSlug} />
+      <LessonNav prev={lesson.prev} next={lesson.next} moduleSlug={moduleSlug} />
 
       {showSuggest && userId > 0 && (
         <TopicSuggestionModal onClose={() => setShowSuggest(false)} />

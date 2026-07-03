@@ -13,7 +13,23 @@
  *   - Brute-force is mitigated by the rate limiter on the login API.
  */
 
-const ADMIN_SESSION_MAX_AGE_MS = 60 * 60 * 24 * 7 * 1000; // 7 days
+// 24h stolen-cookie window (was 7 days). The admin is a single operator who
+// can simply log in again; a shorter lifetime bounds the damage of a leaked
+// admin_session cookie without an added session store.
+export const ADMIN_SESSION_MAX_AGE_MS = 60 * 60 * 24 * 1000; // 24 hours
+
+/**
+ * Optional hard revocation switch. Set ADMIN_SESSION_EPOCH to a millisecond
+ * timestamp (e.g. `node -e "console.log(Date.now())"`) to instantly invalidate
+ * every admin session issued before that moment — without rotating ADMIN_SECRET
+ * (which would also break signed URLs / require redeploying the secret).
+ */
+function issuedBeforeEpoch(issuedAt: number): boolean {
+  const raw = process.env.ADMIN_SESSION_EPOCH;
+  if (!raw) return false;
+  const epoch = Number(raw);
+  return Number.isFinite(epoch) && issuedAt < epoch;
+}
 
 async function hmac(payload: string, secret: string): Promise<string> {
   const keyData = new TextEncoder().encode(secret);
@@ -75,6 +91,7 @@ export async function isAdminAuthorised(cookieValue: string | undefined): Promis
 
   const age = Date.now() - issuedAt;
   if (age < 0 || age > ADMIN_SESSION_MAX_AGE_MS) return false;
+  if (issuedBeforeEpoch(issuedAt)) return false;
 
   const payload = `${issuedAtRaw}.${nonce}`;
   const expected = await hmac(payload, secret);

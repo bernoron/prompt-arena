@@ -4,7 +4,7 @@
 
 | Schicht | Technologie | Begründung |
 |---------|------------|------------|
-| Framework | Next.js 14 App Router | File-based Routing, Server Components, API Routes |
+| Framework | Next.js 16 App Router (React 19) | File-based Routing, Server Components, API Routes; async Request-APIs (`params`/`cookies()` sind Promises) |
 | Datenbank | Prisma 5 + SQLite | Dateibasiert, kein separater DB-Server nötig |
 | Styling | TailwindCSS | Utility-first, kein Build-Overhead |
 | Validierung | Zod | TypeScript-first, wiederverwendbare Schemas |

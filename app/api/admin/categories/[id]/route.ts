@@ -20,7 +20,7 @@ const PatchSchema = z.object({
 // @spec AC-07-010
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   const auth = await requireAdmin(req);
   if (auth) return auth;
@@ -29,7 +29,7 @@ export async function PATCH(
     return NextResponse.json({ error: 'Too many requests' }, { status: 429 });
   }
 
-  const id = parseInt(params.id, 10);
+  const id = parseInt((await params).id, 10);
   if (!id) return NextResponse.json({ error: 'Invalid id' }, { status: 400 });
 
   const body   = await req.json().catch(() => null);
@@ -49,7 +49,7 @@ export async function PATCH(
 
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   const auth = await requireAdmin(req);
   if (auth) return auth;
@@ -58,7 +58,7 @@ export async function DELETE(
     return NextResponse.json({ error: 'Too many requests' }, { status: 429 });
   }
 
-  const id = parseInt(params.id, 10);
+  const id = parseInt((await params).id, 10);
   if (!id) return NextResponse.json({ error: 'Invalid id' }, { status: 400 });
 
   // Refuse deletion if any prompts still reference this category slug

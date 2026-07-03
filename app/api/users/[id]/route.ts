@@ -15,14 +15,14 @@ import { readLimiter, getClientIp } from '@/lib/rate-limit';
 // @spec AC-01-003, AC-10-001
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   if (!readLimiter.check(getClientIp(req))) {
     return NextResponse.json({ error: 'Too many requests' }, { status: 429 });
   }
 
   // Validate that the path segment is a valid positive integer
-  const idResult = PathId.safeParse(params.id);
+  const idResult = PathId.safeParse((await params).id);
   if (!idResult.success) {
     return NextResponse.json({ error: 'Invalid user ID' }, { status: 400 });
   }

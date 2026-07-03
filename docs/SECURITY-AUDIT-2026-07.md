@@ -75,6 +75,40 @@ Arbitrary File Read im Dev-Server) aktualisiert. 20 → 6 offene Findings.
 
 ---
 
+## 1b. Nachtrag 2026-07-03 – Behobene HIGH/MEDIUM-Findings
+
+### 1b.1 Framework-Upgrade Next.js 14 → 16 (HOCH, CR-001)
+
+Next.js 14.2.35 war seit Dez 2025 End-of-Life; `npm audit` meldete dauerhaft
+mehrere **High**-Advisories. Umgesetzt via [CR-001](../specs/changes/CR-001-nextjs-16-upgrade.md):
+Upgrade auf **Next 16.2.10 + React 19**, ESLint 9 (Flat-Config, `next lint` entfällt),
+async Request-APIs (`params`/`cookies()` → Promises) in allen 11 dynamischen
+Routen/Seiten migriert. `npm audit --omit=dev --audit-level=high` ist danach sauber
+(4 High-Advisories behoben). Verbleibend: ein `postcss`-Moderate (transitiv über
+`next`, nur Build-Zeit).
+
+### 1b.2 CSP: `script-src 'unsafe-inline'` → Nonce + `strict-dynamic` (MITTEL)
+
+Die Produktions-CSP erlaubte Inline-Skripte (`'unsafe-inline'`), was Inline-XSS
+nicht wirksam verhindert. Neu: Die Middleware erzeugt pro Request eine Nonce
+(`lib/csp.ts`), Next.js stempelt sie auf seine Hydration-Skripte; `strict-dynamic`
+ersetzt `'unsafe-inline'` im `script-src`. Da eine Per-Request-Nonce nicht in
+statisch vorgerenderte Seiten gebacken werden kann, rendern alle Seiten dynamisch
+(`force-dynamic` im Root-Layout). Live verifiziert: alle Seiten (inkl. `/login`,
+`/admin/login`) liefern ausschließlich noncetragende Skripte. `style-src
+'unsafe-inline'` bleibt (Next/Tailwind-Inline-Styles; schwächere XSS-Senke).
+
+### 1b.3 Admin-Sessions gehärtet (MITTEL)
+
+Stolen-Cookie-Fenster von 7 Tagen auf **24 h** reduziert (Cookie-`maxAge` +
+serverseitiger `ADMIN_SESSION_MAX_AGE_MS`). Neuer optionaler Sofort-Widerruf
+`ADMIN_SESSION_EPOCH` (ms-Timestamp) invalidiert **alle** Admin-Sessions ohne
+`ADMIN_SECRET`-Rotation. Der architektonische Rest (geteiltes Admin-Passwort ohne
+Benutzerbindung) bleibt als bewusster Single-Admin-Kompromiss bestehen (Restrisiko
+#6) – echte Admin-Accounts/SSO wären ein eigenes Feature.
+
+---
+
 ## 2. Geprüft und für solide befunden
 
 - **Auth-Flows:** scrypt-Passwort-Hashing mit Salt, timing-safe Vergleiche,
@@ -100,9 +134,9 @@ Arbitrary File Read im Dev-Server) aktualisiert. 20 → 6 offene Findings.
 
 | # | Restrisiko | Empfehlung | Priorität |
 |---|---|---|---|
-| 1 | **Framework-/Dependency-Advisories** können zwischen Releases neu auftauchen und müssen vor jedem Deploy sichtbar werden | Umgesetzt: `npm run security:deps` blockt High/Critical-Advisories in Produktionsabhängigkeiten in CI; Dependabot erstellt wöchentliche PRs für npm- und GitHub-Actions-Updates. Next-Upgrades weiter als eigene Change Requests behandeln. | Hoch |
-| 2 | CSP enthält `script-src 'unsafe-inline'` (von Next.js-Hydration benötigt) | Nonce-basierte CSP via Middleware evaluieren (erfordert dynamisches Rendering aller Seiten) | Mittel |
-| 3 | Admin-Sessions stateless → kein serverseitiger Widerruf vor 7-Tage-Ablauf | Bei Bedarf: Token-Denylist in DB/Redis; kurzfristig `ADMIN_SECRET` rotieren (invalidiert alle Admin-Sessions sofort) | Mittel |
+| 1 | **Framework-/Dependency-Advisories** können zwischen Releases neu auftauchen und müssen vor jedem Deploy sichtbar werden | Umgesetzt: `npm run security:deps` blockt High/Critical-Advisories in Produktionsabhängigkeiten in CI; Dependabot erstellt wöchentliche PRs. **Next 14→16-Upgrade durchgeführt (1b.1)** → offene High-Advisories behoben. Künftige Next-Major-Upgrades weiter als eigene Change Requests. | Hoch (laufend) |
+| 2 | ~~CSP enthält `script-src 'unsafe-inline'`~~ | **Behoben** (1b.2): Nonce + `strict-dynamic`, alle Seiten dynamisch. `style-src 'unsafe-inline'` bleibt (nicht per Nonce absicherbar). | ~~Mittel~~ erledigt |
+| 3 | ~~Admin-Sessions stateless → kein Widerruf vor 7-Tage-Ablauf~~ | **Behoben** (1b.3): 24h-Fenster + `ADMIN_SESSION_EPOCH`-Sofortwiderruf. Geteiltes Passwort bleibt (Restrisiko #6). | ~~Mittel~~ erledigt |
 | 4 | Rate Limiter prozesslokal | Bei Multi-Replica-Deployment auf Redis-basierten Limiter wechseln | Niedrig (aktuell Single Instance) |
 | 5 | Verbleibende `npm audit`-Findings: `esbuild`/`glob` (nur Dev-Toolchain, nicht im Produktions-Bundle), `next`/`postcss` (siehe #1) | Mit dem Next-Upgrade erledigen | Niedrig |
 | 6 | `ADMIN_SECRET` ist ein geteiltes Passwort ohne Benutzerbindung | Für Mehr-Admin-Betrieb: echte Admin-Accounts oder SSO | Niedrig |

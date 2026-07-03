@@ -32,7 +32,7 @@ export const USER_COOKIE_OPTS = {
  * For use in Server Components and Server Actions.
  */
 export async function getSessionUserId(): Promise<number | null> {
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const value = cookieStore.get(USER_COOKIE)?.value;
   return verifyUserCookie(value);
 }

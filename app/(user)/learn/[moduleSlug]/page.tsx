@@ -1,13 +1,14 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, use } from 'react';
 import Link from 'next/link';
 import ProgressRing from '@/components/learn/ProgressRing';
 import type { LearningModuleWithProgress } from '@/lib/types';
 import { useCurrentUser } from '@/hooks/useCurrentUser';
 
 // @spec AC-08-005
-export default function ModulePage({ params }: { params: { moduleSlug: string } }) {
+export default function ModulePage({ params }: { params: Promise<{ moduleSlug: string }> }) {
+  const { moduleSlug } = use(params);
   const userId = useCurrentUser() ?? 0;
   const [mod, setMod] = useState<LearningModuleWithProgress | null>(null);
   const [loading, setLoading] = useState(true);
@@ -16,12 +17,12 @@ export default function ModulePage({ params }: { params: { moduleSlug: string } 
     fetch(`/api/learn?userId=${userId}`)
       .then((r) => r.json())
       .then((data: LearningModuleWithProgress[]) => {
-        const found = data.find((m) => m.slug === params.moduleSlug) ?? null;
+        const found = data.find((m) => m.slug === moduleSlug) ?? null;
         setMod(found);
         setLoading(false);
       })
       .catch(() => setLoading(false));
-  }, [params.moduleSlug, userId]);
+  }, [moduleSlug, userId]);
 
   if (loading) {
     return (

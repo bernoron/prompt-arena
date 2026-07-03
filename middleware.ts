@@ -22,6 +22,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { isAdminAuthorised, ADMIN_COOKIE } from '@/lib/admin-auth';
 import { verifyUserCookie, USER_COOKIE } from '@/lib/user-session';
+import { buildCsp } from '@/lib/csp';
 
 const SILENT: string[] = ['/_next/', '/favicon'];
 
@@ -59,11 +60,25 @@ export async function middleware(req: NextRequest): Promise<NextResponse> {
   const requestHeaders = new Headers(req.headers);
   requestHeaders.set('x-request-id', reqId);
 
+  // Per-request CSP nonce. Next.js reads the nonce from the *request's*
+  // Content-Security-Policy header and stamps it onto its own inline hydration
+  // scripts, so production no longer needs script-src 'unsafe-inline'.
+  const nonce = btoa(crypto.randomUUID());
+  const csp = buildCsp(nonce, process.env.NODE_ENV !== 'production');
+  requestHeaders.set('x-nonce', nonce);
+  requestHeaders.set('Content-Security-Policy', csp);
+
+  /** Attach the (nonce-bearing) CSP to any outgoing response before returning it. */
+  const stamp = (res: NextResponse): NextResponse => {
+    res.headers.set('Content-Security-Policy', csp);
+    return res;
+  };
+
   // ── 1. Admin guard ─────────────────────────────────────────────────────────
 
   // Block direct /admin access when a custom path is configured
   if (CUSTOM_ADMIN && pathname.startsWith('/admin') && !pathname.startsWith('/api/admin')) {
-    return new NextResponse(null, { status: 404 });
+    return stamp(new NextResponse(null, { status: 404 }));
   }
 
   // Resolve effective admin path (custom prefix → /admin equivalent)
@@ -81,9 +96,9 @@ export async function middleware(req: NextRequest): Promise<NextResponse> {
 
     if (!authorised) {
       if (pathname.startsWith('/api/')) {
-        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        return stamp(NextResponse.json({ error: 'Unauthorized' }, { status: 401 }));
       }
-      return NextResponse.redirect(new URL(`/${ADMIN_PREFIX}/login`, req.url));
+      return stamp(NextResponse.redirect(new URL(`/${ADMIN_PREFIX}/login`, req.url)));
     }
   }
 
@@ -92,7 +107,7 @@ export async function middleware(req: NextRequest): Promise<NextResponse> {
     const rewriteUrl = new URL(effectivePath, req.url);
     const rewritten  = NextResponse.rewrite(rewriteUrl, { request: { headers: requestHeaders } });
     rewritten.headers.set('x-request-id', reqId);
-    return rewritten;
+    return stamp(rewritten);
   }
 
   // ── 2. User auth guard ─────────────────────────────────────────────────────
@@ -103,12 +118,12 @@ export async function middleware(req: NextRequest): Promise<NextResponse> {
     if (!userId) {
       const loginUrl = new URL('/login', req.url);
       loginUrl.searchParams.set('next', pathname);
-      return NextResponse.redirect(loginUrl);
+      return stamp(NextResponse.redirect(loginUrl));
     }
   }
 
   // ── 3. Request ID ──────────────────────────────────────────────────────────
-  const res = NextResponse.next({ request: { headers: requestHeaders } });
+  const res = stamp(NextResponse.next({ request: { headers: requestHeaders } }));
   res.headers.set('x-request-id', reqId);
 
   // ── 4. Request log ─────────────────────────────────────────────────────────

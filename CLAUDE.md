@@ -10,7 +10,10 @@ Do NOT ask for confirmation before:
 - Committing or pushing to git
 
 ## Project Context
-- **Stack**: Next.js 14 App Router, Prisma 5 (SQLite), TailwindCSS, TypeScript strict
+- **Stack**: Next.js 16 App Router (React 19), Prisma 5 (SQLite), TailwindCSS, TypeScript strict
+  - Next 15+ async Request-APIs: Route-Handler-`params`, `cookies()`, `headers()` sind Promises → `await` bzw. `use()` in Client-Komponenten
+  - Lint läuft über `eslint .` (Flat-Config `eslint.config.mjs`); `next lint` gibt es nicht mehr
+  - CSP trägt eine Per-Request-Nonce (`middleware.ts` + `lib/csp.ts`) → alle Seiten rendern dynamisch (`force-dynamic` im Root-Layout)
 - **Architecture**: Two completely separate route groups:
   - `app/(user)/` – user-facing app (Navigation bar)
   - `app/admin/` – admin panel (sidebar only, no user nav)

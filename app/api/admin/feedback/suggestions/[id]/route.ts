@@ -12,7 +12,7 @@ import { logger, serializeError } from '@/lib/logger';
 // @spec AC-11-016
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   const auth = await requireAdmin(req);
   if (auth) return auth;
@@ -22,7 +22,7 @@ export async function PATCH(
     return NextResponse.json({ error: 'Too many requests' }, { status: 429 });
   }
 
-  const idResult = PathId.safeParse(params.id);
+  const idResult = PathId.safeParse((await params).id);
   if (!idResult.success) {
     return NextResponse.json({ error: 'Invalid id' }, { status: 400 });
   }
