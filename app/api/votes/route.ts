@@ -65,9 +65,11 @@ export async function POST(req: NextRequest) {
       create: { promptId, userId, value },
     });
 
-    // Award points only for the first vote, not for changes
+    // Award points only for the first vote, not for changes. The ledger
+    // key (not just the `!existing` check above) is what actually prevents
+    // a double-award if two requests race past the check simultaneously.
     if (!existing) {
-      await awardPoints(userId, POINTS.VOTE_ON_PROMPT);
+      await awardPoints(userId, POINTS.VOTE_ON_PROMPT, undefined, { action: 'VOTE', refId: promptId });
       logger.info('vote cast', { promptId, userId, value, reqId });
     } else {
       logger.debug('vote updated', { promptId, userId, value, reqId });

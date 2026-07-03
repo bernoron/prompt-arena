@@ -28,9 +28,33 @@ model User {
   feedbacks            Feedback[]
   lessonFeedbacks      LessonFeedback[]
   topicSuggestions     TopicSuggestion[]
+  pointsLedger         PointsLedger[]
 
   @@unique([name])
   @@index([totalPoints])
+}
+
+// Idempotency + audit trail for one-time point awards (vote, favorite,
+// lesson completion). The unique constraint is the actual guarantee that a
+// given (userId, action, refId) combination is only ever awarded once —
+// awardPoints() relies on catching its violation rather than a pre-check,
+// closing the check-then-act race a plain SELECT-before-INSERT has.
+//
+// Deliberately NOT used for prompt usage: repeated "used this prompt" clicks
+// are allowed to award points again each time (see lib/points.ts), so there
+// is nothing to deduplicate there.
+model PointsLedger {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  action    String   // 'VOTE' | 'FAVORITE' | 'LESSON_COMPLETE'
+  refId     Int      // meaning depends on action — see call sites in lib/services + routes
+  delta     Int
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, action, refId])
+  @@index([userId])
 }
 
 // ─── Learning Path ────────────────────────────────────────────────────────────

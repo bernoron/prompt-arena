@@ -82,11 +82,14 @@ export async function toggleFavorite(promptId: number, userId: number): Promise<
   });
 
   await prisma.$transaction(async (tx) => {
-    await tx.favorite.create({
+    const created = await tx.favorite.create({
       data: { promptId, userId, isActive: true, pointsAwarded: true },
     });
     if (prompt && prompt.authorId !== userId) {
-      await awardPoints(prompt.authorId, POINTS.FAVORITE_PROMPT, tx);
+      // refId = this Favorite row's own id — unique per (promptId, userId)
+      // for the lifetime of the row, so re-adding after a soft-delete never
+      // re-triggers the ledger insert (and thus never re-awards points).
+      await awardPoints(prompt.authorId, POINTS.FAVORITE_PROMPT, tx, { action: 'FAVORITE', refId: created.id });
     }
   });
 

@@ -9,7 +9,8 @@ import { prisma } from '@/lib/prisma';
 import { writeLimiter, getClientIp } from '@/lib/rate-limit';
 import { CompleteLessonSchema, validationError } from '@/lib/validation';
 import { requireUser } from '@/lib/route-auth';
-import { POINTS, getLevel } from '@/lib/points';
+import { awardPoints } from '@/lib/db-helpers';
+import { POINTS } from '@/lib/points';
 
 // @spec AC-08-003
 export async function POST(
@@ -48,22 +49,17 @@ export async function POST(
     return NextResponse.json({ ok: true, alreadyCompleted: true, pointsAwarded: 0 });
   }
 
-  // Create progress record + award points atomically
-  await prisma.$transaction(async (tx) => {
+  // Create progress record + award points atomically. The ledger key
+  // (not just the `existing` check above) is what actually prevents a
+  // double-award if two requests race past the check simultaneously.
+  const result = await prisma.$transaction(async (tx) => {
     await tx.lessonProgress.create({ data: { userId, lessonId: lesson.id } });
-    const user = await tx.user.update({
-      where: { id: userId },
-      data:  { totalPoints: { increment: POINTS.COMPLETE_LESSON } },
-    });
-    await tx.user.update({
-      where: { id: userId },
-      data:  { level: getLevel(user.totalPoints) },
-    });
+    return awardPoints(userId, POINTS.COMPLETE_LESSON, tx, { action: 'LESSON_COMPLETE', refId: lesson.id });
   });
 
   return NextResponse.json({
     ok:              true,
     alreadyCompleted: false,
-    pointsAwarded:   POINTS.COMPLETE_LESSON,
+    pointsAwarded:   result.awarded ? POINTS.COMPLETE_LESSON : 0,
   });
 }

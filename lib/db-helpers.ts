@@ -23,6 +23,16 @@ type TxClient = Omit<
 >;
 
 /**
+ * Identifies a one-time point award for PointsLedger deduplication.
+ * `refId` meaning depends on `action` — see call sites (vote: promptId,
+ * favorite: the Favorite row's own id, lesson completion: lessonId).
+ */
+export interface AwardIdempotencyKey {
+  action: 'VOTE' | 'FAVORITE' | 'LESSON_COMPLETE';
+  refId: number;
+}
+
+/**
  * Awards points to a user and re-evaluates their level.
  *
  * Every user action (submit prompt, vote, usage recorded, challenge entry)
@@ -32,19 +42,41 @@ type TxClient = Omit<
  *
  * Extracting this into a helper ensures the pattern is applied consistently.
  *
+ * When `idempotencyKey` is supplied, the award is additionally guarded by a
+ * unique row in PointsLedger: a duplicate (userId, action, refId) hits a DB
+ * constraint violation and the award is skipped instead of double-counted.
+ * This closes the check-then-act race a plain "does a row already exist?"
+ * pre-check has under real concurrency — the caller's own pre-check (if any)
+ * can stay for the common case; this is the actual guarantee.
+ *
  * @param userId - Database ID of the user receiving the points
  * @param points - Number of points to award (use constants from lib/points.ts)
  * @param txClient - Optional Prisma transaction client. When provided the
  *                   caller is responsible for the transaction boundary; no
  *                   nested transaction is created.
+ * @param idempotencyKey - Optional one-time-award guard (see above).
  */
 // @spec AC-04-001
 export async function awardPoints(
   userId: number,
   points: number,
   txClient?: TxClient,
-): Promise<void> {
+  idempotencyKey?: AwardIdempotencyKey,
+): Promise<{ awarded: boolean }> {
   const run = async (tx: TxClient) => {
+    if (idempotencyKey) {
+      try {
+        await tx.pointsLedger.create({
+          data: { userId, action: idempotencyKey.action, refId: idempotencyKey.refId, delta: points },
+        });
+      } catch (err) {
+        if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2002') {
+          return { awarded: false as const };
+        }
+        throw err;
+      }
+    }
+
     const user = await tx.user.update({
       where: { id: userId },
       data:  { totalPoints: { increment: points } },
@@ -57,23 +89,28 @@ export async function awardPoints(
         data:  { level: newLevel },
       });
     }
-    return { ...user, level: newLevel };
+    return { awarded: true as const, user: { ...user, level: newLevel } };
   };
 
-  const updatedUser = txClient
-    ? await run(txClient)
-    : await prisma.$transaction(run);
+  const result = txClient ? await run(txClient) : await prisma.$transaction(run);
 
-  logger.info('points awarded', { userId, points, total: updatedUser.totalPoints });
+  if (!result.awarded) {
+    logger.debug('points award skipped (already awarded)', { userId, ...idempotencyKey });
+    return { awarded: false };
+  }
 
-  if (updatedUser.level !== getLevel(updatedUser.totalPoints - points)) {
+  logger.info('points awarded', { userId, points, total: result.user.totalPoints });
+
+  if (result.user.level !== getLevel(result.user.totalPoints - points)) {
     logger.info('level up', {
       userId,
-      from: getLevel(updatedUser.totalPoints - points),
-      to:   updatedUser.level,
-      total: updatedUser.totalPoints,
+      from: getLevel(result.user.totalPoints - points),
+      to:   result.user.level,
+      total: result.user.totalPoints,
     });
   }
+
+  return { awarded: true };
 }
 
 // Re-export Prisma for convenience in files that import from here

@@ -39,6 +39,21 @@ WeeklyChallenge 1──n ChallengeSubmission
 | `feedbacks` | `Feedback[]` | Pflicht |  |
 | `lessonFeedbacks` | `LessonFeedback[]` | Pflicht |  |
 | `topicSuggestions` | `TopicSuggestion[]` | Pflicht |  |
+| `pointsLedger` | `PointsLedger[]` | Pflicht |  |
+
+---
+
+### PointsLedger
+
+| Feld | Typ | Pflicht | Hinweise |
+|---|---|---|---|
+| `id` | `Int` | Pflicht | @id @default(autoincrement()) |
+| `userId` | `Int` | Pflicht |  |
+| `action` | `String` | Pflicht | 'VOTE' | 'FAVORITE' | 'LESSON_COMPLETE' |
+| `refId` | `Int` | Pflicht | meaning depends on action — see call sites in lib/services + routes |
+| `delta` | `Int` | Pflicht |  |
+| `createdAt` | `DateTime` | Pflicht | @default(now()) |
+| `user` | `User` | Pflicht | @relation(fields: [userId], references: [id], onDelete: Cascade) |
 
 ---
 
@@ -272,4 +287,4 @@ Für Produktivbetrieb empfiehlt sich PostgreSQL (nur `schema.prisma` anpassen).
 
 
 ---
-*Automatisch generiert am 03.07.2026, 05:20 · [Quellcode](https://github.com/your-org/prompt-arena)*
+*Automatisch generiert am 03.07.2026, 05:29 · [Quellcode](https://github.com/your-org/prompt-arena)*
