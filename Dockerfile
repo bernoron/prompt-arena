@@ -47,6 +47,12 @@ COPY --from=builder /app/node_modules/prisma    ./node_modules/prisma
 COPY --from=builder /app/node_modules/@prisma   ./node_modules/@prisma
 COPY --from=builder /app/node_modules/.prisma   ./node_modules/.prisma
 
+# lib/ is not otherwise needed at runtime (Next's standalone output bundles
+# its own compiled copy), but prisma/seed.ts imports from it directly via
+# relative paths (lib/points, lib/password, lib/email-crypto, lib/constants)
+# for the one-off `fly ssh console -C "npx tsx prisma/seed.ts"` seeding step.
+COPY --from=builder /app/lib                    ./lib
+
 COPY docker-entrypoint.sh ./docker-entrypoint.sh
 
 # /data is the mount point for the persistent SQLite volume (DATABASE_URL=file:/data/prod.db).

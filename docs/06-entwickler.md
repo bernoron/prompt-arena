@@ -125,4 +125,4 @@ Client-Komponenten weiter. `useCurrentUser()` (nur die ID) und `useSession()`
 
 
 ---
-*Automatisch generiert am 03.07.2026, 18:21 · [Quellcode](https://github.com/your-org/prompt-arena)*
+*Automatisch generiert am 03.07.2026, 18:28 · [Quellcode](https://github.com/your-org/prompt-arena)*

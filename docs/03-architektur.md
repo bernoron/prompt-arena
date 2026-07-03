@@ -177,4 +177,4 @@ den Cookie neu auswertet — ein manueller Sync-Mechanismus ist dafür nicht nö
 
 
 ---
-*Automatisch generiert am 03.07.2026, 18:21 · [Quellcode](https://github.com/your-org/prompt-arena)*
+*Automatisch generiert am 03.07.2026, 18:28 · [Quellcode](https://github.com/your-org/prompt-arena)*

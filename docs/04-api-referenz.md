@@ -271,4 +271,4 @@ Alle Timestamps werden als **ISO 8601** Strings zurückgegeben, z.B. `"2024-03-1
 
 
 ---
-*Automatisch generiert am 03.07.2026, 18:21 · [Quellcode](https://github.com/your-org/prompt-arena)*
+*Automatisch generiert am 03.07.2026, 18:28 · [Quellcode](https://github.com/your-org/prompt-arena)*
