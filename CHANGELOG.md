@@ -1,5 +1,19 @@
 # Changelog
 
+## [8.1.0](https://github.com/bernoron/prompt-arena/compare/v8.0.0...v8.1.0) (2026-07-03)
+
+
+### Features
+
+* add PointsLedger to close a vote-award race condition ([b46a571](https://github.com/bernoron/prompt-arena/commit/b46a571478843e477b1431ca21ff91f08c0cfa0d))
+* add SEO-indexable prompt detail pages ([e5a159d](https://github.com/bernoron/prompt-arena/commit/e5a159d18bf15aa61181eb1f490315e9e7819c40))
+
+
+### Bug Fixes
+
+* **security:** upgrade Next 14→16, nonce-based CSP, harden admin sess… ([8745ef6](https://github.com/bernoron/prompt-arena/commit/8745ef6ca2e5e1f06e1fea40eb6b08a816fa2dfc))
+* **security:** upgrade Next 14→16, nonce-based CSP, harden admin sessions ([82c4cf3](https://github.com/bernoron/prompt-arena/commit/82c4cf341c2c4a06d7bc08c5e59e5f5ecd8cdb88))
+
 ## [8.0.0](https://github.com/bernoron/prompt-arena/compare/v7.1.1...v8.0.0) (2026-07-02)
 
 
