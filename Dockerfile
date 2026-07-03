@@ -2,15 +2,29 @@
 FROM node:20-alpine AS builder
 WORKDIR /app
 
+# .dockerignore excludes .git from the build context, so the "prepare" script's
+# git-hooks setup (npm run setup:hooks) would fail with "git: not found" on this
+# alpine image. CI=true makes it skip, matching the same check GitHub Actions
+# already relies on. Builder-stage-only — never carried into the runner image.
+ENV CI=true
+
 # Prisma engines need these on Alpine.
 RUN apk add --no-cache libc6-compat openssl
 
 COPY package*.json ./
+# schema.prisma must exist before `npm ci`, because npm ci runs the
+# "postinstall": "prisma generate" script, which fails without it.
+COPY prisma ./prisma
 RUN npm ci
 
 COPY . .
 RUN npx prisma generate
 RUN npm run build
+
+# This project has no public/ directory (favicon lives at app/favicon.ico via
+# the App Router convention) — ensure it exists so the runner stage's COPY
+# below doesn't fail. If a real public/ is added later, this is a no-op.
+RUN mkdir -p public
 
 # ─── Runtime stage ────────────────────────────────────────────────────────────
 FROM node:20-alpine AS runner

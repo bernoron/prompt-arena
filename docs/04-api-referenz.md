@@ -190,8 +190,6 @@ GET /api/categories Returns all active prompt categories ordered by display orde
 
 ### `POST /api/learn/[moduleSlug]/[lessonSlug]/complete`
 
-POST /api/learn/[moduleSlug]/[lessonSlug]/complete No body fields — the user comes from the session cookie. Marks a lesson as complete for the user and awards points (idempotent).
-
 
 ---
 
@@ -273,4 +271,4 @@ Alle Timestamps werden als **ISO 8601** Strings zurückgegeben, z.B. `"2024-03-1
 
 
 ---
-*Automatisch generiert am 03.07.2026, 06:34 · [Quellcode](https://github.com/your-org/prompt-arena)*
+*Automatisch generiert am 03.07.2026, 18:21 · [Quellcode](https://github.com/your-org/prompt-arena)*
