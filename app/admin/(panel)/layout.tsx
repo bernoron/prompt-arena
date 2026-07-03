@@ -23,20 +23,20 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     router.refresh();
   }
   return (
-    <div className="flex gap-6 min-h-[calc(100vh-8rem)]">
+    <div className="flex flex-col lg:flex-row gap-6 min-h-[calc(100vh-8rem)]">
       {/* Sidebar */}
-      <aside className="w-52 flex-shrink-0">
-        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden sticky top-24">
+      <aside className="w-full lg:w-52 lg:flex-shrink-0">
+        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden lg:sticky lg:top-24">
           <div className="px-4 py-3 border-b border-slate-100" style={{ background: 'linear-gradient(135deg,#0F172A,#1E293B)' }}>
             <p className="text-xs font-bold uppercase tracking-widest text-slate-400">Admin</p>
             <p className="text-white font-extrabold text-sm mt-0.5">Verwaltung</p>
           </div>
-          <nav className="p-2 space-y-0.5">
+          <nav className="flex overflow-x-auto lg:flex-col gap-1 lg:gap-0 lg:space-y-0.5 p-2">
             {adminLinks.map(({ href, label, icon }) => {
               const active = pathname === href;
               return (
                 <Link key={href} href={href}
-                  className={`flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm font-medium transition-all ${
+                  className={`flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm font-medium transition-all whitespace-nowrap flex-shrink-0 lg:flex-shrink ${
                     active
                       ? 'bg-emerald-50 text-emerald-700 font-semibold'
                       : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
@@ -47,13 +47,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               );
             })}
           </nav>
-          <div className="p-3 border-t border-slate-100 space-y-1">
+          <div className="flex lg:block p-3 border-t border-slate-100 gap-1 lg:gap-0 lg:space-y-1">
             <Link href="/dashboard"
-              className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs text-slate-400 hover:text-slate-600 hover:bg-slate-50 transition-all">
+              className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs text-slate-400 hover:text-slate-600 hover:bg-slate-50 transition-all whitespace-nowrap">
               ← Zurück zur App
             </Link>
             <button onClick={handleLogout}
-              className="flex w-full items-center gap-2 px-3 py-2 rounded-xl text-xs text-red-400 hover:text-red-600 hover:bg-red-50 transition-all">
+              className="flex lg:w-full items-center gap-2 px-3 py-2 rounded-xl text-xs text-red-400 hover:text-red-600 hover:bg-red-50 transition-all whitespace-nowrap">
               🔓 Abmelden
             </button>
           </div>
