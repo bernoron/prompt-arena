@@ -8,14 +8,14 @@ import { writeLimiter, getClientIp } from '@/lib/rate-limit';
 import { requireAdmin } from '@/lib/route-auth';
 
 // @spec AC-07-005
-export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const auth = await requireAdmin(req);
   if (auth) return auth;
 
   if (!writeLimiter.check(getClientIp(req)))
     return NextResponse.json({ error: 'Too many requests' }, { status: 429 });
 
-  const idResult = PathId.safeParse(params.id);
+  const idResult = PathId.safeParse((await params).id);
   if (!idResult.success) return NextResponse.json({ error: 'Invalid id' }, { status: 400 });
 
   const id = idResult.data;

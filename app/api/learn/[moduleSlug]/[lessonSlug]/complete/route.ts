@@ -15,7 +15,7 @@ import { POINTS } from '@/lib/points';
 // @spec AC-08-003
 export async function POST(
   req: NextRequest,
-  { params }: { params: { moduleSlug: string; lessonSlug: string } },
+  { params }: { params: Promise<{ moduleSlug: string; lessonSlug: string }> },
 ) {
   if (!writeLimiter.check(getClientIp(req))) {
     return NextResponse.json({ error: 'Too many requests' }, { status: 429 });
@@ -31,7 +31,7 @@ export async function POST(
   const auth = await requireUser(req);
   if ('response' in auth) return auth.response;
   const userId = auth.userId;
-  const { moduleSlug, lessonSlug } = params;
+  const { moduleSlug, lessonSlug } = await params;
 
   // Find the lesson
   const lesson = await prisma.lesson.findFirst({

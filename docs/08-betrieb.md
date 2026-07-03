@@ -24,6 +24,7 @@ Alle Variablen in `.env` definieren. Vorlage: `.env.example` (liegt im Repositor
 | `DATABASE_URL` | `file:./dev.db` | Database SQLite (default for local development): |
 | `ADMIN_PATH` | `` | Admin URL path (optional — hides the admin panel behind a secret URL) Default: admin  → admin panel is at /admin Custom:  ADMIN_PATH=backstage → admin panel is at /backstage, direct /admin returns 404 Use a random string in production to prevent enumeration |
 | `ADMIN_SECRET` | `` | Admin authentication (for the admin panel) Set any strong password here |
+| `ADMIN_SESSION_EPOCH` | `` | Optional: instantly revoke ALL admin sessions issued before this millisecond timestamp (without rotating ADMIN_SECRET) |
 | `USER_SECRET` | `` | User session signing (for cookie-based auth) REQUIRED in production |
 | `EMAIL_SECRET` | `` | Email encryption key (for AES-256-GCM email storage) REQUIRED in production |
 
@@ -211,4 +212,4 @@ Empfohlene externe Uptime-Monitore (alle mit Gratis-Tier verfügbar): **UptimeRo
 
 
 ---
-*Automatisch generiert am 03.07.2026, 05:46 · [Quellcode](https://github.com/your-org/prompt-arena)*
+*Automatisch generiert am 03.07.2026, 06:34 · [Quellcode](https://github.com/your-org/prompt-arena)*

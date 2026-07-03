@@ -83,7 +83,7 @@ export default function UserMenu({ dark = false }: { dark?: boolean }) {
 }
 
 /** Closes an open dropdown when the user clicks outside of `ref`. */
-function useOutsideClick(ref: React.RefObject<HTMLElement>, active: boolean, onOutside: () => void) {
+function useOutsideClick(ref: React.RefObject<HTMLElement | null>, active: boolean, onOutside: () => void) {
   useEffect(() => {
     function handleClick(e: MouseEvent) {
       if (ref.current && !ref.current.contains(e.target as Node)) onOutside();

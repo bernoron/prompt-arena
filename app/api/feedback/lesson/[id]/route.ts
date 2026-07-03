@@ -12,14 +12,14 @@ import { logger, serializeError } from '@/lib/logger';
 // @spec AC-11-008
 export async function PUT(
   req: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   const ip = getClientIp(req);
   if (!writeLimiter.check(ip)) {
     return NextResponse.json({ error: 'Too many requests' }, { status: 429 });
   }
 
-  const idResult = PathId.safeParse(params.id);
+  const idResult = PathId.safeParse((await params).id);
   if (!idResult.success) {
     return NextResponse.json({ error: 'Invalid id' }, { status: 400 });
   }

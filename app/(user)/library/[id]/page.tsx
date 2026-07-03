@@ -9,7 +9,7 @@ import { getSessionUser } from '@/lib/session';
 import type { Category } from '@/lib/types';
 
 interface Props {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }
 
 function parseId(raw: string): number | null {
@@ -22,7 +22,7 @@ function parseId(raw: string): number | null {
 // search engines and shared as direct links, even though the rest of the app
 // requires an account.
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const id = parseId(params.id);
+  const id = parseId((await params).id);
   const prompt = id ? await getPromptById(id, null) : null;
   if (!prompt) return { title: 'Prompt nicht gefunden – PromptArena' };
 
@@ -42,7 +42,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function PromptDetailPage({ params }: Props) {
-  const id = parseId(params.id);
+  const id = parseId((await params).id);
   if (!id) notFound();
 
   const user = await getSessionUser();

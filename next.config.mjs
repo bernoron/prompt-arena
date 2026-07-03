@@ -1,40 +1,5 @@
 /** @type {import('next').NextConfig} */
 
-const isDev = process.env.NODE_ENV !== 'production';
-
-/**
- * Content-Security-Policy
- *
- * Development vs. Production differ in one directive:
- *   script-src in DEV needs 'unsafe-eval' because Next.js HMR (webpack)
- *   evaluates code strings at runtime for hot-reloading.
- *   In production that is never needed and would be a security risk.
- *
- * All other headers are identical in both environments.
- */
-const cspDirectives = [
-  "default-src 'self'",
-  // 'unsafe-eval' only in dev (HMR / webpack); removed in production builds.
-  // 'unsafe-inline' is required for Next.js inline script hydration chunks
-  // (the __NEXT_DATA__ bootstrap). Nonce-based CSP would remove this need
-  // but requires a custom middleware layer not yet implemented here.
-  isDev
-    ? "script-src 'self' 'unsafe-inline' 'unsafe-eval'"
-    : "script-src 'self' 'unsafe-inline'",
-  "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-  "font-src 'self' https://fonts.gstatic.com",
-  "img-src 'self' data:",
-  // Allow WebSocket connections in dev (Next.js HMR uses ws://)
-  isDev
-    ? "connect-src 'self' ws://localhost:* wss://localhost:*"
-    : "connect-src 'self'",
-  "frame-ancestors 'none'",
-  "base-uri 'self'",
-  "form-action 'self'",
-  // Block <object>/<embed> plugin content entirely — never used by the app.
-  "object-src 'none'",
-];
-
 const nextConfig = {
   output: 'standalone',
 
@@ -49,12 +14,9 @@ const nextConfig = {
   poweredByHeader: false,
 
   // Never emit browser source maps in production (would expose app source).
+  // instrumentation.ts (env/secret validation) runs automatically on server
+  // startup since Next 15 — no experimental.instrumentationHook flag needed.
   productionBrowserSourceMaps: false,
-
-  // Run instrumentation.ts once on server startup (env/secret validation).
-  experimental: {
-    instrumentationHook: true,
-  },
 
   /**
    * HTTP security headers applied to every response.
@@ -64,7 +26,9 @@ const nextConfig = {
    *   - MIME-sniffing         → X-Content-Type-Options
    *   - Referrer leakage      → Referrer-Policy
    *   - Dangerous APIs        → Permissions-Policy
-   *   - XSS / injection       → Content-Security-Policy
+   *
+   * Content-Security-Policy is NOT set here — it carries a per-request nonce
+   * and is therefore built and attached in middleware.ts (see lib/csp.ts).
    */
   async headers() {
     return [
@@ -81,10 +45,6 @@ const nextConfig = {
           {
             key:   'Permissions-Policy',
             value: 'camera=(), microphone=(), geolocation=(), payment=()',
-          },
-          {
-            key:   'Content-Security-Policy',
-            value: cspDirectives.join('; '),
           },
         ],
       },
