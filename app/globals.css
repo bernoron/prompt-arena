@@ -11,6 +11,11 @@
   --nav-bg: #0F172A;
 }
 
+html, body {
+  overflow-x: hidden;
+  max-width: 100%;
+}
+
 body {
   color: #0F172A;
   background: #F1F5F9;
