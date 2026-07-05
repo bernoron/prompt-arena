@@ -1,5 +1,14 @@
 # Changelog
 
+## [8.1.1](https://github.com/bernoron/prompt-arena/compare/v8.1.0...v8.1.1) (2026-07-04)
+
+
+### Bug Fixes
+
+* **docker:** copy lib/ into runtime image so prisma/seed.ts can run ([e2eb6fa](https://github.com/bernoron/prompt-arena/commit/e2eb6fac3d6b2a207101b60deacb73251f62809d))
+* **docker:** resolve three pre-existing build failures blocking deploy ([abb61b6](https://github.com/bernoron/prompt-arena/commit/abb61b69c9a64b7696d3e4eb3da3f52649b284ec))
+* **mobile:** make admin panel responsive and prevent horizontal overflow ([5f7c044](https://github.com/bernoron/prompt-arena/commit/5f7c044fd1f25ee66a427b1a5be28ce8a700a45b))
+
 ## [8.1.0](https://github.com/bernoron/prompt-arena/compare/v8.0.0...v8.1.0) (2026-07-03)
 
 
