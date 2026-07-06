@@ -136,3 +136,34 @@ jobs:
 
       - name: ESLint
         run: npm run lint
+
+  # ── Deploy to Fly.io ─────────────────────────────────────────────────────────
+  # Runs only after every check above has passed, and only for a push to main
+  # (never for pull_request events) — that keeps FLY_API_TOKEN unreachable from
+  # forked/unreviewed branches, since pull_request workflows never get secrets
+  # from the base repo's "production" environment.
+  deploy:
+    name: Deploy to Fly.io
+    runs-on: ubuntu-latest
+    needs: [dependency-security, unit, e2e, lint]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    environment: production
+    concurrency:
+      group: fly-deploy-production
+      cancel-in-progress: false
+    permissions:
+      contents: read
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Fly CLI
+        # Pinned to the commit behind tag 1.6 (not the mutable tag itself) so a
+        # future re-tag of this third-party action can't silently swap in
+        # different code for a job that holds a production deploy token.
+        uses: superfly/flyctl-actions/setup-flyctl@ed8efb33836e8b2096c7fd3ba1c8afe303ebbff1
+
+      - name: Deploy to Fly.io
+        run: flyctl deploy --remote-only
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
