@@ -357,6 +357,14 @@ spass­bringend und sichtbar.
 2. Gibt Name, E-Mail und Passwort ein
 3. Wird als «Prompt-Lehrling» angelegt und automatisch eingeloggt
 
+### UC-08: Startseite besuchen (nicht angemeldet)
+**Akteur:** Anonyme:r Besucher:in
+**Ablauf:**
+1. Öffnet die Wurzel-URL (/)
+2. Liest die kurze Erklärung, was PromptArena ist und was man damit tun kann
+3. Sieht eine anonymisierte Auswahl der 3 beliebtesten Prompts als Vorgeschmack
+4. Klickt «Jetzt kostenlos starten» → Registrierung, oder «Anmelden» → Login
+
 ---
 
 ## 4. Funktionale Anforderungen
@@ -374,6 +382,7 @@ spass­bringend und sichtbar.
 | FA-09 | Prompts können als «genutzt» markiert werden (Autor erhält Punkte) | Soll |
 | FA-10 | Das Profil zeigt eigene Prompts, Punkte und Fortschritt | Soll |
 | FA-11 | Profilbild als farbiger Avatar (automatische Farbzuweisung) | Kann |
+| FA-12 | Eine öffentliche Startseite erklärt das Produkt und zeigt anonymisierte Top-Prompts | Soll |
 
 ---
 
@@ -413,6 +422,14 @@ gespeichert, bis du dich abmeldest.
 ---
 
 ## Seiten im Überblick
+
+### Startseite (/)
+Wer noch nicht angemeldet ist, landet hier statt direkt auf dem Login:
+- Kurze Erklärung, was PromptArena ist und was man damit tun kann
+- Eine anonymisierte Auswahl der 3 beliebtesten Prompts (ohne Autorenname) macht neugierig
+- Zwei Buttons: **Jetzt kostenlos starten** (→ Registrierung) und **Anmelden** (→ Login)
+
+Bereits angemeldete Nutzer:innen werden beim Aufruf von «/» automatisch zum Dashboard weitergeleitet.
 
 ### Dashboard (/dashboard)
 Die Startseite zeigt:

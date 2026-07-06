@@ -236,4 +236,17 @@ test.describe('PromptArena spec contracts', () => {
       pointsAwarded: 0,
     });
   });
+
+  test('BAC-13 landing page: anonymous visitors see it, signed-in users are redirected to the dashboard', async ({ request }) => {
+    const anonRes = await request.get('/', { maxRedirects: 0 });
+    expect(anonRes.status()).toBe(200);
+    const html = await anonRes.text();
+    expect(html).toContain('href="/register"');
+    expect(html).toContain('href="/login"');
+
+    const user = await createAndLoginUser(request);
+    const loggedInRes = await request.get('/', { headers: { Cookie: user.cookie }, maxRedirects: 0 });
+    expect(loggedInRes.status()).toBe(307);
+    expect(loggedInRes.headers()['location']).toBe('/dashboard');
+  });
 });

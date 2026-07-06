@@ -68,6 +68,41 @@ export async function getPromptById(id: number, resolvedUserId: number | null) {
   };
 }
 
+// ─── Top prompts (public landing page showcase) ────────────────────────────────
+
+export interface TopPrompt {
+  id: number;
+  title: string;
+  titleEn: string;
+  content: string;
+  category: string;
+  difficulty: string;
+  usageCount: number;
+  avgRating: number;
+  voteCount: number;
+}
+
+/**
+ * Most-used prompts, stripped of author identity — used on the public
+ * (unauthenticated) landing page, which must not leak who submitted what.
+ */
+// @spec AC-13-005
+export async function getTopPrompts(limit: number): Promise<TopPrompt[]> {
+  const prompts = await prisma.prompt.findMany({
+    where: { usageCount: { gt: 0 } },
+    orderBy: [{ usageCount: 'desc' }, { id: 'desc' }],
+    take: limit,
+    select: {
+      id: true, title: true, titleEn: true, content: true,
+      category: true, difficulty: true, usageCount: true,
+    },
+  });
+  if (prompts.length === 0) return [];
+
+  const ratings = await getRatingsMap(prompts.map((p) => p.id));
+  return prompts.map((p) => ({ ...p, ...getRating(ratings, p.id) }));
+}
+
 // ─── List (GET /api/prompts) ───────────────────────────────────────────────────
 
 export interface ListPromptsParams {

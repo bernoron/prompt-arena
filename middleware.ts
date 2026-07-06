@@ -9,7 +9,7 @@
  *      → Unauthorised page requests → redirect to /admin/login.
  *      → Unauthorised API requests  → 401 JSON.
  *
- *   2. Guard all user-facing pages (not /login, /register) behind a
+ *   2. Guard all user-facing pages (not /, /login, /register) behind a
  *      valid user_session cookie.
  *      → Unauthenticated page requests → redirect to /login.
  *      → API routes handle their own auth via resolveUserId().
@@ -36,8 +36,11 @@ const CUSTOM_ADMIN = ADMIN_PREFIX !== 'admin';
 const PROMPT_DETAIL_PATH = /^\/library\/\d+$/;
 
 /** Paths that do NOT require a user session. */
+// @spec AC-13-001
 function isPublicPath(pathname: string): boolean {
   return (
+    pathname === '/' || // public landing page — app/page.tsx redirects signed-in users itself
+
     pathname === '/login' ||
     pathname.startsWith('/login/') ||
     pathname === '/register' ||

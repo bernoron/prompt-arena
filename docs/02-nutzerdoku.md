@@ -16,6 +16,14 @@ gespeichert, bis du dich abmeldest.
 
 ## Seiten im Überblick
 
+### Startseite (/)
+Wer noch nicht angemeldet ist, landet hier statt direkt auf dem Login:
+- Kurze Erklärung, was PromptArena ist und was man damit tun kann
+- Eine anonymisierte Auswahl der 3 beliebtesten Prompts (ohne Autorenname) macht neugierig
+- Zwei Buttons: **Jetzt kostenlos starten** (→ Registrierung) und **Anmelden** (→ Login)
+
+Bereits angemeldete Nutzer:innen werden beim Aufruf von «/» automatisch zum Dashboard weitergeleitet.
+
 ### Dashboard (/dashboard)
 Die Startseite zeigt:
 - **Deine aktuellen Punkte und dein Level** mit XP-Fortschrittsbalken
@@ -103,4 +111,4 @@ Wende dich an den App-Administrator.
 
 
 ---
-*Automatisch generiert am 03.07.2026, 18:28 · [Quellcode](https://github.com/your-org/prompt-arena)*
+*Automatisch generiert am 06.07.2026, 23:43 · [Quellcode](https://github.com/your-org/prompt-arena)*

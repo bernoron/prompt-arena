@@ -32,7 +32,9 @@ specs/
 | `08-learning-path.md` | Lernpfade | ✅ |
 | `09-extended-learning.md` | Erweitertes Lernen | ✅ |
 | `10-profile.md` | Profil & Badges | ✅ |
-| `11-jrgame.md` | Jump & Run Spiel | 📝 draft |
+| `11-feedback.md` | Nutzer-Feedback | ✅ |
+| `12-email-auth.md` | E-Mail-Authentifizierung | ✅ |
+| `13-landing-page.md` | Öffentliche Startseite | ✅ |
 
 ---
 
@@ -54,6 +56,10 @@ specs/
 | `07-admin.md` | Admin-Panel | ✅ |
 | `08-learning-path.md` | Lernpfade | ✅ |
 | `09-extended-learning.md` | Erweitertes Lernen | ✅ |
+| `10-profile.md` | Profil & Badges | ✅ |
+| `11-feedback.md` | Nutzer-Feedback | ✅ |
+| `12-email-auth.md` | E-Mail-Authentifizierung | ✅ |
+| `13-landing-page.md` | Öffentliche Startseite | ✅ |
 
 ---
 

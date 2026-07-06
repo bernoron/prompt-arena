@@ -155,6 +155,18 @@
 
 ---
 
+## Feature 13 – Öffentliche Startseite (13-landing-page.md)
+
+- [x] AC-13-001: middleware.ts – `/` ist ein öffentlicher Pfad (kein Login-Redirect)
+- [x] AC-13-002: app/page.tsx – Server Component, Redirect zu /dashboard für angemeldete Nutzer
+- [x] AC-13-003: Hero mit Produkterklärung + CTA-Links zu /register und /login
+- [x] AC-13-004: Vier Feature-Kacheln (Bibliothek, Einreichen, Lernpfade, Challenges)
+- [x] AC-13-005: getTopPrompts() – anonymisierte Top-Prompts (keine Autor-Felder selektiert)
+- [x] AC-13-006: Showcase der 3 beliebtesten Prompts ohne Autorenname/Avatar
+- [x] AC-13-007: Showcase-Abschnitt wird ausgeblendet, wenn noch keine Prompts genutzt wurden
+
+---
+
 ## Open Improvements
 
 - [x] PERF-001: GET /api/prompts – votes groupBy instead of include (Performance)
