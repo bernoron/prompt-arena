@@ -1,10 +1,12 @@
 import { PrismaClient } from '@prisma/client';
+import { PrismaBetterSqlite3 } from '@prisma/adapter-better-sqlite3';
 import { getLevel } from '../lib/points';
 import { hashPassword } from '../lib/password';
 import { encryptEmail, hashEmail } from '../lib/email-crypto';
 import { AVATAR_COLORS } from '../lib/constants';
 
-const prisma = new PrismaClient();
+const adapter = new PrismaBetterSqlite3({ url: process.env.DATABASE_URL });
+const prisma = new PrismaClient({ adapter });
 
 async function main() {
   console.log('🌱 Seeding PromptArena...');
