@@ -1,34 +1,30 @@
-'use client';
-
-import { useState, useEffect, useMemo } from 'react';
 import LevelBadge from '@/components/LevelBadge';
-import type { UserWithStats, LevelName, PromptWithDetails } from '@/lib/types';
-import { useCurrentUser } from '@/hooks/useCurrentUser';
+import { getSessionUser } from '@/lib/session';
+import { getRankedUsers } from '@/lib/services/user-service';
+import { listPrompts } from '@/lib/services/prompt-service';
+import type { LevelName, PromptWithDetails } from '@/lib/types';
 
 // @spec AC-04-006
-export default function LeaderboardPage() {
-  const [users, setUsers] = useState<UserWithStats[]>([]);
-  const [topPrompt, setTopPrompt] = useState<PromptWithDetails | null>(null);
-  const [loading, setLoading] = useState(true);
-  const currentUserId = useCurrentUser();
+export default async function LeaderboardPage() {
+  const sessionUser = await getSessionUser();
+  const currentUserId = sessionUser?.id ?? null;
 
-  useEffect(() => {
-    Promise.all([
-      fetch('/api/users').then((r) => r.json()),
-      fetch('/api/prompts?take=100').then((r) => r.json()),
-    ]).then(([u, data]: [UserWithStats[], { items: PromptWithDetails[]; hasNextPage: boolean }]) => {
-      setUsers(u);
-      const p = data.items ?? [];
-      const oneWeekAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
-      const thisWeek = p.filter((x) => new Date(x.createdAt).getTime() > oneWeekAgo);
-      const best = [...(thisWeek.length ? thisWeek : p)].sort((a, b) => b.avgRating - a.avgRating)[0];
-      setTopPrompt(best ?? null);
-      setLoading(false);
-    });
-  }, []);
+  const [users, promptPage] = await Promise.all([
+    getRankedUsers(),
+    // Matches the page size the client fetch used to be clamped to server-side.
+    listPrompts({ sortBy: 'newest', take: 50, resolvedUserId: null }),
+  ]);
 
-  const top10 = useMemo(() => users.slice(0, 10), [users]);
+  const prompts = promptPage.items as unknown as PromptWithDetails[];
+  const oneWeekAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
+  const thisWeek = prompts.filter((p) => new Date(p.createdAt).getTime() > oneWeekAgo);
+  const topPrompt = [...(thisWeek.length ? thisWeek : prompts)].sort((a, b) => b.avgRating - a.avgRating)[0] ?? null;
+
+  const top10 = users.slice(0, 10);
   const [top1, top2, top3, ...rest] = top10;
+  const me = currentUserId ? users.find((u) => u.id === currentUserId) : null;
+  const myRank = currentUserId ? users.findIndex((u) => u.id === currentUserId) + 1 : 0;
+  const showMeSeparately = !!me && !top10.some((u) => u.id === currentUserId);
 
   return (
     <div>
@@ -50,91 +46,76 @@ export default function LeaderboardPage() {
               <h2 className="font-bold text-slate-800">Top 10 Individuen</h2>
             </div>
 
-            {loading ? (
-              <div className="p-6 space-y-3">
-                {Array.from({ length: 5 }).map((_, i) => (
-                  <div key={i} className="h-14 bg-slate-100 rounded-xl animate-pulse" />
+            {/* Podium */}
+            {top1 && top2 && top3 && (
+              <div className="px-3 sm:px-6 pt-4 sm:pt-6 pb-3 sm:pb-4 flex items-end justify-center gap-2 sm:gap-3 border-b border-slate-100 bg-slate-50">
+                {[
+                  { user: top2, rank: 2, height: 64, emoji: '🥈', bg: 'bg-slate-200', textColor: 'text-slate-500' },
+                  { user: top1, rank: 1, height: 96, emoji: '🥇', bg: 'bg-gradient-to-b from-amber-200 to-amber-300', textColor: 'text-amber-600', crown: true, ring: 'ring-4 ring-amber-400' },
+                  { user: top3, rank: 3, height: 48, emoji: '🥉', bg: 'bg-orange-100', textColor: 'text-orange-500' },
+                ].map(({ user, rank, height, emoji, bg, textColor, crown, ring }) => (
+                  <div key={rank} className="flex flex-col items-center gap-2 flex-1 max-w-[140px]">
+                    {crown && <span className="text-xl">👑</span>}
+                    <span className={`${rank === 1 ? 'w-14 h-14' : 'w-11 h-11'} rounded-full flex items-center justify-center text-white font-extrabold shadow-lg ${ring ?? ''}`}
+                      style={{ backgroundColor: user.avatarColor, fontSize: rank === 1 ? 18 : 14 }}>
+                      {user.name.split(' ').map((n) => n[0]).join('')}
+                    </span>
+                    <div className="text-center">
+                      <p className={`${rank === 1 ? 'text-sm font-extrabold text-slate-900' : 'text-xs font-bold text-slate-700'} truncate max-w-[120px]`}>
+                        {user.name.split(' ')[0]}
+                      </p>
+                      <p className={`text-xs font-bold ${textColor}`}>{user.totalPoints} Pts</p>
+                    </div>
+                    <div className={`w-full ${bg} rounded-t-lg flex items-center justify-center text-2xl`} style={{ height }}>
+                      {emoji}
+                    </div>
+                  </div>
                 ))}
               </div>
-            ) : (
-              <>
-                {/* Podium */}
-                {top1 && top2 && top3 && (
-                  <div className="px-3 sm:px-6 pt-4 sm:pt-6 pb-3 sm:pb-4 flex items-end justify-center gap-2 sm:gap-3 border-b border-slate-100 bg-slate-50">
-                    {[
-                      { user: top2, rank: 2, height: 64, emoji: '🥈', bg: 'bg-slate-200', textColor: 'text-slate-500' },
-                      { user: top1, rank: 1, height: 96, emoji: '🥇', bg: 'bg-gradient-to-b from-amber-200 to-amber-300', textColor: 'text-amber-600', crown: true, ring: 'ring-4 ring-amber-400' },
-                      { user: top3, rank: 3, height: 48, emoji: '🥉', bg: 'bg-orange-100', textColor: 'text-orange-500' },
-                    ].map(({ user, rank, height, emoji, bg, textColor, crown, ring }) => (
-                      <div key={rank} className="flex flex-col items-center gap-2 flex-1 max-w-[140px]">
-                        {crown && <span className="text-xl">👑</span>}
-                        <span className={`${rank === 1 ? 'w-14 h-14' : 'w-11 h-11'} rounded-full flex items-center justify-center text-white font-extrabold shadow-lg ${ring ?? ''}`}
-                          style={{ backgroundColor: user.avatarColor, fontSize: rank === 1 ? 18 : 14 }}>
-                          {user.name.split(' ').map((n) => n[0]).join('')}
-                        </span>
-                        <div className="text-center">
-                          <p className={`${rank === 1 ? 'text-sm font-extrabold text-slate-900' : 'text-xs font-bold text-slate-700'} truncate max-w-[120px]`}>
-                            {user.name.split(' ')[0]}
-                          </p>
-                          <p className={`text-xs font-bold ${textColor}`}>{user.totalPoints} Pts</p>
-                        </div>
-                        <div className={`w-full ${bg} rounded-t-lg flex items-center justify-center text-2xl`} style={{ height }}>
-                          {emoji}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
+            )}
 
-                {/* Ranks 4–10 */}
-                <div className="divide-y divide-slate-50">
-                  {rest.map((user, i) => {
-                    const isMe = user.id === currentUserId;
-                    return (
-                      <div key={user.id}
-                        className={`flex items-center gap-2 sm:gap-4 px-3 sm:px-6 py-3 transition-colors ${isMe ? 'bg-emerald-50' : 'hover:bg-slate-50'}`}>
-                        <span className="w-7 text-center text-sm font-extrabold text-slate-400">#{i + 4}</span>
-                        <span className="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0 shadow-sm"
-                          style={{ backgroundColor: user.avatarColor }}>
-                          {user.name.split(' ').map((n) => n[0]).join('')}
-                        </span>
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2">
-                            <span className="font-semibold text-slate-900 text-sm">{user.name}</span>
-                            {isMe && <span className="text-xs text-emerald-600 font-bold bg-emerald-100 px-1.5 py-0.5 rounded-full">Du</span>}
-                          </div>
-                        </div>
-                        <LevelBadge level={user.level as LevelName} size="sm" />
-                        <div className="text-right flex-shrink-0">
-                          <p className="font-extrabold text-emerald-600">{user.totalPoints}</p>
-                          <p className="text-xs text-slate-400">Pts</p>
-                        </div>
+            {/* Ranks 4–10 */}
+            <div className="divide-y divide-slate-50">
+              {rest.map((user, i) => {
+                const isMe = user.id === currentUserId;
+                return (
+                  <div key={user.id}
+                    className={`flex items-center gap-2 sm:gap-4 px-3 sm:px-6 py-3 transition-colors ${isMe ? 'bg-emerald-50' : 'hover:bg-slate-50'}`}>
+                    <span className="w-7 text-center text-sm font-extrabold text-slate-400">#{i + 4}</span>
+                    <span className="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0 shadow-sm"
+                      style={{ backgroundColor: user.avatarColor }}>
+                      {user.name.split(' ').map((n) => n[0]).join('')}
+                    </span>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2">
+                        <span className="font-semibold text-slate-900 text-sm">{user.name}</span>
+                        {isMe && <span className="text-xs text-emerald-600 font-bold bg-emerald-100 px-1.5 py-0.5 rounded-full">Du</span>}
                       </div>
-                    );
-                  })}
-                </div>
-
-                {/* My rank if outside top 10 */}
-                {currentUserId && !top10.find(u => u.id === currentUserId) && (() => {
-                  const me = users.find(u => u.id === currentUserId);
-                  const myRank = users.findIndex(u => u.id === currentUserId) + 1;
-                  if (!me) return null;
-                  return (
-                    <div className="border-t-2 border-dashed border-slate-200 px-3 sm:px-6 py-3 bg-emerald-50 flex items-center gap-2 sm:gap-4">
-                      <span className="w-7 text-center text-sm font-extrabold text-slate-400">#{myRank}</span>
-                      <span className="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold"
-                        style={{ backgroundColor: me.avatarColor }}>
-                        {me.name.split(' ').map((n) => n[0]).join('')}
-                      </span>
-                      <div className="flex-1">
-                        <span className="font-semibold text-slate-900 text-sm">{me.name}</span>
-                        <span className="ml-2 text-xs text-emerald-600 font-bold bg-emerald-100 px-1.5 py-0.5 rounded-full">Du</span>
-                      </div>
-                      <p className="font-extrabold text-emerald-600">{me.totalPoints} Pts</p>
                     </div>
-                  );
-                })()}
-              </>
+                    <LevelBadge level={user.level as LevelName} size="sm" />
+                    <div className="text-right flex-shrink-0">
+                      <p className="font-extrabold text-emerald-600">{user.totalPoints}</p>
+                      <p className="text-xs text-slate-400">Pts</p>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* My rank if outside top 10 */}
+            {showMeSeparately && me && (
+              <div className="border-t-2 border-dashed border-slate-200 px-3 sm:px-6 py-3 bg-emerald-50 flex items-center gap-2 sm:gap-4">
+                <span className="w-7 text-center text-sm font-extrabold text-slate-400">#{myRank}</span>
+                <span className="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold"
+                  style={{ backgroundColor: me.avatarColor }}>
+                  {me.name.split(' ').map((n) => n[0]).join('')}
+                </span>
+                <div className="flex-1">
+                  <span className="font-semibold text-slate-900 text-sm">{me.name}</span>
+                  <span className="ml-2 text-xs text-emerald-600 font-bold bg-emerald-100 px-1.5 py-0.5 rounded-full">Du</span>
+                </div>
+                <p className="font-extrabold text-emerald-600">{me.totalPoints} Pts</p>
+              </div>
             )}
           </div>
         </div>

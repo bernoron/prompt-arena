@@ -7,11 +7,14 @@
  * instead of mirroring the cookie into localStorage.
  */
 
+import { cache } from 'react';
 import { prisma } from '@/lib/prisma';
 import { getSessionUserId } from '@/lib/user-auth';
 import type { UserWithStats, LevelName } from '@/lib/types';
 
-export async function getSessionUser(): Promise<UserWithStats | null> {
+// Deduplicates repeated calls within the same request (e.g. layout + page
+// both resolving the session user) down to a single DB round trip.
+export const getSessionUser = cache(async (): Promise<UserWithStats | null> => {
   const userId = await getSessionUserId();
   if (!userId) return null;
 
@@ -26,4 +29,4 @@ export async function getSessionUser(): Promise<UserWithStats | null> {
     level:     user.level as LevelName,
     createdAt: user.createdAt.toISOString(),
   };
-}
+});

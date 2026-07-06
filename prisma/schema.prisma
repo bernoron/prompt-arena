@@ -189,6 +189,8 @@ model WeeklyChallenge {
   isActive    Boolean  @default(false)
 
   submissions ChallengeSubmission[]
+
+  @@index([isActive])
 }
 
 model ChallengeSubmission {

@@ -9,7 +9,6 @@
  */
 
 import { useEffect } from 'react';
-import confetti from 'canvas-confetti';
 import { LEVEL_CONFIG } from '@/lib/constants';
 
 interface Props {
@@ -21,22 +20,26 @@ export default function LevelUpModal({ newLevel, onClose }: Props) {
   const levelConf = LEVEL_CONFIG[newLevel as keyof typeof LEVEL_CONFIG];
 
   useEffect(() => {
-    // Fire confetti burst from both sides
-    const fire = (x: number, angle: number) =>
-      confetti({
-        particleCount: 80,
-        spread: 60,
-        angle,
-        origin: { x, y: 0.6 },
-        colors: ['#059669', '#0891b2', '#f59e0b', '#8b5cf6', '#ec4899'],
-      });
+    let cancelled = false;
 
-    fire(0.25, 60);
-    fire(0.75, 120);
+    import('canvas-confetti').then(({ default: confetti }) => {
+      if (cancelled) return;
+      const fire = (x: number, angle: number) =>
+        confetti({
+          particleCount: 80,
+          spread: 60,
+          angle,
+          origin: { x, y: 0.6 },
+          colors: ['#059669', '#0891b2', '#f59e0b', '#8b5cf6', '#ec4899'],
+        });
+
+      fire(0.25, 60);
+      fire(0.75, 120);
+    });
 
     // Auto-close after 6 s
     const timer = setTimeout(onClose, 6000);
-    return () => clearTimeout(timer);
+    return () => { cancelled = true; clearTimeout(timer); };
   }, [onClose]);
 
   return (

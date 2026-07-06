@@ -7,8 +7,8 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
 import { readLimiter, getClientIp } from '@/lib/rate-limit';
+import { getActiveChallenges } from '@/lib/services/challenge-service';
 
 // @spec AC-06-001
 export async function GET(req: NextRequest) {
@@ -17,21 +17,11 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    const challenges = await prisma.weeklyChallenge.findMany({
-      where:   { isActive: true },
-      orderBy: { startDate: 'asc' },
-      include: { _count: { select: { submissions: true } } },
-    });
+    const challenges = await getActiveChallenges();
 
-    return NextResponse.json(
-      challenges.map((c) => ({
-        ...c,
-        submissionCount: c._count.submissions,
-        startDate: c.startDate.toISOString(),
-        endDate:   c.endDate.toISOString(),
-      })),
-      { headers: { 'Cache-Control': 'public, s-maxage=30, stale-while-revalidate=60' } },
-    );
+    return NextResponse.json(challenges, {
+      headers: { 'Cache-Control': 'public, s-maxage=30, stale-while-revalidate=60' },
+    });
   } catch {
     return NextResponse.json({ error: 'Failed to fetch challenges' }, { status: 500 });
   }

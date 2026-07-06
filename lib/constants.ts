@@ -7,6 +7,9 @@
 
 // ─── Users ───────────────────────────────────────────────────────────────────
 
+/** Safety cap on unpaginated user list endpoints (/api/users, /api/admin/users). */
+export const MAX_USERS_LIST = 500;
+
 /**
  * Palette of avatar background colours assigned round-robin when a new user
  * registers (index = user count modulo palette length).

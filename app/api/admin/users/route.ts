@@ -13,6 +13,7 @@ import { decryptEmail } from '@/lib/email-crypto';
 import { isAdminAuthorised, ADMIN_COOKIE } from '@/lib/admin-auth';
 import { readLimiter, getClientIp } from '@/lib/rate-limit';
 import { logger } from '@/lib/logger';
+import { MAX_USERS_LIST } from '@/lib/constants';
 
 export async function GET(req: NextRequest) {
   // Secondary auth guard — middleware is the first line but not the only one
@@ -27,6 +28,7 @@ export async function GET(req: NextRequest) {
 
   const users = await prisma.user.findMany({
     orderBy: { totalPoints: 'desc' },
+    take: MAX_USERS_LIST,
     select: {
       id: true, name: true, avatarColor: true,
       totalPoints: true, level: true, createdAt: true,
