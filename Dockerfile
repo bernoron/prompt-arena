@@ -21,7 +21,10 @@ COPY prisma ./prisma
 RUN npm ci
 
 COPY . .
-RUN npx prisma generate
+# No separate `prisma generate` here: npm ci's postinstall hook already ran it
+# above, and re-running it now would fail anyway - prisma.config.ts (copied in
+# by `COPY . .`, unlike the plain prisma/ dir copied earlier) makes the CLI
+# resolve DATABASE_URL eagerly, which isn't set as a build-time env var here.
 RUN npm run build
 
 # This project has no public/ directory (favicon lives at app/favicon.ico via
