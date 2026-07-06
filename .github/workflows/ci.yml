@@ -26,6 +26,11 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+        env:
+          # prisma.config.ts resolves this eagerly as soon as any prisma
+          # command runs (including the postinstall `prisma generate` that
+          # npm ci triggers) - Prisma 5 only needed it at actual connect time.
+          DATABASE_URL: file:./dev.db
 
       - name: Block high/critical production dependency advisories
         run: npm run security:deps
@@ -52,6 +57,11 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+        env:
+          # prisma.config.ts resolves this eagerly as soon as any prisma
+          # command runs (including the postinstall `prisma generate` that
+          # npm ci triggers) - Prisma 5 only needed it at actual connect time.
+          DATABASE_URL: file:./dev.db
 
       - name: Run unit tests
         run: npm run test:unit
@@ -71,6 +81,11 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+        env:
+          # prisma.config.ts resolves this eagerly as soon as any prisma
+          # command runs (including the postinstall `prisma generate` that
+          # npm ci triggers) - Prisma 5 only needed it at actual connect time.
+          DATABASE_URL: file:./dev.db
 
       - name: Generate Prisma client
         run: npx prisma generate
@@ -127,6 +142,11 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+        env:
+          # prisma.config.ts resolves this eagerly as soon as any prisma
+          # command runs (including the postinstall `prisma generate` that
+          # npm ci triggers) - Prisma 5 only needed it at actual connect time.
+          DATABASE_URL: file:./dev.db
 
       - name: Generate Prisma client
         run: npx prisma generate
