@@ -26,6 +26,11 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+        env:
+          # prisma.config.ts resolves this eagerly as soon as any prisma
+          # command runs (including the postinstall `prisma generate` that
+          # npm ci triggers) - Prisma 5 only needed it at actual connect time.
+          DATABASE_URL: file:./prisma/dev.db
 
       - name: Block high/critical production dependency advisories
         run: npm run security:deps
@@ -52,6 +57,11 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+        env:
+          # prisma.config.ts resolves this eagerly as soon as any prisma
+          # command runs (including the postinstall `prisma generate` that
+          # npm ci triggers) - Prisma 5 only needed it at actual connect time.
+          DATABASE_URL: file:./prisma/dev.db
 
       - name: Run unit tests
         run: npm run test:unit
@@ -71,21 +81,28 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
-
-      - name: Generate Prisma client
-        run: npx prisma generate
+        env:
+          # prisma.config.ts resolves this eagerly as soon as any prisma
+          # command runs (including the postinstall `prisma generate` that
+          # npm ci triggers) - Prisma 5 only needed it at actual connect time.
+          # That postinstall hook already generates the client, so the
+          # separate "Generate Prisma client" step this used to have was
+          # always redundant - removed rather than given its own DATABASE_URL.
+          DATABASE_URL: file:./prisma/dev.db
 
       - name: Run database migrations + seed
         run: npm run db:reset:dev
         env:
-          # file:./dev.db → resolved relative to prisma/ → prisma/dev.db
-          DATABASE_URL: file:./dev.db
+          # Resolved relative to the job's cwd (repo root) by both the Prisma
+          # CLI and the runtime driver adapter, so this must match exactly
+          # everywhere below and in playwright.config.ts's webServer env.
+          DATABASE_URL: file:./prisma/dev.db
           NODE_ENV: development
 
       - name: Build Next.js for production (deterministic, no JIT)
         run: npm run build
         env:
-          DATABASE_URL: file:./dev.db
+          DATABASE_URL: file:./prisma/dev.db
           ADMIN_SECRET: ci-admin-secret
           USER_SECRET: ci-user-secret-with-at-least-32-chars
           EMAIL_SECRET: ci-email-secret-for-testing-32chars!!
@@ -97,7 +114,7 @@ jobs:
       - name: Run E2E tests
         run: npm run test:e2e
         env:
-          DATABASE_URL: file:./dev.db
+          DATABASE_URL: file:./prisma/dev.db
           ADMIN_SECRET: ci-admin-secret
           USER_SECRET: ci-user-secret-with-at-least-32-chars
           EMAIL_SECRET: ci-email-secret-for-testing-32chars!!
@@ -127,9 +144,14 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
-
-      - name: Generate Prisma client
-        run: npx prisma generate
+        env:
+          # prisma.config.ts resolves this eagerly as soon as any prisma
+          # command runs (including the postinstall `prisma generate` that
+          # npm ci triggers) - Prisma 5 only needed it at actual connect time.
+          # That postinstall hook already generates the client, so the
+          # separate "Generate Prisma client" step this used to have was
+          # always redundant - removed rather than given its own DATABASE_URL.
+          DATABASE_URL: file:./prisma/dev.db
 
       - name: TypeScript type check
         run: npx tsc --noEmit

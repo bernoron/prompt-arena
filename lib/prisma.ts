@@ -17,6 +17,7 @@
  */
 
 import { PrismaClient } from '@prisma/client';
+import { PrismaBetterSqlite3 } from '@prisma/adapter-better-sqlite3';
 
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined;
@@ -30,7 +31,9 @@ const prismaLog: ('query' | 'info' | 'warn' | 'error')[] =
     : ['warn', 'error'];
 
 function createPrismaClient() {
-  const client = new PrismaClient({ log: prismaLog });
+  // Prisma 7 requires a driver adapter instead of a bundled query engine binary.
+  const adapter = new PrismaBetterSqlite3({ url: process.env.DATABASE_URL });
+  const client = new PrismaClient({ adapter, log: prismaLog });
 
   // Enable WAL mode for SQLite to prevent database corruption under concurrent
   // access and survive process restarts cleanly. PRAGMA journal_mode returns a

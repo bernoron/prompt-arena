@@ -8,8 +8,11 @@ WORKDIR /app
 # already relies on. Builder-stage-only — never carried into the runner image.
 ENV CI=true
 
-# Prisma engines need these on Alpine.
-RUN apk add --no-cache libc6-compat openssl
+# libc6-compat/openssl: Prisma's query engine on Alpine.
+# python3/make/g++: better-sqlite3 (Prisma's SQLite driver adapter) ships
+# prebuilt binaries for glibc Linux but not musl/Alpine, so its install falls
+# back to compiling from source via node-gyp here.
+RUN apk add --no-cache libc6-compat openssl python3 make g++
 
 COPY package*.json ./
 # schema.prisma must exist before `npm ci`, because npm ci runs the
@@ -41,11 +44,52 @@ COPY --from=builder /app/public           ./public
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static     ./.next/static
 
-# Prisma schema, migrations and CLI — required to run `migrate deploy` at startup.
+# Prisma schema, migrations, config and CLI — required to run `migrate deploy`
+# at startup. prisma.config.ts now carries the datasource URL (Prisma 7 no
+# longer allows `url` inside schema.prisma).
 COPY --from=builder /app/prisma                 ./prisma
+COPY --from=builder /app/prisma.config.ts       ./prisma.config.ts
 COPY --from=builder /app/node_modules/prisma    ./node_modules/prisma
 COPY --from=builder /app/node_modules/@prisma   ./node_modules/@prisma
 COPY --from=builder /app/node_modules/.prisma   ./node_modules/.prisma
+
+# The `prisma` CLI package (config loading via @prisma/config, plus its
+# bundled `prisma bootstrap`/dev tooling) requires this whole tree at its own
+# require-time, regardless of what prisma.config.ts itself imports. Found by
+# actually running `migrate deploy` against a minimal copy of this image and
+# adding each "Cannot find module" one at a time until it succeeded — not
+# guessed from package.json alone, since several of these (proper-lockfile,
+# zeptomatch, etc.) come from an internal dependency, not @prisma/config
+# directly. Keep in sync if a future Prisma bump breaks this.
+COPY --from=builder \
+  /app/node_modules/@standard-schema \
+  /app/node_modules/c12 \
+  /app/node_modules/confbox \
+  /app/node_modules/deepmerge-ts \
+  /app/node_modules/defu \
+  /app/node_modules/destr \
+  /app/node_modules/dotenv \
+  /app/node_modules/effect \
+  /app/node_modules/empathic \
+  /app/node_modules/exsolve \
+  /app/node_modules/fast-check \
+  /app/node_modules/get-port-please \
+  /app/node_modules/giget \
+  /app/node_modules/graceful-fs \
+  /app/node_modules/grammex \
+  /app/node_modules/graphmatch \
+  /app/node_modules/ohash \
+  /app/node_modules/pathe \
+  /app/node_modules/perfect-debounce \
+  /app/node_modules/pkg-types \
+  /app/node_modules/proper-lockfile \
+  /app/node_modules/pure-rand \
+  /app/node_modules/rc9 \
+  /app/node_modules/remeda \
+  /app/node_modules/retry \
+  /app/node_modules/valibot \
+  /app/node_modules/zeptomatch \
+  ./node_modules/
 
 # lib/ is not otherwise needed at runtime (Next's standalone output bundles
 # its own compiled copy), but prisma/seed.ts imports from it directly via
