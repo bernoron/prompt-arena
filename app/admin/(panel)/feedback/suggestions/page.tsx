@@ -88,7 +88,7 @@ export default function AdminSuggestionsPage() {
                     value={s.status}
                     disabled={updating === s.id}
                     onChange={(e) => updateStatus(s.id, e.target.value)}
-                    className="text-xs border border-slate-200 rounded-lg px-2 py-1.5 bg-white text-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-400 disabled:opacity-50"
+                    className="text-xs border border-slate-200 rounded-lg px-2 py-1.5 bg-white text-slate-700 focus:outline-hidden focus:ring-2 focus:ring-emerald-400 disabled:opacity-50"
                   >
                     {STATUS_OPTIONS.map((opt) => (
                       <option key={opt} value={opt}>{STATUS_META[opt].label}</option>

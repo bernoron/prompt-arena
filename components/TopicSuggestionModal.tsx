@@ -37,7 +37,7 @@ export default function TopicSuggestionModal({ onClose }: Props) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4">
-      <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} />
+      <div className="absolute inset-0 bg-black/40 backdrop-blur-xs" onClick={onClose} />
       <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6 space-y-4">
         {done ? (
           <div className="text-center py-4">
@@ -58,7 +58,7 @@ export default function TopicSuggestionModal({ onClose }: Props) {
                   onChange={(e) => setTitle(e.target.value)}
                   maxLength={200}
                   placeholder="Welches Thema fehlt dir? *"
-                  className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400"
+                  className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-hidden focus:ring-2 focus:ring-emerald-400"
                 />
                 <div className="text-right text-xs text-gray-400 mt-1">{title.length}/200</div>
               </div>
@@ -70,7 +70,7 @@ export default function TopicSuggestionModal({ onClose }: Props) {
                   maxLength={500}
                   rows={3}
                   placeholder="Warum wäre das nützlich? (optional)"
-                  className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-emerald-400"
+                  className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm resize-none focus:outline-hidden focus:ring-2 focus:ring-emerald-400"
                 />
                 <div className="text-right text-xs text-gray-400">{description.length}/500</div>
               </div>

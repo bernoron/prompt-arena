@@ -31,11 +31,11 @@ export default function PromptCard({ prompt, onClick }: Props) {
   return (
     <button
       onClick={onClick}
-      className={`bg-white rounded-2xl border border-slate-200 border-t-4 ${accent} shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-200 p-5 text-left w-full group relative ${rarityConf.ring}`}
+      className={`bg-white rounded-2xl border border-slate-200 border-t-4 ${accent} shadow-xs hover:shadow-lg hover:-translate-y-1 transition-all duration-200 p-5 text-left w-full group relative ${rarityConf.ring}`}
     >
       {/* Rarity badge (pinned top-right, only for non-common) */}
       {rarity !== 'common' && (
-        <span className={`absolute -top-3 right-3 text-xs px-2.5 py-0.5 rounded-full font-bold shadow-sm ${rarityConf.badgeClass}`}>
+        <span className={`absolute -top-3 right-3 text-xs px-2.5 py-0.5 rounded-full font-bold shadow-xs ${rarityConf.badgeClass}`}>
           {rarityConf.emoji} {rarityConf.label}
         </span>
       )}
@@ -87,7 +87,7 @@ export default function PromptCard({ prompt, onClick }: Props) {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <span
-            className="w-6 h-6 rounded-full flex items-center justify-center text-white text-xs font-bold shadow-sm"
+            className="w-6 h-6 rounded-full flex items-center justify-center text-white text-xs font-bold shadow-xs"
             style={{ backgroundColor: prompt.author.avatarColor }}
           >
             {prompt.author.name.split(' ').map((n) => n[0]).join('')}

@@ -47,7 +47,7 @@ export default function RegisterPage() {
     }
   };
 
-  const inputCls = 'w-full px-3 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:border-transparent focus:bg-white transition-all';
+  const inputCls = 'w-full px-3 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-sm focus:outline-hidden focus:ring-2 focus:ring-emerald-400 focus:border-transparent focus:bg-white transition-all';
 
   return (
     <div

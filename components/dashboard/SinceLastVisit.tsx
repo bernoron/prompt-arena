@@ -4,7 +4,7 @@ import type { RankDiff, RankedUser } from '@/lib/types';
 function Avatar({ user, size = 7 }: { user: Pick<RankedUser, 'name' | 'avatarColor'>; size?: number }) {
   return (
     <span
-      className={`w-${size} h-${size} rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0`}
+      className={`w-${size} h-${size} rounded-full flex items-center justify-center text-white text-xs font-bold shrink-0`}
       style={{ backgroundColor: user.avatarColor }}
     >
       {user.name.split(' ').map((n) => n[0]).join('')}
@@ -29,9 +29,9 @@ const SinceLastVisit = memo(function SinceLastVisit({ diff }: { diff: RankDiff }
   return (
     <div className={`rounded-2xl border p-5 ${
       delta < 0
-        ? 'border-emerald-200 bg-gradient-to-br from-emerald-50 to-teal-50'
+        ? 'border-emerald-200 bg-linear-to-br from-emerald-50 to-teal-50'
         : delta > 0
-        ? 'border-rose-200 bg-gradient-to-br from-rose-50 to-orange-50'
+        ? 'border-rose-200 bg-linear-to-br from-rose-50 to-orange-50'
         : 'border-slate-200 bg-slate-50'
     }`}>
       <div className="flex items-center gap-2 mb-4">

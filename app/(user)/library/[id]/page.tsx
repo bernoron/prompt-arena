@@ -57,7 +57,7 @@ export default async function PromptDetailPage({ params }: Props) {
         ← Zurück zur Bibliothek
       </Link>
 
-      <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+      <div className="bg-white rounded-2xl shadow-xs border border-slate-200 overflow-hidden">
         <div className="p-4 sm:p-6 border-b border-slate-100">
           <div className="flex flex-wrap gap-2 mb-2">
             <CategoryBadge category={prompt.category as Category} />
@@ -84,7 +84,7 @@ export default async function PromptDetailPage({ params }: Props) {
         <div className="p-4 sm:p-6 border-t border-slate-100 space-y-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2.5">
-              <span className="w-9 h-9 rounded-full flex items-center justify-center text-white text-xs font-bold shadow-sm"
+              <span className="w-9 h-9 rounded-full flex items-center justify-center text-white text-xs font-bold shadow-xs"
                 style={{ backgroundColor: prompt.author.avatarColor }}>
                 {prompt.author.name.split(' ').map((n) => n[0]).join('')}
               </span>

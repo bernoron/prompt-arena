@@ -52,7 +52,7 @@ export default function AdminOverview() {
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {kpis.map(({ label, value, icon, color, href }) => {
           const card = (
-            <div className={`bg-white rounded-2xl border border-slate-200 shadow-sm p-5 ${href ? 'hover:border-emerald-300 transition-colors cursor-pointer' : ''}`}>
+            <div className={`bg-white rounded-2xl border border-slate-200 shadow-xs p-5 ${href ? 'hover:border-emerald-300 transition-colors cursor-pointer' : ''}`}>
               <div className="flex items-center justify-between mb-3">
                 <span className="text-2xl">{icon}</span>
                 {href && <span className="text-xs text-slate-400">→</span>}
@@ -67,7 +67,7 @@ export default function AdminOverview() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Category breakdown */}
-        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-5">
+        <div className="bg-white rounded-2xl border border-slate-200 shadow-xs p-5">
           <h2 className="font-bold text-slate-800 mb-4">📂 Prompts nach Kategorie</h2>
           <div className="space-y-3">
             {stats.categoryBreakdown.sort((a, b) => b.count - a.count).map(({ category, count }) => {
@@ -90,7 +90,7 @@ export default function AdminOverview() {
         </div>
 
         {/* Top Prompts */}
-        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-5">
+        <div className="bg-white rounded-2xl border border-slate-200 shadow-xs p-5">
           <div className="flex items-center justify-between mb-4">
             <h2 className="font-bold text-slate-800">🚀 Meistgenutzte Prompts</h2>
             <Link href="/admin/prompts" className="text-xs text-emerald-600 hover:underline font-semibold">Alle →</Link>
@@ -113,7 +113,7 @@ export default function AdminOverview() {
       </div>
 
       {/* Recent Users */}
-      <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+      <div className="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
         <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100">
           <h2 className="font-bold text-slate-800">🆕 Neue Nutzer</h2>
           <Link href="/admin/users" className="text-xs text-emerald-600 hover:underline font-semibold">Alle verwalten →</Link>

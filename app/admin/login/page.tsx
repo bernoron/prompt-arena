@@ -37,7 +37,7 @@ export default function AdminLoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-linear-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center p-4">
       <div className="w-full max-w-sm">
         {/* Header */}
         <div className="text-center mb-8">
@@ -66,7 +66,7 @@ export default function AdminLoginPage() {
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Admin-Passwort eingeben…"
               className="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm
-                         focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:border-transparent
+                         focus:outline-hidden focus:ring-2 focus:ring-emerald-400 focus:border-transparent
                          placeholder:text-slate-400 transition"
             />
           </div>

@@ -5,7 +5,7 @@ import type { PromptWithDetails } from '@/lib/types';
 function Avatar({ user }: { user: { name: string; avatarColor: string } }) {
   return (
     <span
-      className="w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0"
+      className="w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-bold shrink-0"
       style={{ backgroundColor: user.avatarColor }}
     >
       {user.name.split(' ').map((n) => n[0]).join('')}
@@ -48,14 +48,14 @@ const TrendingPrompts = memo(function TrendingPrompts({ allPrompts }: { allPromp
         : 1);
 
   return (
-    <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+    <div className="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
       <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between flex-wrap gap-2">
         <h3 className="font-bold text-slate-800">Trending Prompts</h3>
         <div className="flex bg-slate-100 rounded-xl p-1 gap-1">
           {([['hot', '🔥 Meistgenutzt'], ['new', '✨ Neueste']] as const).map(([key, label]) => (
             <button key={key} onClick={() => setTab(key)}
               className={`text-xs font-bold px-3 py-1.5 rounded-lg transition-all ${
-                tab === key ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-500 hover:text-slate-700'
+                tab === key ? 'bg-white text-slate-800 shadow-xs' : 'text-slate-500 hover:text-slate-700'
               }`}>
               {label}
             </button>
@@ -68,7 +68,7 @@ const TrendingPrompts = memo(function TrendingPrompts({ allPrompts }: { allPromp
           <div className="p-8 text-center text-slate-400 text-sm">Noch keine Prompts.</div>
         ) : shown.map((p, i) => (
           <div key={p.id} className="flex items-center gap-3 px-6 py-3.5 hover:bg-slate-50 transition-colors">
-            <span className="text-sm font-extrabold w-5 text-slate-300 flex-shrink-0">
+            <span className="text-sm font-extrabold w-5 text-slate-300 shrink-0">
               {i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `${i + 1}.`}
             </span>
             <Avatar user={p.author} />
@@ -88,7 +88,7 @@ const TrendingPrompts = memo(function TrendingPrompts({ allPrompts }: { allPromp
               {tab === 'hot' && <ImpactBar value={p.usageCount} max={maxVal as number} />}
             </div>
             <Link href={`/library?prompt=${p.id}`}
-              className="text-xs text-slate-400 hover:text-emerald-600 transition-colors flex-shrink-0 font-medium">
+              className="text-xs text-slate-400 hover:text-emerald-600 transition-colors shrink-0 font-medium">
               Ansehen →
             </Link>
           </div>

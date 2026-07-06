@@ -80,7 +80,7 @@ export default function ProfilePage() {
         <div className="relative space-y-4">
           {/* Avatar + Name row */}
           <div className="flex items-center gap-4">
-            <span className="w-14 h-14 sm:w-20 sm:h-20 rounded-xl sm:rounded-2xl flex items-center justify-center text-white text-2xl sm:text-3xl font-extrabold flex-shrink-0 shadow-xl"
+            <span className="w-14 h-14 sm:w-20 sm:h-20 rounded-xl sm:rounded-2xl flex items-center justify-center text-white text-2xl sm:text-3xl font-extrabold shrink-0 shadow-xl"
               style={{ backgroundColor: profile.avatarColor }}>
               {profile.name.split(' ').map(n => n[0]).join('')}
             </span>
@@ -129,7 +129,7 @@ export default function ProfilePage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Prompts */}
         <div className="lg:col-span-2">
-          <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+          <div className="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
             <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
               <h2 className="font-bold text-slate-800">Meine Prompts</h2>
               <span className="text-xs font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full">{profile.prompts.length}</span>
@@ -157,7 +157,7 @@ export default function ProfilePage() {
                         <h3 className="font-bold text-slate-900 text-sm">{p.title}</h3>
                         {p.titleEn !== p.title && <p className="text-xs text-slate-400 mt-0.5">{p.titleEn}</p>}
                       </div>
-                      <div className="text-right flex-shrink-0">
+                      <div className="text-right shrink-0">
                         <p className="text-sm font-extrabold text-emerald-600">{p.usageCount}×</p>
                         <p className="text-xs text-slate-400">genutzt</p>
                         {p.voteCount > 0 && (
@@ -178,7 +178,7 @@ export default function ProfilePage() {
 
         {/* Badges */}
         <div>
-          <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
+          <div className="bg-white rounded-2xl border border-slate-200 shadow-xs p-6">
             <h2 className="font-bold text-slate-800 mb-4">
               Badges
               <span className="ml-2 text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">

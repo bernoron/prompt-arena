@@ -55,7 +55,7 @@ export default function LessonPage({
   if (loading) {
     return (
       <div className="max-w-3xl mx-auto space-y-4">
-        <div className="h-6 w-48 bg-slate-100 rounded animate-pulse" />
+        <div className="h-6 w-48 bg-slate-100 rounded-sm animate-pulse" />
         <div className="h-10 w-3/4 bg-slate-100 rounded-xl animate-pulse" />
         <div className="space-y-3">
           {[...Array(4)].map((_, i) => (

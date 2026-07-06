@@ -45,7 +45,7 @@ export default function LeaderboardPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Top 10 */}
         <div className="lg:col-span-2">
-          <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+          <div className="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
             <div className="px-6 py-4 border-b border-slate-100">
               <h2 className="font-bold text-slate-800">Top 10 Individuen</h2>
             </div>
@@ -63,7 +63,7 @@ export default function LeaderboardPage() {
                   <div className="px-3 sm:px-6 pt-4 sm:pt-6 pb-3 sm:pb-4 flex items-end justify-center gap-2 sm:gap-3 border-b border-slate-100 bg-slate-50">
                     {[
                       { user: top2, rank: 2, height: 64, emoji: '🥈', bg: 'bg-slate-200', textColor: 'text-slate-500' },
-                      { user: top1, rank: 1, height: 96, emoji: '🥇', bg: 'bg-gradient-to-b from-amber-200 to-amber-300', textColor: 'text-amber-600', crown: true, ring: 'ring-4 ring-amber-400' },
+                      { user: top1, rank: 1, height: 96, emoji: '🥇', bg: 'bg-linear-to-b from-amber-200 to-amber-300', textColor: 'text-amber-600', crown: true, ring: 'ring-4 ring-amber-400' },
                       { user: top3, rank: 3, height: 48, emoji: '🥉', bg: 'bg-orange-100', textColor: 'text-orange-500' },
                     ].map(({ user, rank, height, emoji, bg, textColor, crown, ring }) => (
                       <div key={rank} className="flex flex-col items-center gap-2 flex-1 max-w-[140px]">
@@ -94,7 +94,7 @@ export default function LeaderboardPage() {
                       <div key={user.id}
                         className={`flex items-center gap-2 sm:gap-4 px-3 sm:px-6 py-3 transition-colors ${isMe ? 'bg-emerald-50' : 'hover:bg-slate-50'}`}>
                         <span className="w-7 text-center text-sm font-extrabold text-slate-400">#{i + 4}</span>
-                        <span className="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0 shadow-sm"
+                        <span className="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold shrink-0 shadow-xs"
                           style={{ backgroundColor: user.avatarColor }}>
                           {user.name.split(' ').map((n) => n[0]).join('')}
                         </span>
@@ -105,7 +105,7 @@ export default function LeaderboardPage() {
                           </div>
                         </div>
                         <LevelBadge level={user.level as LevelName} size="sm" />
-                        <div className="text-right flex-shrink-0">
+                        <div className="text-right shrink-0">
                           <p className="font-extrabold text-emerald-600">{user.totalPoints}</p>
                           <p className="text-xs text-slate-400">Pts</p>
                         </div>
@@ -142,7 +142,7 @@ export default function LeaderboardPage() {
         {/* Right column */}
         <div className="space-y-5">
           {topPrompt && (
-            <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 sm:p-6">
+            <div className="bg-white rounded-2xl border border-slate-200 shadow-xs p-4 sm:p-6">
               <div className="flex items-center gap-2 mb-4">
                 <span className="text-xl">⭐</span>
                 <h2 className="font-bold text-slate-800">Prompt der Woche</h2>
@@ -152,7 +152,7 @@ export default function LeaderboardPage() {
                 <p className="text-xs text-slate-600 line-clamp-3 font-mono bg-white/60 rounded-lg px-2 py-1.5">{topPrompt.content}</p>
                 <div className="mt-3 flex items-center justify-between">
                   <div className="flex items-center gap-1.5">
-                    <span className="w-5 h-5 rounded-full flex items-center justify-center text-white text-xs font-bold shadow-sm"
+                    <span className="w-5 h-5 rounded-full flex items-center justify-center text-white text-xs font-bold shadow-xs"
                       style={{ backgroundColor: topPrompt.author.avatarColor }}>
                       {topPrompt.author.name.split(' ').map((n) => n[0]).join('')}
                     </span>
