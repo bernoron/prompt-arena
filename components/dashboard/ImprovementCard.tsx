@@ -15,7 +15,7 @@ const ImprovementCard = memo(function ImprovementCard({
 }: ImprovementCardProps) {
   if (rank === 1) {
     return (
-      <div className="rounded-2xl border border-amber-200 p-4 bg-gradient-to-br from-amber-50 to-yellow-50">
+      <div className="rounded-2xl border border-amber-200 p-4 bg-linear-to-br from-amber-50 to-yellow-50">
         <p className="text-sm font-extrabold text-amber-800 mb-1">🏆 Du führst das Ranking an!</p>
         <p className="text-xs text-amber-700 leading-relaxed">
           Bleib aktiv — der Zweite liegt nur{' '}
@@ -40,7 +40,7 @@ const ImprovementCard = memo(function ImprovementCard({
   ];
 
   return (
-    <div className="rounded-2xl border border-blue-200 p-4 bg-gradient-to-br from-blue-50 to-indigo-50">
+    <div className="rounded-2xl border border-blue-200 p-4 bg-linear-to-br from-blue-50 to-indigo-50">
       <p className="text-sm font-extrabold text-blue-800 mb-1">
         💡 So überholst du {ahead?.name.split(' ')[0]}
       </p>

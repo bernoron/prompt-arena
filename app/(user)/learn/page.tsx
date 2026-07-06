@@ -97,7 +97,7 @@ export default function LearnPage() {
                         <p className="text-xs text-slate-400 mt-0.5">{mod.totalLessons} Lektionen</p>
                       </div>
                     </div>
-                    <div className="relative flex-shrink-0">
+                    <div className="relative shrink-0">
                       <ProgressRing completed={mod.completedLessons} total={mod.totalLessons} size={40} />
                       <span className="absolute inset-0 flex items-center justify-center text-[10px] font-extrabold text-slate-600">
                         {mod.completedLessons}/{mod.totalLessons}
@@ -148,15 +148,15 @@ export default function LearnPage() {
         <h3 className="font-bold text-slate-800 mb-3">🎯 Wie funktioniert der Lernpfad?</h3>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-sm text-slate-600">
           <div className="flex gap-2">
-            <span className="text-lg flex-shrink-0">📖</span>
+            <span className="text-lg shrink-0">📖</span>
             <div><p className="font-semibold text-slate-700">Theorie & Beispiele</p><p>Jede Lektion erklärt ein Konzept mit konkreten Gut/Schlecht-Vergleichen.</p></div>
           </div>
           <div className="flex gap-2">
-            <span className="text-lg flex-shrink-0">🔧</span>
+            <span className="text-lg shrink-0">🔧</span>
             <div><p className="font-semibold text-slate-700">Kopierbare Vorlagen</p><p>Jedes Pattern kannst du direkt in deine Arbeit übernehmen.</p></div>
           </div>
           <div className="flex gap-2">
-            <span className="text-lg flex-shrink-0">⭐</span>
+            <span className="text-lg shrink-0">⭐</span>
             <div><p className="font-semibold text-slate-700">Punkte sammeln</p><p>Pro abgeschlossener Lektion erhältst du +{POINTS.COMPLETE_LESSON} Punkte für das Ranking.</p></div>
           </div>
         </div>

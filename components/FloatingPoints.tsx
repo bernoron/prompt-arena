@@ -49,7 +49,7 @@ export default function FloatingPoints() {
   }, [handleFloat]);
 
   return (
-    <div className="pointer-events-none fixed inset-0 z-[9999]" aria-hidden="true">
+    <div className="pointer-events-none fixed inset-0 z-9999" aria-hidden="true">
       {items.map((item) => (
         <span
           key={item.id}

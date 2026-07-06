@@ -1,46 +1,69 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap')
+layer(base);
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss';
 
-:root {
-  --primary: #059669;
-  --primary-dark: #047857;
-  --primary-light: #D1FAE5;
-  --nav-bg: #0F172A;
+/*
+  The default border color has changed to `currentcolor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentcolor);
+  }
 }
 
-html, body {
-  overflow-x: hidden;
-  max-width: 100%;
+@utility text-balance {
+  text-wrap: balance;
 }
 
-body {
-  color: #0F172A;
-  background: #F1F5F9;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+@utility gradient-brand {
+  background: linear-gradient(135deg, #059669 0%, #0891b2 100%);
+}
+
+@utility gradient-gold {
+  background: linear-gradient(135deg, #f59e0b 0%, #ef4444 100%);
+}
+
+@utility card {
+  @apply bg-white rounded-2xl border border-slate-200 shadow-xs;
+}
+
+@utility card-hover {
+  @apply transition-all duration-200 hover:shadow-md hover:-translate-y-0.5;
 }
 
 @layer utilities {
-  .text-balance {
-    text-wrap: balance;
+  :root {
+    --primary: #059669;
+    --primary-dark: #047857;
+    --primary-light: #d1fae5;
+    --nav-bg: #0f172a;
   }
 
-  .gradient-brand {
-    background: linear-gradient(135deg, #059669 0%, #0891b2 100%);
+  html,
+  body {
+    overflow-x: hidden;
+    max-width: 100%;
   }
 
-  .gradient-gold {
-    background: linear-gradient(135deg, #F59E0B 0%, #EF4444 100%);
-  }
-
-  .card {
-    @apply bg-white rounded-2xl border border-slate-200 shadow-sm;
-  }
-
-  .card-hover {
-    @apply transition-all duration-200 hover:shadow-md hover:-translate-y-0.5;
+  body {
+    color: #0f172a;
+    background: #f1f5f9;
+    font-family:
+      'Inter',
+      -apple-system,
+      BlinkMacSystemFont,
+      'Segoe UI',
+      sans-serif;
   }
 }
 

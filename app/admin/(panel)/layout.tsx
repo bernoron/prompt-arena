@@ -25,8 +25,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   return (
     <div className="flex flex-col lg:flex-row gap-6 min-h-[calc(100vh-8rem)]">
       {/* Sidebar */}
-      <aside className="w-full lg:w-52 lg:flex-shrink-0">
-        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden lg:sticky lg:top-24">
+      <aside className="w-full lg:w-52 lg:shrink-0">
+        <div className="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden lg:sticky lg:top-24">
           <div className="px-4 py-3 border-b border-slate-100" style={{ background: 'linear-gradient(135deg,#0F172A,#1E293B)' }}>
             <p className="text-xs font-bold uppercase tracking-widest text-slate-400">Admin</p>
             <p className="text-white font-extrabold text-sm mt-0.5">Verwaltung</p>
@@ -36,7 +36,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               const active = pathname === href;
               return (
                 <Link key={href} href={href}
-                  className={`flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm font-medium transition-all whitespace-nowrap flex-shrink-0 lg:flex-shrink ${
+                  className={`flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm font-medium transition-all whitespace-nowrap shrink-0 lg:shrink ${
                     active
                       ? 'bg-emerald-50 text-emerald-700 font-semibold'
                       : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'

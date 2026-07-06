@@ -145,7 +145,7 @@ export default function AdminFeedbackPage() {
                     </p>
                   </div>
 
-                  <div className="flex flex-col gap-1.5 flex-shrink-0">
+                  <div className="flex flex-col gap-1.5 shrink-0">
                     {!isDone && (
                       <button
                         onClick={() => markDone(entry.id)}

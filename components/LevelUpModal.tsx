@@ -41,7 +41,7 @@ export default function LevelUpModal({ newLevel, onClose }: Props) {
 
   return (
     <div
-      className="fixed inset-0 z-[300] flex items-center justify-center p-4"
+      className="fixed inset-0 z-300 flex items-center justify-center p-4"
       style={{ backgroundColor: 'rgba(15,23,42,0.75)', backdropFilter: 'blur(6px)' }}
       onClick={onClose}
     >

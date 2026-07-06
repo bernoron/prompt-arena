@@ -214,7 +214,7 @@ export default function DashboardPage() {
             <p className="text-slate-400 mt-1.5 text-sm">{motivLine}</p>
           </div>
           {currentUser && (
-            <div className="flex gap-2 w-full sm:w-auto sm:flex-shrink-0">
+            <div className="flex gap-2 w-full sm:w-auto sm:shrink-0">
               <Link href="/submit"
                 className="flex-1 sm:flex-none text-center bg-emerald-500 hover:bg-emerald-400 text-white font-bold text-sm px-4 py-2.5 rounded-xl transition-all hover:scale-105 shadow-lg">
                 + Einreichen
@@ -316,7 +316,7 @@ export default function DashboardPage() {
 
           {/* My top prompts */}
           {myPrompts.length > 0 && (
-            <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+            <div className="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
               <div className="px-4 sm:px-6 py-3 sm:py-4 border-b border-slate-100 flex items-center justify-between">
                 <div>
                   <h3 className="font-bold text-slate-800">Meine Top-Prompts 🚀</h3>
@@ -338,7 +338,7 @@ export default function DashboardPage() {
                         </div>
                         <ImpactBar value={p.usageCount} max={maxUsage} />
                       </div>
-                      <span className="text-xs font-bold text-purple-600 bg-purple-50 px-2 py-0.5 rounded-full flex-shrink-0">
+                      <span className="text-xs font-bold text-purple-600 bg-purple-50 px-2 py-0.5 rounded-full shrink-0">
                         +{p.usageCount * 5} Pts verdient
                       </span>
                     </div>
@@ -354,9 +354,9 @@ export default function DashboardPage() {
           {currentUser && progress && rank ? (
             <>
               {/* User / XP card */}
-              <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-5">
+              <div className="bg-white rounded-2xl border border-slate-200 shadow-xs p-5">
                 <div className="flex items-center gap-3 mb-4">
-                  <span className="w-12 h-12 rounded-xl flex items-center justify-center text-white font-extrabold text-lg shadow"
+                  <span className="w-12 h-12 rounded-xl flex items-center justify-center text-white font-extrabold text-lg shadow-sm"
                     style={{ backgroundColor: currentUser.avatarColor }}>
                     {currentUser.name.split(' ').map((n: string) => n[0]).join('')}
                   </span>
@@ -397,7 +397,7 @@ export default function DashboardPage() {
               <NextLessonWidget modules={learnModules} />
 
               {/* Mini leaderboard */}
-              <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+              <div className="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
                 <div className="px-5 py-3.5 border-b border-slate-100 flex items-center justify-between">
                   <h3 className="font-bold text-slate-800 text-sm">🏅 Top Rangliste</h3>
                   <Link href="/leaderboard" className="text-xs text-emerald-600 font-semibold hover:underline">Alle →</Link>
@@ -414,8 +414,8 @@ export default function DashboardPage() {
                         className={`flex items-center gap-2.5 px-5 py-2.5 transition-colors ${
                           isMe ? 'bg-emerald-50 border-l-2 border-emerald-400' : 'hover:bg-slate-50'
                         }`}>
-                        <span className="text-sm w-6 text-center flex-shrink-0">{medal}</span>
-                        <span className="w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0"
+                        <span className="text-sm w-6 text-center shrink-0">{medal}</span>
+                        <span className="w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-bold shrink-0"
                           style={{ backgroundColor: u.avatarColor }}>
                           {u.name.split(' ').map((n) => n[0]).join('')}
                         </span>

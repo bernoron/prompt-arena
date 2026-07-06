@@ -40,7 +40,7 @@ export default function UserMenu({ dark = false }: { dark?: boolean }) {
         }`}
       >
         <span
-          className="w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0 shadow-sm"
+          className="w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-bold shrink-0 shadow-xs"
           style={{ backgroundColor: user.avatarColor }}
         >
           {initials(user.name)}

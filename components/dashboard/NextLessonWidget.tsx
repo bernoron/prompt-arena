@@ -32,7 +32,7 @@ const NextLessonWidget = memo(function NextLessonWidget({ modules }: NextLessonW
 
   if (allDone) {
     return (
-      <div className="rounded-2xl border border-emerald-200 p-4 bg-gradient-to-br from-emerald-50 to-teal-50">
+      <div className="rounded-2xl border border-emerald-200 p-4 bg-linear-to-br from-emerald-50 to-teal-50">
         <p className="text-sm font-extrabold text-emerald-800 mb-1">🎓 Lernpfad abgeschlossen!</p>
         <p className="text-xs text-emerald-700">
           Du hast alle {totalLessons} Lektionen absolviert.
@@ -46,7 +46,7 @@ const NextLessonWidget = memo(function NextLessonWidget({ modules }: NextLessonW
   const pct = totalLessons > 0 ? Math.round((totalCompleted / totalLessons) * 100) : 0;
 
   return (
-    <div className="rounded-2xl border border-violet-200 p-4 bg-gradient-to-br from-violet-50 to-indigo-50">
+    <div className="rounded-2xl border border-violet-200 p-4 bg-linear-to-br from-violet-50 to-indigo-50">
       <p className="text-sm font-extrabold text-violet-800 mb-1">🧠 Nächste Lektion</p>
       <p className="text-xs text-violet-600 mb-3">
         {nextModule.icon} {nextModule.title} · {totalCompleted}/{totalLessons} abgeschlossen

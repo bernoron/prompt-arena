@@ -51,7 +51,7 @@ export default function FeedbackModal({ onClose, contextType = 'GENERAL', contex
 
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4">
-      <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} />
+      <div className="absolute inset-0 bg-black/40 backdrop-blur-xs" onClick={onClose} />
       <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6 space-y-4">
         {done ? (
           <div className="text-center py-4">
@@ -90,7 +90,7 @@ export default function FeedbackModal({ onClose, contextType = 'GENERAL', contex
               maxLength={500}
               rows={3}
               placeholder="Was möchtest du uns mitteilen?"
-              className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-emerald-400"
+              className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm resize-none focus:outline-hidden focus:ring-2 focus:ring-emerald-400"
             />
             <div className="text-right text-xs text-gray-400">{text.length}/500</div>
 
