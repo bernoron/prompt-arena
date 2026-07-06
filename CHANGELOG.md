@@ -1,5 +1,14 @@
 # Changelog
 
+## [8.1.2](https://github.com/bernoron/prompt-arena/compare/v8.1.1...v8.1.2) (2026-07-06)
+
+
+### Bug Fixes
+
+* **ci:** fix DATABASE_URL path resolution for Prisma 7 + standalone server ([3db846d](https://github.com/bernoron/prompt-arena/commit/3db846de05d5c96eb077fe454f737c66f90212a9))
+* **ci:** remove redundant Generate Prisma client steps ([746d67f](https://github.com/bernoron/prompt-arena/commit/746d67fe78d8f14e52042e695f583d2e2ebc165c))
+* **ci:** set DATABASE_URL for npm ci so Prisma 7's postinstall works ([dc568b2](https://github.com/bernoron/prompt-arena/commit/dc568b2074544f8389e544bda9094957db3d87b7))
+
 ## [8.1.1](https://github.com/bernoron/prompt-arena/compare/v8.1.0...v8.1.1) (2026-07-04)
 
 
