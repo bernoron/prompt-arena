@@ -11,7 +11,7 @@ export default function ContentBlockRenderer({ block }: { block: ContentBlock })
     case 'tip':
       return (
         <div className="flex gap-3 bg-emerald-50 border border-emerald-200 rounded-xl p-4">
-          <span className="text-lg flex-shrink-0">💡</span>
+          <span className="text-lg shrink-0">💡</span>
           <p className="text-emerald-800 text-sm leading-relaxed">{block.content}</p>
         </div>
       );
@@ -19,7 +19,7 @@ export default function ContentBlockRenderer({ block }: { block: ContentBlock })
     case 'warning':
       return (
         <div className="flex gap-3 bg-amber-50 border border-amber-200 rounded-xl p-4">
-          <span className="text-lg flex-shrink-0">⚠️</span>
+          <span className="text-lg shrink-0">⚠️</span>
           <p className="text-amber-800 text-sm leading-relaxed">{block.content}</p>
         </div>
       );

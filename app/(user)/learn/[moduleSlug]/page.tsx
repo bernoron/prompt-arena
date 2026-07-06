@@ -67,7 +67,7 @@ export default function ModulePage({ params }: { params: Promise<{ moduleSlug: s
               <p className="text-sm text-slate-500 mt-1">{mod.totalLessons} Lektionen · +{mod.totalLessons * 15} Punkte total</p>
             </div>
           </div>
-          <div className="relative flex-shrink-0">
+          <div className="relative shrink-0">
             <ProgressRing completed={mod.completedLessons} total={mod.totalLessons} size={56} />
             <span className="absolute inset-0 flex items-center justify-center text-xs font-extrabold text-slate-700">
               {mod.completedLessons}/{mod.totalLessons}
@@ -88,11 +88,11 @@ export default function ModulePage({ params }: { params: Promise<{ moduleSlug: s
               className={`flex items-center gap-4 rounded-xl border p-4 transition-all group ${
                 isCompleted
                   ? 'bg-emerald-50 border-emerald-200 hover:border-emerald-300'
-                  : 'bg-white border-slate-200 hover:border-blue-300 hover:shadow-sm'
+                  : 'bg-white border-slate-200 hover:border-blue-300 hover:shadow-xs'
               }`}
             >
               {/* Step number / checkmark */}
-              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0 ${
+              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold shrink-0 ${
                 isCompleted
                   ? 'bg-emerald-500 text-white'
                   : 'bg-slate-100 text-slate-500 group-hover:bg-blue-100 group-hover:text-blue-700'
@@ -108,7 +108,7 @@ export default function ModulePage({ params }: { params: Promise<{ moduleSlug: s
               </div>
 
               {/* Points badge */}
-              <div className="flex items-center gap-2 flex-shrink-0">
+              <div className="flex items-center gap-2 shrink-0">
                 {isCompleted ? (
                   <span className="text-xs font-bold text-emerald-600 bg-emerald-100 px-2 py-0.5 rounded-full">
                     +{lesson.points} ✓

@@ -19,7 +19,7 @@ function LivePreviewCard({ title, titleEn, content, category, difficulty, author
   const ACCENT: Record<string, string> = { Writing: 'border-t-teal-400', Email: 'border-t-indigo-400', Analysis: 'border-t-orange-400', Excel: 'border-t-green-400' };
   const accent = (category && ACCENT[category]) ?? 'border-t-slate-200';
   return (
-    <div className={`bg-white rounded-2xl border border-slate-200 border-t-4 ${accent} shadow-sm p-5`}>
+    <div className={`bg-white rounded-2xl border border-slate-200 border-t-4 ${accent} shadow-xs p-5`}>
       <div className="flex items-start justify-between gap-2 mb-3">
         <div className="flex flex-wrap gap-1.5">
           {category && <CategoryBadge category={category} size="sm" />}
@@ -37,7 +37,7 @@ function LivePreviewCard({ title, titleEn, content, category, difficulty, author
         {content || <span className="text-slate-300 font-sans">Prompt-Vorschau erscheint hier...</span>}
       </p>
       <div className="flex items-center gap-2">
-        <span className="w-6 h-6 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0 shadow-sm"
+        <span className="w-6 h-6 rounded-full flex items-center justify-center text-white text-xs font-bold shrink-0 shadow-xs"
           style={{ backgroundColor: authorColor || '#059669' }}>{initials}</span>
         <span className="text-xs text-slate-500 font-medium">{authorName.split(' ')[0] || 'Du'}</span>
       </div>
@@ -88,7 +88,7 @@ export default function SubmitPage() {
     setSubmitting(false);
   };
 
-  const inputCls = "w-full px-3 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:border-transparent focus:bg-white transition-all";
+  const inputCls = "w-full px-3 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-sm focus:outline-hidden focus:ring-2 focus:ring-emerald-400 focus:border-transparent focus:bg-white transition-all";
   const labelCls = "block text-sm font-semibold text-slate-700 mb-1.5";
 
   return (
@@ -110,11 +110,11 @@ export default function SubmitPage() {
             <div onClick={() => setLinkChallenge((v) => !v)}
               className={`rounded-2xl border-2 p-4 cursor-pointer transition-all ${
                 linkChallenge
-                  ? 'border-emerald-400 bg-gradient-to-br from-emerald-50 to-teal-50 shadow-sm'
+                  ? 'border-emerald-400 bg-linear-to-br from-emerald-50 to-teal-50 shadow-xs'
                   : 'border-slate-200 bg-white hover:border-slate-300'
               }`}>
               <div className="flex items-start gap-3">
-                <div className={`w-5 h-5 rounded-md border-2 flex items-center justify-center flex-shrink-0 mt-0.5 transition-all ${
+                <div className={`w-5 h-5 rounded-md border-2 flex items-center justify-center shrink-0 mt-0.5 transition-all ${
                   linkChallenge ? 'border-emerald-500 bg-emerald-500' : 'border-slate-300'
                 }`}>
                   {linkChallenge && <span className="text-white text-xs leading-none font-bold">✓</span>}
@@ -138,7 +138,7 @@ export default function SubmitPage() {
                 <button key={slug} type="button" onClick={() => setField('category', slug)}
                   className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-semibold border-2 transition-all ${
                     form.category === slug
-                      ? 'border-emerald-500 text-white shadow-sm'
+                      ? 'border-emerald-500 text-white shadow-xs'
                       : 'border-slate-200 text-slate-600 bg-slate-50 hover:border-slate-300 hover:bg-white'
                   }`}
                   style={form.category === slug ? { background: 'linear-gradient(135deg, #059669, #0891b2)' } : {}}>
@@ -255,9 +255,9 @@ export default function SubmitPage() {
           <div className="bg-white rounded-2xl border border-slate-200 p-4">
             <p className="text-xs font-bold text-slate-500 uppercase tracking-wide mb-3">💡 Tipps für gute Prompts</p>
             <ul className="space-y-2 text-xs text-slate-500">
-              <li className="flex items-start gap-2"><span className="text-emerald-500 font-bold flex-shrink-0">→</span> Sei spezifisch: Erkläre den Kontext und das gewünschte Ergebnis</li>
-              <li className="flex items-start gap-2"><span className="text-emerald-500 font-bold flex-shrink-0">→</span> Gib Beispiele oder ein Format vor</li>
-              <li className="flex items-start gap-2"><span className="text-emerald-500 font-bold flex-shrink-0">→</span> Verwende Platzhalter wie [THEMA] für Variablen</li>
+              <li className="flex items-start gap-2"><span className="text-emerald-500 font-bold shrink-0">→</span> Sei spezifisch: Erkläre den Kontext und das gewünschte Ergebnis</li>
+              <li className="flex items-start gap-2"><span className="text-emerald-500 font-bold shrink-0">→</span> Gib Beispiele oder ein Format vor</li>
+              <li className="flex items-start gap-2"><span className="text-emerald-500 font-bold shrink-0">→</span> Verwende Platzhalter wie [THEMA] für Variablen</li>
             </ul>
           </div>
         </div>

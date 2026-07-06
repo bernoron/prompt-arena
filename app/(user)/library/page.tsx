@@ -219,7 +219,7 @@ function LibraryPageInner() {
       </div>
 
       {/* Filters */}
-      <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 mb-6 flex flex-col gap-3">
+      <div className="bg-white rounded-2xl border border-slate-200 shadow-xs p-4 mb-6 flex flex-col gap-3">
         <div className="relative w-full">
           <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">🔍</span>
           <input
@@ -227,7 +227,7 @@ function LibraryPageInner() {
             placeholder="Prompts durchsuchen…"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-9 pr-4 py-2 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:border-transparent bg-slate-50"
+            className="w-full pl-9 pr-4 py-2 rounded-xl border border-slate-200 text-sm focus:outline-hidden focus:ring-2 focus:ring-emerald-400 focus:border-transparent bg-slate-50"
           />
         </div>
         <div className="flex gap-2 flex-wrap">
@@ -237,7 +237,7 @@ function LibraryPageInner() {
               onClick={() => setCategory(cat.slug as 'all' | Category)}
               className={`px-3 py-1.5 rounded-xl text-sm font-semibold transition-all ${
                 category === cat.slug
-                  ? 'text-white shadow-sm'
+                  ? 'text-white shadow-xs'
                   : 'bg-slate-50 border border-slate-200 text-slate-600 hover:border-emerald-300 hover:text-emerald-700'
               }`}
               style={category === cat.slug ? { background: 'linear-gradient(135deg, #059669, #0891b2)' } : {}}

@@ -16,7 +16,7 @@ const COLOR_MAP: Record<string, string> = {
 
 const StatCard = memo(function StatCard({ value, label, sub, color = 'emerald' }: StatCardProps) {
   return (
-    <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-4 text-center">
+    <div className="bg-white rounded-2xl border border-slate-100 shadow-xs p-4 text-center">
       <p className={`text-2xl font-extrabold ${COLOR_MAP[color] ?? COLOR_MAP.emerald}`}>{value}</p>
       <p className="text-xs text-slate-500 mt-0.5 font-medium">{label}</p>
       {sub && <p className="text-xs text-slate-400 mt-0.5">{sub}</p>}

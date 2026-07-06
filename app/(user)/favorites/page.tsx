@@ -134,12 +134,12 @@ export default function FavoritesPage() {
 
       {/* Search */}
       {!loading && prompts.length > 0 && (
-        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 mb-6">
+        <div className="bg-white rounded-2xl border border-slate-200 shadow-xs p-4 mb-6">
           <div className="relative max-w-sm">
             <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">🔍</span>
             <input type="text" placeholder="Favoriten durchsuchen…" value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-9 pr-4 py-2 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent bg-slate-50" />
+              className="w-full pl-9 pr-4 py-2 rounded-xl border border-slate-200 text-sm focus:outline-hidden focus:ring-2 focus:ring-amber-400 focus:border-transparent bg-slate-50" />
           </div>
         </div>
       )}

@@ -111,7 +111,7 @@ export default function PromptModal({
                 <button key={lang} onClick={() => setActiveTab(lang)}
                   className={`px-4 py-1.5 rounded-lg text-sm font-semibold transition-all ${
                     activeTab === lang
-                      ? 'bg-white shadow-sm text-slate-900'
+                      ? 'bg-white shadow-xs text-slate-900'
                       : 'text-slate-500 hover:text-slate-700'
                   }`}>
                   {lang === 'de' ? '🇩🇪 Deutsch' : '🇬🇧 English'}
@@ -129,7 +129,7 @@ export default function PromptModal({
           {/* Author + stats */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2.5">
-              <span className="w-9 h-9 rounded-full flex items-center justify-center text-white text-xs font-bold shadow-sm"
+              <span className="w-9 h-9 rounded-full flex items-center justify-center text-white text-xs font-bold shadow-xs"
                 style={{ backgroundColor: prompt.author.avatarColor }}>
                 {prompt.author.name.split(' ').map((n) => n[0]).join('')}
               </span>

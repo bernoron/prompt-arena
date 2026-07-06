@@ -120,7 +120,7 @@ export default function LessonFeedback({ lessonId, userId }: Props) {
             maxLength={500}
             rows={2}
             placeholder="Möchtest du uns mehr sagen? (optional)"
-            className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-emerald-400"
+            className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm resize-none focus:outline-hidden focus:ring-2 focus:ring-emerald-400"
           />
           <div className="flex gap-2">
             <button

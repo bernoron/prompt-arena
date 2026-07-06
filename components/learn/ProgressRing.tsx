@@ -13,7 +13,7 @@ export default function ProgressRing({ completed, total, size = 48 }: ProgressRi
   const done = completed === total && total > 0;
 
   return (
-    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} className="rotate-[-90deg]">
+    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} className="-rotate-90">
       <circle cx={cx} cy={cx} r={r} fill="none" stroke="#e2e8f0" strokeWidth={size * 0.1} />
       <circle
         cx={cx} cy={cx} r={r} fill="none"

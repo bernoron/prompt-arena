@@ -65,13 +65,13 @@ export default function AdminPrompts() {
       <div className="flex gap-3 flex-wrap items-center">
         <input value={search} onChange={(e) => setSearch(e.target.value)}
           placeholder="Titel oder Autor suchen…"
-          className="px-3 py-2 text-sm rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-400 w-56" />
+          className="px-3 py-2 text-sm rounded-xl border border-slate-200 focus:outline-hidden focus:ring-2 focus:ring-emerald-400 w-56" />
         <div className="flex gap-1.5">
           {categories.map((cat) => (
             <button key={cat} onClick={() => setCategory(cat)}
               className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
                 category === cat
-                  ? 'text-white shadow-sm'
+                  ? 'text-white shadow-xs'
                   : 'bg-slate-50 border border-slate-200 text-slate-600 hover:border-emerald-300'
               }`}
               style={category === cat ? { background: 'linear-gradient(135deg,#059669,#0891b2)' } : {}}>
@@ -91,7 +91,7 @@ export default function AdminPrompts() {
           Keine Prompts gefunden.
         </div>
       ) : (
-        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+        <div className="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
           <div className="divide-y divide-slate-50">
             {filtered.map((p) => (
               <div key={p.id}>
@@ -99,7 +99,7 @@ export default function AdminPrompts() {
                   onClick={() => setExpanded(expanded === p.id ? null : p.id)}>
 
                   {/* Category badge */}
-                  <span className={`text-xs px-2 py-0.5 rounded-full font-semibold border flex-shrink-0 ${CATEGORY_COLORS[p.category] ?? 'bg-slate-50 text-slate-600 border-slate-200'}`}>
+                  <span className={`text-xs px-2 py-0.5 rounded-full font-semibold border shrink-0 ${CATEGORY_COLORS[p.category] ?? 'bg-slate-50 text-slate-600 border-slate-200'}`}>
                     {p.category}
                   </span>
 
@@ -110,7 +110,7 @@ export default function AdminPrompts() {
                   </div>
 
                   {/* Stats */}
-                  <div className="hidden sm:flex items-center gap-4 text-xs text-slate-400 flex-shrink-0">
+                  <div className="hidden sm:flex items-center gap-4 text-xs text-slate-400 shrink-0">
                     <span title="Nutzungen">🚀 {p.usageCount}</span>
                     <span title="Bewertungen">⭐ {p.avgRating > 0 ? p.avgRating.toFixed(1) : '—'}</span>
                     <span title="Erstellt">{new Date(p.createdAt).toLocaleDateString('de-CH', { day: '2-digit', month: '2-digit' })}</span>
@@ -118,12 +118,12 @@ export default function AdminPrompts() {
 
                   {/* Delete */}
                   <button onClick={(e) => { e.stopPropagation(); deletePrompt(p.id, p.title); }}
-                    className="px-2.5 py-1 rounded-lg text-xs border border-red-200 text-red-600 hover:bg-red-50 transition-all flex-shrink-0"
+                    className="px-2.5 py-1 rounded-lg text-xs border border-red-200 text-red-600 hover:bg-red-50 transition-all shrink-0"
                     title="Löschen">
                     🗑
                   </button>
 
-                  <span className="text-slate-300 text-xs flex-shrink-0">{expanded === p.id ? '▲' : '▼'}</span>
+                  <span className="text-slate-300 text-xs shrink-0">{expanded === p.id ? '▲' : '▼'}</span>
                 </div>
 
                 {/* Expanded content preview */}
