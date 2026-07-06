@@ -85,10 +85,10 @@ jobs:
           # prisma.config.ts resolves this eagerly as soon as any prisma
           # command runs (including the postinstall `prisma generate` that
           # npm ci triggers) - Prisma 5 only needed it at actual connect time.
+          # That postinstall hook already generates the client, so the
+          # separate "Generate Prisma client" step this used to have was
+          # always redundant - removed rather than given its own DATABASE_URL.
           DATABASE_URL: file:./dev.db
-
-      - name: Generate Prisma client
-        run: npx prisma generate
 
       - name: Run database migrations + seed
         run: npm run db:reset:dev
@@ -146,10 +146,10 @@ jobs:
           # prisma.config.ts resolves this eagerly as soon as any prisma
           # command runs (including the postinstall `prisma generate` that
           # npm ci triggers) - Prisma 5 only needed it at actual connect time.
+          # That postinstall hook already generates the client, so the
+          # separate "Generate Prisma client" step this used to have was
+          # always redundant - removed rather than given its own DATABASE_URL.
           DATABASE_URL: file:./dev.db
-
-      - name: Generate Prisma client
-        run: npx prisma generate
 
       - name: TypeScript type check
         run: npx tsc --noEmit
