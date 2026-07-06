@@ -1,5 +1,12 @@
 # Changelog
 
+## [8.1.3](https://github.com/bernoron/prompt-arena/compare/v8.1.2...v8.1.3) (2026-07-06)
+
+
+### Bug Fixes
+
+* **docker:** remove redundant prisma generate that broke the real build ([9c0b21b](https://github.com/bernoron/prompt-arena/commit/9c0b21ba4accfcfb432dd6333215f23d48d7922d))
+
 ## [8.1.2](https://github.com/bernoron/prompt-arena/compare/v8.1.1...v8.1.2) (2026-07-06)
 
 
