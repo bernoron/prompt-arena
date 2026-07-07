@@ -108,6 +108,16 @@ jobs:
           EMAIL_SECRET: ci-email-secret-for-testing-32chars!!
           NODE_ENV: production
 
+      # `output: 'standalone'` does not copy .next/static into the standalone
+      # bundle on its own (see Dockerfile, which does this same copy for the
+      # real deploy) — without it, the standalone server 404s every
+      # /_next/static/chunks/* request. Every previous E2E test only used
+      # request-based API calls (no real page.goto()), so this never
+      # surfaced: unhydrated pages never actually got exercised until the
+      # onboarding tests started clicking real buttons.
+      - name: Copy static assets into standalone build
+        run: cp -r .next/static .next/standalone/.next/static
+
       - name: Install Playwright browsers
         run: npx playwright install chromium --with-deps
 
