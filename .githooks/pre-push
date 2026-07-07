@@ -3,20 +3,27 @@
 # Pre-Push Hook – E2E-Tests
 #
 # Läuft vor jedem git push:
-#   - Startet den Dev-Server falls er nicht läuft
-#   - Führt alle Playwright E2E-Tests aus
-#   - Stoppt den temporär gestarteten Server wieder
+#   - Führt alle Playwright E2E-Tests aus (playwright.config.ts startet den
+#     Dev-Server selbst, falls keiner läuft, und beendet ihn danach wieder)
 #
 # Einrichten (einmalig nach git clone):
 #   cd prompt-arena && npm run setup:hooks
 #
+# Hinweis: Vor Next 16 startete dieser Hook zusätzlich manuell einen eigenen
+# Dev-Server, bevor Playwright lief ("doppeltes Sicherheitsnetz"). Next 16
+# verweigert jetzt einen zweiten `next dev`-Prozess im selben Projektordner
+# hart (statt wie zuvor einfach auf Port 3001 auszuweichen) — das führte
+# dazu, dass Playwrights eigener webServer beim Start des zweiten Servers
+# abstürzte. Der Server wird daher nur noch einmal verwaltet: durch
+# Playwright selbst (siehe `webServer` in playwright.config.ts).
 
 set -e
 
 # Bypasses rate-limiting for this run only (see lib/rate-limit.ts):
 # the full suite registers more test users in one process than authLimiter
 # allows per IP, since every request comes from 127.0.0.1. Only takes effect
-# for a dev server started below — never in production or a plain `npm run dev`.
+# for the dev server Playwright starts below — never in production or in a
+# developer's own plain `npm run dev`.
 export E2E_TESTING=true
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
@@ -29,50 +36,12 @@ while read local_sha local_ref remote_sha remote_ref; do
   case "$local_ref" in refs/tags/*) echo "🏷  Tag-Push erkannt – Tests werden übersprungen."; exit 0 ;; esac
 done
 
-SERVER_STARTED=0
-SERVER_PID=""
-
 # ── Prisma Client sicherstellen ──────────────────────────────────────────────
 echo "⚙️  Prisma Client wird generiert…"
 # Wenn der Dev-Server läuft, ist die DLL gesperrt – das ist OK, der Client ist aktuell
 npx prisma generate --silent 2>/dev/null || echo "ℹ️  Prisma generate übersprungen (DLL gesperrt – Client ist aktuell)"
 
-# ── Server-Status prüfen ──────────────────────────────────────────────────────
-if curl -s --max-time 3 http://localhost:3000/api/health > /dev/null 2>&1; then
-  echo "🌐 Dev-Server läuft bereits auf Port 3000."
-else
-  echo "🚀 Dev-Server wird gestartet…"
-  npm run dev > /tmp/promptarena-dev.log 2>&1 &
-  SERVER_PID=$!
-  SERVER_STARTED=1
-
-  # Warten bis der Server antwortet (max. 45 s)
-  ATTEMPTS=0
-  until curl -s --max-time 2 http://localhost:3000/api/health > /dev/null 2>&1; do
-    ATTEMPTS=$((ATTEMPTS + 1))
-    if [ $ATTEMPTS -ge 45 ]; then
-      echo "❌ Dev-Server hat nicht geantwortet. Abbruch."
-      kill $SERVER_PID 2>/dev/null || true
-      exit 1
-    fi
-    sleep 1
-  done
-  echo "✅ Dev-Server bereit."
-fi
-
 # ── E2E-Tests ausführen ───────────────────────────────────────────────────────
 echo "🎭 E2E-Tests (Playwright) werden ausgeführt…"
-
-# Cleanup-Funktion: Server stoppen falls wir ihn gestartet haben
-cleanup() {
-  if [ $SERVER_STARTED -eq 1 ] && [ -n "$SERVER_PID" ]; then
-    echo "🛑 Dev-Server wird gestoppt (PID $SERVER_PID)…"
-    kill $SERVER_PID 2>/dev/null || true
-    # Auch alle verbleibenden next-Prozesse auf Port 3000 beenden
-    npx kill-port 3000 2>/dev/null || true
-  fi
-}
-trap cleanup EXIT
-
 npm run test:e2e
 echo "✅ Alle E2E-Tests bestanden."
