@@ -1,5 +1,12 @@
 # Changelog
 
+## [8.2.2](https://github.com/bernoron/prompt-arena/compare/v8.2.1...v8.2.2) (2026-07-07)
+
+
+### Bug Fixes
+
+* **docker:** install prisma CLI standalone instead of hand-copying its deps ([#47](https://github.com/bernoron/prompt-arena/issues/47)) ([22d94b0](https://github.com/bernoron/prompt-arena/commit/22d94b095366e85d91ce08d0073065449d46a0cf))
+
 ## [8.2.1](https://github.com/bernoron/prompt-arena/compare/v8.2.0...v8.2.1) (2026-07-07)
 
 
