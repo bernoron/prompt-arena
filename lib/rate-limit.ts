@@ -50,7 +50,13 @@ const MAX_TRACKED_KEYS = 10_000;
 export function createRateLimiter({ windowMs, max }: RateLimiterOptions): RateLimiter {
   // In CI pipelines all requests share the same IP ('unknown'), which exhausts
   // the rate-limit budget within seconds. GitHub Actions sets CI=true automatically.
-  if (process.env.CI === 'true') {
+  //
+  // E2E_TESTING covers the same problem for local Playwright runs (e.g. the
+  // pre-push hook): the full suite registers more test users in one process
+  // than authLimiter's per-IP budget allows, since every test hits 127.0.0.1.
+  // It is set only by .githooks/pre-push around its own `npm run dev` + test
+  // run — never in production or in a developer's regular `npm run dev`.
+  if (process.env.CI === 'true' || process.env.E2E_TESTING === 'true') {
     return { check: () => true };
   }
 

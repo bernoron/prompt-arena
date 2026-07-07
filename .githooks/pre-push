@@ -13,6 +13,12 @@
 
 set -e
 
+# Bypasses rate-limiting for this run only (see lib/rate-limit.ts):
+# the full suite registers more test users in one process than authLimiter
+# allows per IP, since every request comes from 127.0.0.1. Only takes effect
+# for a dev server started below — never in production or a plain `npm run dev`.
+export E2E_TESTING=true
+
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 APP_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 cd "$APP_DIR"
