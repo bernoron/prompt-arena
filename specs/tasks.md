@@ -167,6 +167,20 @@
 
 ---
 
+## Feature 14 – Einstiegs-Funnel (14-onboarding-funnel.md)
+
+- [ ] AC-14-001: User.onboardingCompletedAt (nullable) + Migration mit Backfill für Bestandsnutzer
+- [ ] AC-14-002: getSessionUser() liefert onboardingCompletedAt
+- [ ] AC-14-003: OnboardingFunnel-Komponente zeigt Modal wenn onboardingCompletedAt === null
+- [ ] AC-14-004: ONBOARDING_STEPS-Konstante (mind. 5 Schritte: Bibliothek, Einreichen, Punkte/Level, Lernpfad, Challenges)
+- [ ] AC-14-005: „Überspringen"-Link auf jedem Schritt
+- [ ] AC-14-006: Letzter Schritt zeigt CTA-Links (Bibliothek / Lernpfad) statt „Weiter"
+- [ ] AC-14-007: POST /api/onboarding markiert Einführung als erledigt
+- [ ] AC-14-008: UserMenu-Link „Einführung erneut ansehen" (?tour=1)
+- [ ] AC-14-009: Responsive Modal-Layout (Desktop/Mobile)
+
+---
+
 ## Open Improvements
 
 - [x] PERF-001: GET /api/prompts – votes groupBy instead of include (Performance)
