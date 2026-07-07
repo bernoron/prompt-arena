@@ -20,6 +20,14 @@ COPY package*.json ./
 COPY prisma ./prisma
 RUN npm ci
 
+# Standalone install of the prisma CLI (pinned to the version npm ci just
+# resolved) into its own tree, for the runtime image's `migrate deploy` step.
+# npm resolves the CLI's full transitive dependency closure here, so the
+# runtime stage can copy one complete node_modules instead of maintaining a
+# hand-curated package list that breaks on every Prisma bump.
+RUN npm install --prefix /prisma-cli --no-save --no-audit --no-fund \
+      "prisma@$(node -p "require('prisma/package.json').version")"
+
 COPY . .
 # No separate `prisma generate` here: npm ci's postinstall hook already ran it
 # above, and re-running it now would fail anyway - prisma.config.ts (copied in
@@ -47,52 +55,22 @@ COPY --from=builder /app/public           ./public
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static     ./.next/static
 
-# Prisma schema, migrations, config and CLI — required to run `migrate deploy`
-# at startup. prisma.config.ts now carries the datasource URL (Prisma 7 no
-# longer allows `url` inside schema.prisma).
+# Prisma schema, migrations, config and generated client — prisma.config.ts
+# carries the datasource URL (Prisma 7 no longer allows `url` inside
+# schema.prisma).
 COPY --from=builder /app/prisma                 ./prisma
 COPY --from=builder /app/prisma.config.ts       ./prisma.config.ts
-COPY --from=builder /app/node_modules/prisma    ./node_modules/prisma
 COPY --from=builder /app/node_modules/@prisma   ./node_modules/@prisma
 COPY --from=builder /app/node_modules/.prisma   ./node_modules/.prisma
 
-# The `prisma` CLI package (config loading via @prisma/config, plus its
-# bundled `prisma bootstrap`/dev tooling) requires this whole tree at its own
-# require-time, regardless of what prisma.config.ts itself imports. Found by
-# actually running `migrate deploy` against a minimal copy of this image and
-# adding each "Cannot find module" one at a time until it succeeded — not
-# guessed from package.json alone, since several of these (proper-lockfile,
-# zeptomatch, etc.) come from an internal dependency, not @prisma/config
-# directly. Keep in sync if a future Prisma bump breaks this.
-COPY --from=builder \
-  /app/node_modules/@standard-schema \
-  /app/node_modules/c12 \
-  /app/node_modules/confbox \
-  /app/node_modules/deepmerge-ts \
-  /app/node_modules/defu \
-  /app/node_modules/destr \
-  /app/node_modules/dotenv \
-  /app/node_modules/effect \
-  /app/node_modules/empathic \
-  /app/node_modules/exsolve \
-  /app/node_modules/fast-check \
-  /app/node_modules/get-port-please \
-  /app/node_modules/giget \
-  /app/node_modules/graceful-fs \
-  /app/node_modules/grammex \
-  /app/node_modules/graphmatch \
-  /app/node_modules/ohash \
-  /app/node_modules/pathe \
-  /app/node_modules/perfect-debounce \
-  /app/node_modules/pkg-types \
-  /app/node_modules/proper-lockfile \
-  /app/node_modules/pure-rand \
-  /app/node_modules/rc9 \
-  /app/node_modules/remeda \
-  /app/node_modules/retry \
-  /app/node_modules/valibot \
-  /app/node_modules/zeptomatch \
-  ./node_modules/
+# Prisma CLI with its complete dependency tree (standalone install from the
+# builder stage) — required to run `migrate deploy` at startup. This replaces
+# an earlier hand-curated multi-source COPY of the CLI's transitive
+# dependencies: Docker copies a directory source's *contents*, not the
+# directory itself, so that COPY flattened all the packages on top of each
+# other in node_modules/ and the CLI crash-looped every machine at boot with
+# MODULE_NOT_FOUND before the server ever started.
+COPY --from=builder /prisma-cli/node_modules    ./node_modules
 
 # lib/ is not otherwise needed at runtime (Next's standalone output bundles
 # its own compiled copy), but prisma/seed.ts imports from it directly via
