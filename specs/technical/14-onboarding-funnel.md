@@ -1,7 +1,7 @@
 # Einstiegs-Funnel für neue Nutzer:innen – Technische Spezifikation
 
 ## Metadaten
-- **Status**: `draft`
+- **Status**: `approved`
 - **Version**: 1.0
 - **Feature-Nr**: 14
 - **Abgeleitet von**: `specs/business/14-onboarding-funnel.md` v1.0
