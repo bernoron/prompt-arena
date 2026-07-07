@@ -1,108 +1,84 @@
-# ─── Build stage ──────────────────────────────────────────────────────────────
-FROM node:20-alpine AS builder
+# syntax=docker/dockerfile:1
+#
+# PromptArena production image — Next.js standalone + Prisma 7 (SQLite).
+#
+# Four stages, each single-purpose:
+#   deps       full install (dev+prod) — used to build Next
+#   prod-deps  runtime-only install    — deterministic node_modules for the
+#              startup `prisma migrate deploy`. Replaces the old hand-maintained
+#              list of ~30 transitive Prisma CLI deps: never breaks on a bump.
+#   builder    the actual `next build`
+#   runner     minimal runtime image (non-root)
+
+# ─── deps: full install (compiles better-sqlite3 for musl/Alpine) ─────────────
+FROM node:20-alpine AS deps
 WORKDIR /app
-
-# .dockerignore excludes .git from the build context, so the "prepare" script's
-# git-hooks setup (npm run setup:hooks) would fail with "git: not found" on this
-# alpine image. CI=true makes it skip, matching the same check GitHub Actions
-# already relies on. Builder-stage-only — never carried into the runner image.
+# CI=true makes the "prepare" script skip git-hooks setup (no git on Alpine).
 ENV CI=true
-
-# libc6-compat/openssl: Prisma's query engine on Alpine.
-# python3/make/g++: better-sqlite3 (Prisma's SQLite driver adapter) ships
-# prebuilt binaries for glibc Linux but not musl/Alpine, so its install falls
-# back to compiling from source via node-gyp here.
+# libc6-compat/openssl: Prisma query engine on Alpine.
+# python3/make/g++: better-sqlite3 has no musl prebuilt → node-gyp compiles it.
 RUN apk add --no-cache libc6-compat openssl python3 make g++
-
 COPY package*.json ./
-# schema.prisma must exist before `npm ci`, because npm ci runs the
-# "postinstall": "prisma generate" script, which fails without it.
+# schema.prisma must exist before `npm ci`: the postinstall `prisma generate`
+# needs it. prisma.config.ts is intentionally NOT copied here so generate does
+# not eagerly resolve DATABASE_URL (unset at build time).
 COPY prisma ./prisma
 RUN npm ci
 
-COPY . .
-# No separate `prisma generate` here: npm ci's postinstall hook already ran it
-# above, and re-running it now would fail anyway - prisma.config.ts (copied in
-# by `COPY . .`, unlike the plain prisma/ dir copied earlier) makes the CLI
-# resolve DATABASE_URL eagerly, which isn't set as a build-time env var here.
-RUN npm run build
+# ─── prod-deps: runtime dependencies only, for the migrate-deploy at startup ──
+FROM node:20-alpine AS prod-deps
+WORKDIR /app
+ENV CI=true
+RUN apk add --no-cache libc6-compat openssl python3 make g++
+COPY package*.json ./
+COPY prisma ./prisma
+RUN npm ci --omit=dev
 
-# This project has no public/ directory (favicon lives at app/favicon.ico via
-# the App Router convention) — ensure it exists so the runner stage's COPY
-# below doesn't fail. If a real public/ is added later, this is a no-op.
+# ─── builder: next build ──────────────────────────────────────────────────────
+FROM deps AS builder
+WORKDIR /app
+ENV CI=true
+COPY . .
+RUN npm run build
+# This project has no public/ dir (favicon lives at app/favicon.ico via the App
+# Router). Create it so the runner COPY below never fails; no-op if one is added.
 RUN mkdir -p public
 
-# ─── Runtime stage ────────────────────────────────────────────────────────────
+# ─── runner: minimal runtime image ───────────────────────────────────────────
 FROM node:20-alpine AS runner
 WORKDIR /app
-
 ENV NODE_ENV=production
 
 RUN apk add --no-cache libc6-compat openssl && \
     addgroup --system --gid 1001 nodejs && \
     adduser  --system --uid 1001 nextjs
 
-# Next.js standalone server output.
+# Next.js standalone server output. Copied first; prod-deps node_modules is
+# overlaid on top below (union — the traced standalone subset plus the full
+# Prisma CLI tree needed by `migrate deploy`).
 COPY --from=builder /app/public           ./public
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static     ./.next/static
 
-# Prisma schema, migrations, config and CLI — required to run `migrate deploy`
-# at startup. prisma.config.ts now carries the datasource URL (Prisma 7 no
-# longer allows `url` inside schema.prisma).
-COPY --from=builder /app/prisma                 ./prisma
-COPY --from=builder /app/prisma.config.ts       ./prisma.config.ts
-COPY --from=builder /app/node_modules/prisma    ./node_modules/prisma
-COPY --from=builder /app/node_modules/@prisma   ./node_modules/@prisma
-COPY --from=builder /app/node_modules/.prisma   ./node_modules/.prisma
+# Deterministic runtime node_modules (includes the whole Prisma CLI + its
+# transitive deps and the generated client). Replaces the old cherry-picked list.
+COPY --from=prod-deps /app/node_modules ./node_modules
 
-# The `prisma` CLI package (config loading via @prisma/config, plus its
-# bundled `prisma bootstrap`/dev tooling) requires this whole tree at its own
-# require-time, regardless of what prisma.config.ts itself imports. Found by
-# actually running `migrate deploy` against a minimal copy of this image and
-# adding each "Cannot find module" one at a time until it succeeded — not
-# guessed from package.json alone, since several of these (proper-lockfile,
-# zeptomatch, etc.) come from an internal dependency, not @prisma/config
-# directly. Keep in sync if a future Prisma bump breaks this.
-COPY --from=builder \
-  /app/node_modules/@standard-schema \
-  /app/node_modules/c12 \
-  /app/node_modules/confbox \
-  /app/node_modules/deepmerge-ts \
-  /app/node_modules/defu \
-  /app/node_modules/destr \
-  /app/node_modules/dotenv \
-  /app/node_modules/effect \
-  /app/node_modules/empathic \
-  /app/node_modules/exsolve \
-  /app/node_modules/fast-check \
-  /app/node_modules/get-port-please \
-  /app/node_modules/giget \
-  /app/node_modules/graceful-fs \
-  /app/node_modules/grammex \
-  /app/node_modules/graphmatch \
-  /app/node_modules/ohash \
-  /app/node_modules/pathe \
-  /app/node_modules/perfect-debounce \
-  /app/node_modules/pkg-types \
-  /app/node_modules/proper-lockfile \
-  /app/node_modules/pure-rand \
-  /app/node_modules/rc9 \
-  /app/node_modules/remeda \
-  /app/node_modules/retry \
-  /app/node_modules/valibot \
-  /app/node_modules/zeptomatch \
-  ./node_modules/
+# Prisma schema, migrations and config — required to run `migrate deploy` at
+# startup. prisma.config.ts carries the datasource URL (Prisma 7 no longer
+# allows `url` inside schema.prisma).
+COPY --from=builder /app/prisma           ./prisma
+COPY --from=builder /app/prisma.config.ts ./prisma.config.ts
 
-# lib/ is not otherwise needed at runtime (Next's standalone output bundles
-# its own compiled copy), but prisma/seed.ts imports from it directly via
-# relative paths (lib/points, lib/password, lib/email-crypto, lib/constants)
-# for the one-off `fly ssh console -C "npx tsx prisma/seed.ts"` seeding step.
-COPY --from=builder /app/lib                    ./lib
+# lib/ is not needed by the standalone server (it bundles its own copy) but
+# prisma/seed.ts imports from it via relative paths for the one-off manual
+# `fly ssh console` seeding step.
+COPY --from=builder /app/lib              ./lib
 
 COPY docker-entrypoint.sh ./docker-entrypoint.sh
 
-# /data is the mount point for the persistent SQLite volume (DATABASE_URL=file:/data/prod.db).
+# /data is the mount point for the persistent SQLite volume
+# (DATABASE_URL=file:/data/prod.db).
 RUN chmod +x docker-entrypoint.sh && \
     mkdir -p /data && \
     chown -R nextjs:nodejs /data

@@ -1,47 +1,39 @@
 #!/bin/sh
 #
-# Pre-Push Hook – E2E-Tests
+# Pre-Push Hook – schnelle Gates (Sekunden), kein E2E.
 #
 # Läuft vor jedem git push:
-#   - Führt alle Playwright E2E-Tests aus (playwright.config.ts startet den
-#     Dev-Server selbst, falls keiner läuft, und beendet ihn danach wieder)
+#   1. TypeScript type check
+#   2. ESLint
+#   3. Unit-Tests (Vitest)
+#
+# E2E (Playwright) läuft bewusst NUR noch in CI (.github/workflows/ci.yml) —
+# nicht mehr lokal. Das frühere lokale Hochfahren eines Dev-Servers + volle
+# Playwright-Suite vor jedem Push war langsam, flaky (Port-Konflikte, 45s
+# Warten) und hat Pushes blockiert.
 #
 # Einrichten (einmalig nach git clone):
 #   cd prompt-arena && npm run setup:hooks
 #
-# Hinweis: Vor Next 16 startete dieser Hook zusätzlich manuell einen eigenen
-# Dev-Server, bevor Playwright lief ("doppeltes Sicherheitsnetz"). Next 16
-# verweigert jetzt einen zweiten `next dev`-Prozess im selben Projektordner
-# hart (statt wie zuvor einfach auf Port 3001 auszuweichen) — das führte
-# dazu, dass Playwrights eigener webServer beim Start des zweiten Servers
-# abstürzte. Der Server wird daher nur noch einmal verwaltet: durch
-# Playwright selbst (siehe `webServer` in playwright.config.ts).
 
 set -e
-
-# Bypasses rate-limiting for this run only (see lib/rate-limit.ts):
-# the full suite registers more test users in one process than authLimiter
-# allows per IP, since every request comes from 127.0.0.1. Only takes effect
-# for the dev server Playwright starts below — never in production or in a
-# developer's own plain `npm run dev`.
-export E2E_TESTING=true
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 APP_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 cd "$APP_DIR"
 
-# ── Bei Tag-Push nur den Tag pushen – kein generate, keine Tests ─────────────
-# stdin: "<local-sha> <local-ref> <remote-sha> <remote-ref>"
+# Bei Tag-Push nichts prüfen (stdin: "<local-sha> <local-ref> <remote-sha> <remote-ref>").
 while read local_sha local_ref remote_sha remote_ref; do
-  case "$local_ref" in refs/tags/*) echo "🏷  Tag-Push erkannt – Tests werden übersprungen."; exit 0 ;; esac
+  case "$local_ref" in refs/tags/*) echo "🏷  Tag-Push erkannt – Checks übersprungen."; exit 0 ;; esac
 done
 
-# ── Prisma Client sicherstellen ──────────────────────────────────────────────
-echo "⚙️  Prisma Client wird generiert…"
-# Wenn der Dev-Server läuft, ist die DLL gesperrt – das ist OK, der Client ist aktuell
-npx prisma generate --silent 2>/dev/null || echo "ℹ️  Prisma generate übersprungen (DLL gesperrt – Client ist aktuell)"
+echo "🔎 TypeScript type check…"
+npx tsc --noEmit
 
-# ── E2E-Tests ausführen ───────────────────────────────────────────────────────
-echo "🎭 E2E-Tests (Playwright) werden ausgeführt…"
-npm run test:e2e
-echo "✅ Alle E2E-Tests bestanden."
+echo "🧹 ESLint…"
+npm run lint
+
+echo "🧪 Unit-Tests…"
+npm run test:unit
+
+echo "✅ Alle Pre-Push-Checks bestanden."

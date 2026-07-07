@@ -1,0 +1,37 @@
+name: Deploy to Fly.io
+
+# The single deploy path. Fires only when Release Please publishes a GitHub
+# Release (i.e. after the release PR is merged and a version tag is created),
+# so every deploy corresponds to exactly one real version — never a chore or
+# merge commit. workflow_dispatch allows a manual one-off deploy when needed.
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: fly-deploy-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    environment: production
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Fly CLI
+        # Pinned to the commit behind tag 1.6 (not the mutable tag itself) so a
+        # future re-tag of this third-party action can't silently swap in
+        # different code for a job that holds a production deploy token.
+        uses: superfly/flyctl-actions/setup-flyctl@ed8efb33836e8b2096c7fd3ba1c8afe303ebbff1
+
+      - name: Deploy to Fly.io
+        run: flyctl deploy --remote-only
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}

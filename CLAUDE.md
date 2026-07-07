@@ -10,7 +10,7 @@ Do NOT ask for confirmation before:
 - Committing or pushing to git
 
 ## Project Context
-- **Stack**: Next.js 16 App Router (React 19), Prisma 5 (SQLite), TailwindCSS, TypeScript strict
+- **Stack**: Next.js 16 App Router (React 19), Prisma 7 (SQLite), TailwindCSS, TypeScript strict
   - Next 15+ async Request-APIs: Route-Handler-`params`, `cookies()`, `headers()` sind Promises → `await` bzw. `use()` in Client-Komponenten
   - Lint läuft über `eslint .` (Flat-Config `eslint.config.mjs`); `next lint` gibt es nicht mehr
   - CSP trägt eine Per-Request-Nonce (`middleware.ts` + `lib/csp.ts`) → alle Seiten rendern dynamisch (`force-dynamic` im Root-Layout)
@@ -95,16 +95,23 @@ Layer 3 – Code            // @spec AC-XX-NNN              Implementation
 
 ---
 
-### Versionierung (automatisch via Release-Please)
-Nach jedem `git push origin main` öffnet oder aktualisiert der `Release Please`-GitHub-Actions-Workflow
-eine Release-PR mit Semver-Bump aus Conventional Commits (`feat`→minor, `fix`→patch, `feat!`/`BREAKING CHANGE`→major).
-Nach Merge dieser PR erstellt Release Please Tag + GitHub-Release.
+### Versionierung & Deployment (CI/CD)
+Drei klar getrennte, je einzweckige Workflows — keine Überlappung:
 
-Es gibt bewusst **nur diesen einen** automatischen Mechanismus — vorher lief zusätzlich ein lokaler
-Post-Push-Hook (`scripts/hooks/post-push-auto-tag.mjs`), der unabhängig vom PR-Review sofort taggte
-und dabei mit Release-Please um dieselbe Versionsnummer konkurrierte. Der Hook wurde aus
-`.claude/settings.json` entfernt; `scripts/auto-tag.mjs` bleibt als manueller Fallback erhalten,
-falls Release-Please einmal nicht erreichbar ist: `node scripts/auto-tag.mjs`
+1. **`ci.yml`** (Push auf main + jeder PR): Dependency-Security, Lint+Typecheck, Unit, E2E.
+   Kein Deploy.
+2. **`release-please.yml`** (Push auf main): öffnet/aktualisiert eine Release-PR mit Semver-Bump
+   aus Conventional Commits (`feat`→minor, `fix`→patch, `feat!`/`BREAKING CHANGE`→major).
+   Nach Merge dieser PR erstellt Release Please Tag + GitHub-Release.
+3. **`deploy.yml`** (`release: published` bzw. manuell via `workflow_dispatch`): `flyctl deploy`.
+   Der **einzige** Deploy-Pfad — feuert nur bei einer echten Release-Version, nie bei Chore-/Merge-Commits.
+
+Es gibt bewusst **nur diesen einen** automatischen Tag-/Release-Mechanismus (Release-Please).
+Frühere konkurrierende Auto-Tag-Skripte (`scripts/auto-tag.mjs`, `scripts/hooks/post-push-auto-tag.mjs`)
+wurden entfernt, weil sie mit Release-Please um dieselbe Versionsnummer kämpften.
+
+Lokale Git-Hooks (`.githooks/`) sind bewusst schlank: `pre-commit` = Unit-Tests,
+`pre-push` = Typecheck + Lint + Unit. E2E läuft ausschließlich in CI.
 
 ---
 

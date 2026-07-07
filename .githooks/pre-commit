@@ -1,10 +1,11 @@
 #!/bin/sh
 #
-# Pre-Commit Hook – Unit-Tests + Dokumentation
+# Pre-Commit Hook – schnelle Unit-Tests
 #
-# Läuft bei jedem Commit:
-#   1. Unit-Tests (Vitest, ~1 s) – bricht ab bei Fehler
-#   2. Docs regenerieren – staged Änderungen automatisch
+# Läuft bei jedem Commit und bricht bei Fehlern ab.
+# Bewusst schlank: keine Docs-/Spec-Regenerierung mit Auto-`git add` mehr
+# (das mutierte bei jedem Commit den Tree). Docs/Specs werden bei Bedarf
+# manuell via `npm run docs` bzw. `node scripts/spec-sync.mjs --fix` gepflegt.
 #
 # Einrichten (einmalig nach git clone):
 #   cd prompt-arena && npm run setup:hooks
@@ -16,20 +17,6 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 APP_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 cd "$APP_DIR"
 
-# ── 1. Unit-Tests ─────────────────────────────────────────────────────────────
 echo "🧪 Unit-Tests werden ausgeführt…"
 npm run test:unit
-
 echo "✅ Alle Unit-Tests bestanden."
-
-# ── 2. Dokumentation aktualisieren ────────────────────────────────────────────
-echo "📄 Dokumentation wird aktualisiert…"
-npm run docs
-git add docs/
-echo "✅ Dokumentation aktualisiert und gestaged."
-
-# ── 3. Spec-Sync: Checkboxen in specs/technical/ und tasks.md nachführen ──────
-echo "📋 Specs werden synchronisiert…"
-node scripts/spec-sync.mjs --fix || true
-git add specs/technical/ specs/tasks.md
-echo "✅ Specs synchronisiert und gestaged."
