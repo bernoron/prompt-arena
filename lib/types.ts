@@ -48,6 +48,7 @@ export interface UserWithStats {
   totalPoints: number;
   level: LevelName;
   createdAt: string; // ISO 8601
+  onboardingCompletedAt?: string | null; // ISO 8601 or null; only populated for the session user (getSessionUser)
 }
 
 /**

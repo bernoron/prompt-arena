@@ -17,6 +17,7 @@ model User {
   totalPoints    Int      @default(0)
   level        String   @default("Prompt-Lehrling")
   createdAt    DateTime @default(now())
+  onboardingCompletedAt DateTime? // @spec AC-14-001 – NULL = Einführung noch nicht gesehen
 
   prompts              Prompt[]
   votes                Vote[]

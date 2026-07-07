@@ -11,7 +11,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Prisma } from '@prisma/client';
 import { prisma } from '@/lib/prisma';
-import { signUserId, USER_COOKIE } from '@/lib/user-session';
+import { signUserId, USER_COOKIE, isUserSecretConfigured } from '@/lib/user-session';
 import { USER_COOKIE_OPTS } from '@/lib/user-auth';
 import { hashPassword } from '@/lib/password';
 import { encryptEmail, hashEmail, isEmailSecretConfigured } from '@/lib/email-crypto';
@@ -29,6 +29,14 @@ export async function POST(req: NextRequest) {
     logger.error('EMAIL_SECRET is not set — registration disabled');
     return NextResponse.json(
       { error: 'E-Mail-Verschlüsselung ist nicht konfiguriert.' },
+      { status: 503 },
+    );
+  }
+
+  if (process.env.NODE_ENV === 'production' && !isUserSecretConfigured()) {
+    logger.error('USER_SECRET is not set — registration disabled');
+    return NextResponse.json(
+      { error: 'Session-Verwaltung ist nicht konfiguriert.' },
       { status: 503 },
     );
   }

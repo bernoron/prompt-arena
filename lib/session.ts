@@ -11,19 +11,24 @@ import { prisma } from '@/lib/prisma';
 import { getSessionUserId } from '@/lib/user-auth';
 import type { UserWithStats, LevelName } from '@/lib/types';
 
+// @spec AC-14-001, AC-14-002
 export async function getSessionUser(): Promise<UserWithStats | null> {
   const userId = await getSessionUserId();
   if (!userId) return null;
 
   const user = await prisma.user.findUnique({
     where: { id: userId },
-    select: { id: true, name: true, avatarColor: true, totalPoints: true, level: true, createdAt: true },
+    select: {
+      id: true, name: true, avatarColor: true, totalPoints: true, level: true, createdAt: true,
+      onboardingCompletedAt: true,
+    },
   });
   if (!user) return null;
 
   return {
     ...user,
-    level:     user.level as LevelName,
-    createdAt: user.createdAt.toISOString(),
+    level:                 user.level as LevelName,
+    createdAt:             user.createdAt.toISOString(),
+    onboardingCompletedAt: user.onboardingCompletedAt?.toISOString() ?? null,
   };
 }

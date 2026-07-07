@@ -130,3 +130,43 @@ export const POINTS_GUIDE = [
   { icon: '🥇', action: 'Challenge gewinnen',      pts: '+100' },
   { icon: '🧠', action: 'Lektion abschliessen',   pts: '+15'  },
 ] as const;
+
+// ─── Onboarding ────────────────────────────────────────────────────────────
+
+/**
+ * Steps shown by the first-login onboarding funnel (OnboardingFunnel).
+ * Each step is a short card explaining one core capability of the platform.
+ */
+// @spec AC-14-004
+export const ONBOARDING_STEPS = [
+  {
+    icon: '👋',
+    title: 'Willkommen bei PromptArena!',
+    body: 'In wenigen Schritten zeigen wir dir, was du hier alles machen kannst.',
+  },
+  {
+    icon: '📚',
+    title: 'Prompt-Bibliothek durchsuchen',
+    body: 'Finde bewährte KI-Prompts von anderen Nutzer:innen, filtere nach Kategorie und Schwierigkeit — und markiere sie als „benutzt", sobald sie dir geholfen haben.',
+  },
+  {
+    icon: '✍️',
+    title: 'Eigene Prompts einreichen',
+    body: 'Teile deine eigenen Prompts mit der Community und sammle dafür Punkte.',
+  },
+  {
+    icon: '🏆',
+    title: 'Punkte, Level & Rangliste',
+    body: 'Für Einreichen, Benutzen und Bewerten von Prompts gibt es Punkte. Steige im Level auf und vergleiche dich mit anderen in der Rangliste.',
+  },
+  {
+    icon: '🧠',
+    title: 'Lernpfad',
+    body: 'Kurze, praxisnahe Lektionen bringen dir Schritt für Schritt bei, wie du KI-Prompts noch wirkungsvoller einsetzt.',
+  },
+  {
+    icon: '🎯',
+    title: 'Challenges',
+    body: 'Nimm an wöchentlichen Challenges teil und sammle Bonus-Punkte für die besten Einreichungen.',
+  },
+] as const;
