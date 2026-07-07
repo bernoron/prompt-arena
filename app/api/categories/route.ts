@@ -5,8 +5,8 @@
  * Used by the Library filter, Submit form, and Admin panel.
  */
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
 import { readLimiter, getClientIp } from '@/lib/rate-limit';
+import { listCategories } from '@/lib/services/category-service';
 
 // @spec AC-02-010
 export async function GET(req: NextRequest) {
@@ -14,9 +14,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'Too many requests' }, { status: 429 });
   }
 
-  const categories = await prisma.promptCategory.findMany({
-    orderBy: { order: 'asc' },
-  });
+  const categories = await listCategories();
 
   return NextResponse.json(categories, {
     headers: { 'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=300' },

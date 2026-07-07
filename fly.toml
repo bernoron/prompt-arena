@@ -33,9 +33,14 @@ primary_region = "fra"   # Frankfurt — pick the region closest to your users
 [http_service]
   internal_port = 3000
   force_https = true
-  auto_stop_machines = true     # scale to zero when idle → lower cost
+  # Keep one machine warm. Scale-to-zero made the first request after any idle
+  # period pay a multi-second cold start (machine boot + Node + Prisma connect),
+  # which dominated p95 latency. A single always-on shared-cpu machine removes
+  # that penalty and also keeps the in-process rate-limit/cache state alive
+  # between bursts instead of resetting on every cold start.
+  auto_stop_machines = "suspend"
   auto_start_machines = true
-  min_machines_running = 0
+  min_machines_running = 1
 
   [http_service.concurrency]
     type = "requests"
@@ -52,7 +57,7 @@ primary_region = "fra"   # Frankfurt — pick the region closest to your users
 
 [[vm]]
   size = "shared-cpu-1x"
-  memory = "256mb"   # plenty for this app; bump to 512mb if builds/seed need it
+  memory = "512mb"   # headroom for the SQLite page cache / mmap tuning (lib/prisma.ts)
 
 # IMPORTANT: keep a single machine. SQLite cannot be shared across machines.
 # Do not scale this app horizontally without first migrating to Postgres.

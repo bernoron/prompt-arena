@@ -4,8 +4,8 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
 import { readLimiter, writeLimiter, getClientIp } from '@/lib/rate-limit';
+import { listUsers } from '@/lib/services/user-service';
 
 // @spec AC-01-002
 export async function GET(req: NextRequest) {
@@ -14,19 +14,7 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    const users = await prisma.user.findMany({
-      orderBy: { totalPoints: 'desc' },
-      // Never expose credential or PII columns on a public endpoint.
-      select: {
-        id: true,
-        name: true,
-        avatarColor: true,
-        totalPoints: true,
-        level: true,
-        createdAt: true,
-      },
-    });
-
+    const users = await listUsers();
     return NextResponse.json(users, {
       headers: { 'Cache-Control': 'public, s-maxage=20, stale-while-revalidate=60' },
     });
