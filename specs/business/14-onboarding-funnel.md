@@ -87,7 +87,7 @@ freiwillig erneut aufrufen.
 
 ## Status
 
-- **Status**: `draft`
+- **Status**: `approved`
 - **Version**: 1.0
 - **Datum**: 2026-07-07
 - **PO**: bernoron
