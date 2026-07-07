@@ -11,6 +11,7 @@ import { prisma } from '@/lib/prisma';
 import { getSessionUserId } from '@/lib/user-auth';
 import type { UserWithStats, LevelName } from '@/lib/types';
 
+// @spec AC-14-001, AC-14-002
 export async function getSessionUser(): Promise<UserWithStats | null> {
   const userId = await getSessionUserId();
   if (!userId) return null;

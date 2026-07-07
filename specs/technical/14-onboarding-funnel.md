@@ -11,39 +11,39 @@
 
 ## Technische Akzeptanzkriterien
 
-- [ ] **AC-14-001**: `User`-Modell bekommt Feld `onboardingCompletedAt DateTime?` (nullable). `NULL` = Einführung wurde noch nicht abgeschlossen/übersprungen. Die Migration befüllt dieses Feld bei allen **bestehenden** Zeilen sofort mit einem Zeitstempel (Backfill), damit Bestandsnutzer nicht rückwirkend erfasst werden.
+- [x] **AC-14-001**: `User`-Modell bekommt Feld `onboardingCompletedAt DateTime?` (nullable). `NULL` = Einführung wurde noch nicht abgeschlossen/übersprungen. Die Migration befüllt dieses Feld bei allen **bestehenden** Zeilen sofort mit einem Zeitstempel (Backfill), damit Bestandsnutzer nicht rückwirkend erfasst werden.
   - **Referenz**: BAC-14-006
   - **Testbar durch**: Manual (Migration lokal ausführen, `SELECT` auf Bestandsdaten prüfen)
 
-- [ ] **AC-14-002**: `getSessionUser()` (`lib/session.ts`) selektiert `onboardingCompletedAt` zusätzlich und gibt es als ISO-String oder `null` im `UserWithStats`-Objekt zurück.
+- [x] **AC-14-002**: `getSessionUser()` (`lib/session.ts`) selektiert `onboardingCompletedAt` zusätzlich und gibt es als ISO-String oder `null` im `UserWithStats`-Objekt zurück.
   - **Referenz**: BAC-14-001, BAC-14-005
   - **Testbar durch**: Unit / E2E
 
-- [ ] **AC-14-003**: `components/OnboardingFunnel.tsx` (Client Component, in `app/(user)/layout.tsx` neben `FeedbackButton` gemountet) rendert ein Modal, sobald `useSession().onboardingCompletedAt === null` ist. Kein Modal, wenn der Wert gesetzt ist oder kein User eingeloggt ist.
+- [x] **AC-14-003**: `components/OnboardingFunnel.tsx` (Client Component, in `app/(user)/layout.tsx` neben `FeedbackButton` gemountet) rendert ein Modal, sobald `useSession().onboardingCompletedAt === null` ist. Kein Modal, wenn der Wert gesetzt ist oder kein User eingeloggt ist.
   - **Referenz**: BAC-14-001
   - **Testbar durch**: E2E
 
-- [ ] **AC-14-004**: `lib/constants.ts` exportiert `ONBOARDING_STEPS`: ein Array mit mindestens 5 Einträgen (`icon`, `title`, `body`), die die Kernfunktionen abdecken: Prompt-Bibliothek & Benutzen, Prompts einreichen, Punkte/Level/Rangliste, Lernpfad, Challenges. `OnboardingFunnel` rendert jeweils einen Eintrag pro Schritt mit „Weiter"-Button.
+- [x] **AC-14-004**: `lib/constants.ts` exportiert `ONBOARDING_STEPS`: ein Array mit mindestens 5 Einträgen (`icon`, `title`, `body`), die die Kernfunktionen abdecken: Prompt-Bibliothek & Benutzen, Prompts einreichen, Punkte/Level/Rangliste, Lernpfad, Challenges. `OnboardingFunnel` rendert jeweils einen Eintrag pro Schritt mit „Weiter"-Button.
   - **Referenz**: BAC-14-002
   - **Testbar durch**: Unit (Struktur der Konstante) / Manual (Inhalt)
 
-- [ ] **AC-14-005**: Auf jedem Schritt ist ein „Überspringen"-Link sichtbar. Klick beendet die Einführung sofort (identisches Verhalten wie Abschluss des letzten Schritts).
+- [x] **AC-14-005**: Auf jedem Schritt ist ein „Überspringen"-Link sichtbar. Klick beendet die Einführung sofort (identisches Verhalten wie Abschluss des letzten Schritts).
   - **Referenz**: BAC-14-003
   - **Testbar durch**: E2E
 
-- [ ] **AC-14-006**: Der letzte Schritt zeigt statt „Weiter" zwei CTA-Links („Zur Prompt-Bibliothek" → `/library`, „Lernpfad starten" → `/learn`), die die Einführung beenden und zur jeweiligen Seite navigieren.
+- [x] **AC-14-006**: Der letzte Schritt zeigt statt „Weiter" zwei CTA-Links („Zur Prompt-Bibliothek" → `/library`, „Lernpfad starten" → `/learn`), die die Einführung beenden und zur jeweiligen Seite navigieren.
   - **Referenz**: BAC-14-004
   - **Testbar durch**: E2E
 
-- [ ] **AC-14-007**: `POST /api/onboarding` setzt `onboardingCompletedAt = now()` für den Session-User (via `requireUser()`, `writeLimiter`). Wird sowohl bei „Überspringen" als auch beim Abschluss des letzten Schritts aufgerufen, bevor das Modal geschlossen wird. Client aktualisiert lokal (State), damit das Modal ohne Reload verschwindet.
+- [x] **AC-14-007**: `POST /api/onboarding` setzt `onboardingCompletedAt = now()` für den Session-User (via `requireUser()`, `writeLimiter`). Wird sowohl bei „Überspringen" als auch beim Abschluss des letzten Schritts aufgerufen, bevor das Modal geschlossen wird. Client aktualisiert lokal (State), damit das Modal ohne Reload verschwindet.
   - **Referenz**: BAC-14-003, BAC-14-004, BAC-14-005
   - **Testbar durch**: E2E, Unit (Route-Handler)
 
-- [ ] **AC-14-008**: `UserMenu.tsx` bekommt einen neuen Eintrag „Einführung erneut ansehen", der zu `/dashboard?tour=1` navigiert. `OnboardingFunnel` öffnet sich bei vorhandenem `?tour=1`-Query-Parameter unabhängig vom `onboardingCompletedAt`-Status (ohne diesen zurückzusetzen) und entfernt den Parameter aus der URL beim Schliessen.
+- [x] **AC-14-008**: `UserMenu.tsx` bekommt einen neuen Eintrag „Einführung erneut ansehen", der zu `/dashboard?tour=1` navigiert. `OnboardingFunnel` öffnet sich bei vorhandenem `?tour=1`-Query-Parameter unabhängig vom `onboardingCompletedAt`-Status (ohne diesen zurückzusetzen) und entfernt den Parameter aus der URL beim Schliessen.
   - **Referenz**: BAC-14-007
   - **Testbar durch**: E2E
 
-- [ ] **AC-14-009**: Modal-Layout ist mit Tailwind responsive (max. Breite auf Desktop, volle Breite mit Innenabstand auf Mobile, Buttons untereinander auf schmalen Viewports); manuell auf Mobile-Viewport (375px) geprüft.
+- [x] **AC-14-009**: Modal-Layout ist mit Tailwind responsive (max. Breite auf Desktop, volle Breite mit Innenabstand auf Mobile, Buttons untereinander auf schmalen Viewports); manuell auf Mobile-Viewport (375px) geprüft.
   - **Referenz**: BAC-14-008
   - **Testbar durch**: Manual / E2E (Viewport-Check)
 
