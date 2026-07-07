@@ -1,5 +1,12 @@
 # Changelog
 
+## [8.2.1](https://github.com/bernoron/prompt-arena/compare/v8.2.0...v8.2.1) (2026-07-07)
+
+
+### Performance Improvements
+
+* server-render page data + tune SQLite/deploy to kill the client waterfall ([70f5990](https://github.com/bernoron/prompt-arena/commit/70f599063b42da40e291e4fd79a36dca3609ef10))
+
 ## [8.2.0](https://github.com/bernoron/prompt-arena/compare/v8.1.3...v8.2.0) (2026-07-07)
 
 
