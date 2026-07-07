@@ -23,7 +23,14 @@ describe('user session cookies', () => {
     await expect(verifyUserCookie(tampered)).resolves.toBeNull();
   });
 
-  it('rejects cookies when USER_SECRET is missing', async () => {
+  it('still verifies a signed cookie when USER_SECRET is missing (dev fallback)', async () => {
+    vi.stubEnv('USER_SECRET', '');
+
+    const cookie = await signUserId(42);
+    await expect(verifyUserCookie(cookie)).resolves.toBe(42);
+  });
+
+  it('rejects a malformed cookie regardless of USER_SECRET', async () => {
     vi.stubEnv('USER_SECRET', '');
 
     await expect(verifyUserCookie('42.signature')).resolves.toBeNull();

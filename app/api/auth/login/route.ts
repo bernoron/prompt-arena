@@ -8,7 +8,7 @@
  */
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { signUserId, USER_COOKIE } from '@/lib/user-session';
+import { signUserId, USER_COOKIE, isUserSecretConfigured } from '@/lib/user-session';
 import { hashPassword, verifyPassword } from '@/lib/password';
 import { hashEmail } from '@/lib/email-crypto';
 import { USER_COOKIE_OPTS } from '@/lib/user-auth';
@@ -25,6 +25,14 @@ const DUMMY_HASH_PROMISE = hashPassword('__sentinel__');
 export async function POST(req: NextRequest) {
   if (!authLimiter.check(`login:${getClientIp(req)}`)) {
     return NextResponse.json({ error: 'Too many requests' }, { status: 429 });
+  }
+
+  if (process.env.NODE_ENV === 'production' && !isUserSecretConfigured()) {
+    logger.error('USER_SECRET is not set — login disabled');
+    return NextResponse.json(
+      { error: 'Session-Verwaltung ist nicht konfiguriert.' },
+      { status: 503 },
+    );
   }
 
   let body: unknown;
