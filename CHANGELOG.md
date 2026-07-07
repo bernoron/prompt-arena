@@ -1,5 +1,18 @@
 # Changelog
 
+## [8.2.0](https://github.com/bernoron/prompt-arena/compare/v8.1.3...v8.2.0) (2026-07-07)
+
+
+### Features
+
+* **landing:** add public landing page with anonymized prompt showcase ([a984a99](https://github.com/bernoron/prompt-arena/commit/a984a9947a9156f458dbac3ef5cb9600f2fa5a47))
+
+
+### Bug Fixes
+
+* **hooks:** stop double-managing the e2e dev server in pre-push ([291db51](https://github.com/bernoron/prompt-arena/commit/291db511b6e9381237ff639811ddef6e1bbd5393))
+* **test:** bypass authLimiter during local e2e runs to unblock pre-push ([7e2d7c9](https://github.com/bernoron/prompt-arena/commit/7e2d7c9cdbfb780044be1272982eab7ea0dd1517))
+
 ## [8.1.3](https://github.com/bernoron/prompt-arena/compare/v8.1.2...v8.1.3) (2026-07-06)
 
 
