@@ -24,7 +24,7 @@ async function main() {
 
   // System user — owns all starter prompts; has no credentials
   const systemUser = await prisma.user.create({
-    data: { name: 'PromptArena', avatarColor: '#059669', totalPoints: 0, level: getLevel(0) },
+    data: { name: 'PromptArena', avatarColor: '#059669', totalPoints: 0, level: getLevel(0), onboardingCompletedAt: new Date() },
   });
 
   // --- WEEKLY CHALLENGE ---
@@ -225,6 +225,7 @@ async function main() {
           emailEncrypted: encryptEmail('alicia@example.com'),
           totalPoints: 120,
           level: getLevel(120),
+          onboardingCompletedAt: new Date(),
         },
       }),
       prisma.user.create({
@@ -236,6 +237,7 @@ async function main() {
           emailEncrypted: encryptEmail('bruno@example.com'),
           totalPoints: 60,
           level: getLevel(60),
+          onboardingCompletedAt: new Date(),
         },
       }),
     ]);

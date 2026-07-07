@@ -17,13 +17,17 @@ export async function getSessionUser(): Promise<UserWithStats | null> {
 
   const user = await prisma.user.findUnique({
     where: { id: userId },
-    select: { id: true, name: true, avatarColor: true, totalPoints: true, level: true, createdAt: true },
+    select: {
+      id: true, name: true, avatarColor: true, totalPoints: true, level: true, createdAt: true,
+      onboardingCompletedAt: true,
+    },
   });
   if (!user) return null;
 
   return {
     ...user,
-    level:     user.level as LevelName,
-    createdAt: user.createdAt.toISOString(),
+    level:                 user.level as LevelName,
+    createdAt:             user.createdAt.toISOString(),
+    onboardingCompletedAt: user.onboardingCompletedAt?.toISOString() ?? null,
   };
 }
