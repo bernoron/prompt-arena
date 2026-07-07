@@ -1,6 +1,6 @@
 # PromptArena – Dokumentation
 
-> Version 8.1.0 · Öffentliche Web-Anwendung
+> Version 8.1.3 · Öffentliche Web-Anwendung
 
 Diese Dokumentation wird **automatisch aus dem Quellcode generiert** und ist stets aktuell.
 
@@ -39,4 +39,4 @@ KI-Prompts zu teilen, zu bewerten und weiterzuentwickeln.
 
 
 ---
-*Automatisch generiert am 07.07.2026, 06:18 · [Quellcode](https://github.com/your-org/prompt-arena)*
+*Automatisch generiert am 07.07.2026, 06:23 · [Quellcode](https://github.com/your-org/prompt-arena)*

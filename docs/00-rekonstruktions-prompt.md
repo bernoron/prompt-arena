@@ -20,15 +20,17 @@ TECH-STACK
 - Keine Auth-Library – eigener Cookie-basierter Login (E-Mail + Passwort, scrypt-Hashing, HMAC-signierter Session-Cookie)
 
 ABHÄNGIGKEITEN (package.json dependencies):
-  "@prisma/client": "^5.22.0",
+  "@prisma/adapter-better-sqlite3": "^7.8.0",
+  "@prisma/client": "^7.8.0",
   "@types/canvas-confetti": "^1.9.0",
+  "better-sqlite3": "^12.11.1",
   "canvas-confetti": "^1.9.4",
   "next": "^16.2.10",
-  "prisma": "^5.22.0",
+  "prisma": "^7.8.0",
   "react": "^19.2.7",
   "react-dom": "^19.2.7",
   "tsx": "^4.21.0",
-  "zod": "^3.23.8"
+  "zod": "^4.4.3"
 
 ════════════════════════════════════════════════════════════
 DATENBANKSCHEMA (prisma/schema.prisma – exakt so übernehmen)
@@ -39,7 +41,6 @@ generator client {
 
 datasource db {
   provider = "sqlite"
-  url      = env("DATABASE_URL")
 }
 
 // @spec AC-12-002
@@ -599,4 +600,4 @@ SETUP-REIHENFOLGE
 
 
 ---
-*Automatisch generiert am 07.07.2026, 06:18 · [Quellcode](https://github.com/your-org/prompt-arena)*
+*Automatisch generiert am 07.07.2026, 06:23 · [Quellcode](https://github.com/your-org/prompt-arena)*
