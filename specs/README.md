@@ -1,15 +1,24 @@
 # Specs – Übersicht
 
+> 🗺️ **Gesamtbild zuerst:** [`specs/OVERVIEW.md`](OVERVIEW.md) — eine Landkarte über *alle* Aspekte
+> der Lösung (Lebenszyklus, Artefakte, Governance, Rollen, Automatik, Abdeckung) mit Diagrammen.
+
 Alle Spezifikationen folgen einem einfachen **2-Layer-Prinzip**:
 
 ```
 specs/
-  business/         ← WAS wir bauen   (PO/BA schreibt, kein Tech-Jargon)
-  technical/        ← WIE wir es bauen (Dev schreibt, Maps zu Code)
-  changes/          ← Änderungsanträge an bestehende Specs
-  constitution.md   ← Regeln die immer gelten
-  tasks.md          ← Aktuelle Task-Liste
+  business/           ← WAS wir bauen   (PO/BA schreibt, kein Tech-Jargon)
+  technical/          ← WIE wir es bauen (Dev schreibt, Maps zu Code)
+  changes/            ← Änderungsanträge an bestehende Specs
+  non-functional.md   ← Nichtfunktionale Anforderungen (NFR-Katalog, CR-geschützt)
+  constitution.md     ← Regeln die immer gelten
+  tasks.md            ← Aktuelle Task-Liste
 ```
+
+> **Ein Prompt, ein Fluss:** Statt selbst zu entscheiden ob neu/Änderung/Bugfix, einfach
+> `/intake <deine Anforderung>` — der Router klassifiziert, erzeugt den freigabereifen Entwurf
+> (Business-Spec-Draft oder Change Request) und legt ihn zur Freigabe vor. Erst nach Freigabe
+> wird implementiert. Details unten unter „Workflow".
 
 ---
 
@@ -60,6 +69,17 @@ specs/
 | `11-feedback.md` | Nutzer-Feedback | ✅ |
 | `12-email-auth.md` | E-Mail-Authentifizierung | ✅ |
 | `13-landing-page.md` | Öffentliche Startseite | ✅ |
+| `98-automation.md` | Doku-Generator, Git-Hooks, Spec-Sync (CR-geschützt) | ✅ |
+| `99-pipeline.md` | CI/CD-Pipeline (CR-geschützt) | ✅ |
+
+---
+
+## Querschnitt – Nichtfunktionale Anforderungen (`specs/non-functional.md`)
+
+**Wer schreibt:** Dev / Claude
+**Inhalt:** Messbare Qualitätsziele mit stabilen IDs (`NFR-<KATEGORIE>-NNN`) für Performance,
+Verfügbarkeit, Sicherheit, Barrierefreiheit, i18n, Observability, Wartbarkeit, Kompatibilität.
+Gilt für alle Features; wird von Feature-Specs referenziert statt dupliziert. **CR-geschützt.**
 
 ---
 
@@ -79,12 +99,18 @@ Wenn ein bereits implementiertes Feature geändert werden soll:
 ## Workflow
 
 ```
+Formloser Prompt   → /intake     → Router: klassifiziert + erzeugt Entwurf zur Freigabe
+                                    (danach folgt automatisch einer der Pfade unten)
+
 Neue Idee          → /specify    → specs/business/NN.md
 Business fertig    → /plan       → specs/technical/NN.md
 Bereit zum Bauen   → /tasks      → specs/tasks.md aktualisieren
 Implementieren     → /implement  → Code + @spec Kommentare
-Bestehendes ändern → /change-request
+Bestehendes ändern → /change-request → /approve-change → /implement
 ```
+
+**Regel:** Änderungen an einer `approved` Spec, am NFR-Katalog oder an der Pipeline-Spec
+brauchen immer ein genehmigtes Change Request. `/intake` erzwingt das automatisch.
 
 ---
 

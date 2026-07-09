@@ -4,6 +4,11 @@
 
 > Jede Änderung an einem **bestehenden, freigegebenen Feature** braucht ein genehmigtes Change Request (CR).
 > Neue Features folgen dem normalen SDD-Workflow (kein CR nötig).
+>
+> **Ebenfalls CR-pflichtig:** Änderungen am NFR-Katalog (`specs/non-functional.md`) und an der
+> Pipeline-Spec (`specs/technical/99-pipeline.md` inkl. `.github/workflows/`).
+>
+> **Einstieg:** `/intake <anforderung>` klassifiziert automatisch und erzeugt bei Änderungen den CR.
 
 ---
 
@@ -16,7 +21,7 @@ proposed
     ▼
 impact-assessed
     │
-    │  PO + Tech Lead prüfen und diskutieren
+    │  Product Owner prüft und gibt frei
     ▼
 approved ──── rejected (Ende, CR archiviert)
     │
@@ -31,14 +36,20 @@ implemented (Specs und Code-Annotationen aktualisiert)
 
 ---
 
-## Wer genehmigt was?
+## Wer genehmigt?
 
-| Änderungstyp | PO-Freigabe | Tech-Freigabe | Beide nötig? |
-|-------------|-------------|---------------|-------------|
-| Business-Logik ändert sich | ✅ Pflicht | ✅ Pflicht | Ja |
-| Rein technisch (Refactoring, Performance) | optional | ✅ Pflicht | Nein (Tech reicht) |
-| Breaking Change | ✅ Pflicht | ✅ Pflicht | Ja |
-| Bugfix (kein Behavior-Change) | optional | ✅ Pflicht | Nein (Tech reicht) |
+Es gibt genau **eine** Freigabe-Instanz: den **Product Owner** (die Projektverantwortliche:n).
+Eine separate Tech-Freigabe existiert nicht — jede Änderung braucht die PO-Freigabe, egal ob
+fachlich oder technisch.
+
+| Änderungstyp | Freigabe durch |
+|-------------|----------------|
+| Business-Logik ändert sich | Product Owner |
+| Rein technisch (Refactoring, Performance) | Product Owner |
+| Breaking Change | Product Owner |
+| Bugfix (kein Behavior-Change) | Product Owner |
+| NFR-Katalog ändert sich | Product Owner |
+| Pipeline / CI/CD / Automation ändert sich | Product Owner |
 
 ---
 
@@ -57,8 +68,7 @@ implemented (Specs und Code-Annotationen aktualisiert)
 ```
 Vor jeder Änderung an specs/technical/ oder specs/business/:
 1. Gibt es ein CR für dieses Feature? → Pflicht
-2. Hat das CR Status "approved"? → Pflicht
-3. Sind PO- UND Tech-Freigabe vorhanden (falls required)? → Pflicht
+2. Hat das CR Status "approved"? → Pflicht (= PO-Freigabe erteilt)
 Sonst: BLOCK — kein Code, keine Spec-Änderung
 ```
 
@@ -84,7 +94,8 @@ Beispiele:
 
 ## CR-Nummerierung
 
-CRs werden fortlaufend nummeriert. Nächste freie Nummer: **CR-001**
+CRs werden fortlaufend nummeriert. Vergeben: CR-001, CR-002, CR-003. Nächste freie Nummer: **CR-004**
+(immer per `ls specs/changes/CR-*.md | sort | tail -1` verifizieren).
 
 ---
 

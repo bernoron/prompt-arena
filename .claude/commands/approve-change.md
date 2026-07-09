@@ -5,13 +5,15 @@ Du verwaltest den Change-Request-Prozess. Deine Aufgabe: einen CR genehmigen ode
 ## Aufruf
 
 ```
-/approve-change CR-NNN [approve|reject] [--po|--tech|--both]
+/approve-change CR-NNN [approve|reject]
 ```
 
 Beispiele:
-- `/approve-change CR-001 approve --both` → PO + Tech genehmigt
+- `/approve-change CR-001 approve` → freigegeben (eine einzige Freigabe durch den Product Owner)
 - `/approve-change CR-001 reject` → abgelehnt
-- `/approve-change CR-001 approve --tech` → nur Tech genehmigt (PO noch ausstehend)
+
+Es gibt **nur eine Freigabe-Instanz** (Product Owner / Projektverantwortliche:r). Eine separate
+Tech-Freigabe existiert nicht.
 
 Wenn keine Argumente gegeben: lies den CR und frage interaktiv nach.
 
@@ -27,7 +29,7 @@ Lese:
 
 Im CR-Dokument:
 - Status → `approved`
-- Freigabe-Checkboxen setzen: `[x]` mit Datum (heute: Systemdatum nutzen)
+- Freigabe-Checkbox setzen: `[x]` mit Datum (heute: Systemdatum nutzen)
 
 ### 2. Specs aktualisieren
 
@@ -82,13 +84,3 @@ Für geänderte ACs: Status auf `[ ]` zurücksetzen mit Hinweis `(CR-NNN)`
    CR bleibt archiviert in specs/changes/
    Kein weiteres Handeln nötig.
 ```
-
----
-
-## Sonderfall: Teilfreigabe
-
-Wenn nur `--po` oder nur `--tech` angegeben:
-- Entsprechende Checkbox setzen
-- Status bleibt `impact-assessed` (noch nicht vollständig approved)
-- Ausgabe: „Warte noch auf [Tech/PO]-Freigabe"
-- Keine Spec-Änderungen bis beide Freigaben da sind (falls Workflow 'Beide nötig')

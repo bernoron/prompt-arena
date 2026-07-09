@@ -24,7 +24,9 @@ Do NOT ask for confirmation before:
 
 ## Spec-Driven Development (SDD) – Three-Layer Architecture
 
-**📖 READ FIRST**: `/docs/SPEC-DRIVEN-DEVELOPMENT.md` — Complete guide for POs, BAs, and developers on how to propose, approve, and implement features using the SDD workflow.
+**📖 READ FIRST**:
+- `specs/OVERVIEW.md` — Landkarte über **alle** Aspekte der Lösung (Lebenszyklus, Artefakte, Governance, Rollen, Automatik, Abdeckung) mit Diagrammen.
+- `/docs/SPEC-DRIVEN-DEVELOPMENT.md` — Complete guide for POs, BAs, and developers on how to propose, approve, and implement features using the SDD workflow.
 
 **Spec is the truth. Code follows the spec — never the reverse.**
 
@@ -32,7 +34,20 @@ Do NOT ask for confirmation before:
 Layer 1 – Business Spec   specs/business/NN-feature.md    PO / BA
 Layer 2 – Technical Spec  specs/technical/NN-feature.md   Dev / Claude
 Layer 3 – Code            // @spec AC-XX-NNN              Implementation
+
+Querschnitt – NFR-Katalog specs/non-functional.md         // @nfr NFR-XXX-NNN   (CR-geschützt)
+Querschnitt – Pipeline    specs/technical/99-pipeline.md   .github/workflows/    (CR-geschützt)
 ```
+
+---
+
+### Einstieg im Zweifel: `/intake`
+
+Formloser Prompt (Anforderung / Idee / Bug) → **`/intake <beschreibung>`**. Der Router
+klassifiziert (neu / Änderung / NFR / Pipeline / Bugfix), erzeugt den **freigabereifen Entwurf**
+(Business-Spec-Draft oder Change Request) und **stoppt bis zur Freigabe**. Änderungen an einer
+`approved` Spec, am NFR-Katalog oder an der Pipeline erzwingen automatisch ein CR. Erst nach
+Freigabe wird via `/implement` umgesetzt.
 
 ---
 
@@ -42,7 +57,7 @@ Layer 3 – Code            // @spec AC-XX-NNN              Implementation
 /specify-business <beschreibung>   → Business-Spec schreiben (Layer 1)
                                      Status: draft → PO setzt "approved"
 /specify-tech <feature-nr>         → Tech-Spec ableiten (Layer 2)
-                                     Status: draft → Tech Lead setzt "approved"
+                                     Status: draft → Product Owner setzt "approved"
 /plan                              → tasks.md aktualisieren
 /tasks                             → Offene Tasks anzeigen
 /implement [AC-XX-NNN]             → Nächsten Task umsetzen
@@ -56,7 +71,7 @@ Layer 3 – Code            // @spec AC-XX-NNN              Implementation
 ```
 /change-request <feature> <beschreibung>   → CR erstellen (specs/changes/CR-NNN.md)
                                              Impact-Analyse automatisch
-/approve-change CR-NNN approve --both      → PO + Tech genehmigen
+/approve-change CR-NNN approve             → Product Owner gibt frei (einzige Freigabe)
 /implement                                 → Umsetzung (CR muss approved sein)
 ```
 
@@ -89,9 +104,18 @@ Layer 3 – Code            // @spec AC-XX-NNN              Implementation
 | Business-Spec | `specs/business/NN-*.md` | PO, BA, alle |
 | Technical-Spec (neu) | `specs/technical/NN-*.md` | Dev, Claude |
 | Technical-Spec (legacy) | `specs/features/NN-*.md` | Dev, Claude |
+| NFR-Katalog | `specs/non-functional.md` | Dev, Claude |
+| Automation-Spec | `specs/technical/98-automation.md` | Dev, Claude |
+| Pipeline-Spec | `specs/technical/99-pipeline.md` | Dev, Claude |
 | Change Request | `specs/changes/CR-NNN-*.md` | PO, Dev |
 | CR-Workflow | `specs/changes/WORKFLOW.md` | alle |
 | Prinzipien | `specs/constitution.md` | alle |
+| Workflow-Guide (Mensch) | `docs/SPEC-DRIVEN-DEVELOPMENT.md` | alle |
+
+**Automatische Doku:** `docs/*.md` (außer `SPEC-DRIVEN-DEVELOPMENT.md` + `SECURITY-AUDIT-*.md`)
+werden von `scripts/generate-docs.ts` (`npm run docs`) aus dem Code generiert — **nicht von Hand
+editieren**. Der `pre-commit`-Hook regeneriert sie + führt `spec-sync --fix` aus; `pre-push` fährt
+die E2E-Tests. Details: `specs/technical/98-automation.md`.
 
 ---
 

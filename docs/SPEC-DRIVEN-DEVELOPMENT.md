@@ -189,11 +189,41 @@ export async function getUserProfile(id: number) {
 - Use `// @spec AC-NN-NNN` for TypeScript/JavaScript
 - Multiple ACs: `// @spec AC-10-001, AC-10-002, AC-10-003`
 - One per function/component is typical
-- Run `npm run spec-check` to verify coverage
+- Run `node scripts/spec-sync.mjs` to verify coverage
 
 ---
 
 ## Workflow: From Idea to Live Feature
+
+### Phase 0: Intake — One Prompt In, One Approval-Ready Draft Out
+
+**Who**: Anyone with a request, idea, or bug report
+**Input**: A free-form prompt — no need to know if it's a new feature or a change
+**Output**: The correct draft artifact (business spec *or* Change Request), presented for approval
+
+Instead of deciding yourself whether to call `/specify-business` or `/change-request`, just run:
+
+```
+/intake <your request in plain words>
+```
+
+The intake router reads `constitution.md`, the NFR catalog and the affected specs, then **classifies** the request into one of five tracks and produces the matching approval-ready draft — **without writing code or touching an approved spec directly**:
+
+| Track | When | Produces |
+|-------|------|----------|
+| **A. New feature** | No approved spec covers it | Business spec draft (→ Phase 1) |
+| **B. Change to existing feature** | Touches an approved spec | Change Request (CR-NNN) |
+| **C. NFR change** | Changes a goal in `specs/non-functional.md` | Change Request (CR-NNN) |
+| **D. Pipeline / automation change** | Touches `specs/technical/98-automation.md`, `99-pipeline.md` or `.github/workflows/` | Change Request (CR-NNN) |
+| **E. Bug fix (no behavior change)** | Code diverges from a still-valid spec | Fix plan (no CR) |
+
+It then stops and shows you: category, artifact, affected IDs, touched NFRs, who must approve, and the exact next step. Nothing is implemented until you approve.
+
+### Cross-Cutting Specs (referenced by every feature)
+
+- **NFR catalog** — `specs/non-functional.md`: measurable quality goals with stable IDs (`NFR-<CATEGORY>-NNN`). Features reference them instead of duplicating them. **CR-protected.**
+- **Pipeline spec** — `specs/technical/99-pipeline.md`: the CI/CD pipeline (security → unit → e2e → lint → deploy). **CR-protected.**
+- **Automation spec** — `specs/technical/98-automation.md`: doc generation, git hooks and spec-sync. **CR-protected.**
 
 ### Phase 1: Propose Feature (Draft Status)
 
@@ -229,7 +259,7 @@ export async function getUserProfile(id: number) {
 
 ### Phase 3: Technical Design (Technical Spec)
 
-**Who**: Tech Lead + Developers  
+**Who**: Developers (with Claude)
 **Input**: Approved business spec  
 **Output**: `specs/technical/NN-feature-name.md`
 
@@ -247,10 +277,10 @@ export async function getUserProfile(id: number) {
 /specify-tech feature=profile
 ```
 
-### Phase 4: Technical Approval
+### Phase 4: Technical Spec Approval
 
-**Who**: Tech Lead  
-**Input**: Draft technical spec  
+**Who**: Product Owner (single approval instance — there is no separate technical approver)
+**Input**: Draft technical spec
 **Output**: Status changed to `approved`
 
 **Checklist**:
@@ -275,7 +305,7 @@ export async function getUserProfile(id: number) {
 3. Add `// @spec AC-NN-NNN` annotations
 4. Write unit tests for helpers
 5. Write E2E tests for user journeys
-6. Run `npm run spec-check` — all ACs must have `@spec` annotations
+6. Run `node scripts/spec-sync.mjs` — all ACs must have `@spec` annotations
 7. Run tests: `npm run test:unit && npx playwright test`
 8. Commit: `git commit -m "feat: add profile page — closes #42"`
 
@@ -308,26 +338,18 @@ Closes #42
 
 ### Phase 7: Merge & Deploy
 
-**Who**: Tech Lead  
-**Input**: Approved PR  
-**Output**: Code merged to main + tagged with semver
+**Who**: Product Owner (maintainer)
+**Input**: Approved PR
+**Output**: Code merged to main → CI deploys → Release-Please opens a release PR
 
-**Steps**:
-1. Merge PR to `main`
-2. Auto-tagging hook runs → bumps `package.json` → creates annotated tag → pushes
-3. CI runs: `npm run build` + `npx playwright test`
-4. Tag pushed to GitHub
+**Steps** (see `specs/technical/99-pipeline.md` for the governed detail):
+1. Merge the feature PR to `main`
+2. CI (`.github/workflows/ci.yml`) runs on the push: dependency-security → unit → e2e → lint
+3. Only if all four are green **and** the event is a push to `main`: `deploy` ships to Fly.io
+4. Separately, `release-please.yml` opens/updates a **release PR** with the semver bump derived from Conventional Commits
+5. Merging that release PR creates the git tag + GitHub release
 
-**Example**:
-```bash
-# Local: git commit + git push origin main
-# → PostToolUse hook detects "git push origin main"
-# → runs node scripts/auto-tag.mjs
-# → reads commits since last tag
-# → bumps version (feat: → minor, fix: → patch)
-# → creates tag v4.3.0
-# → pushes tag + commits
-```
+> **There is exactly one tagging mechanism: Release-Please.** The old local post-push auto-tag hook was removed (it competed with Release-Please for the same version number). `scripts/auto-tag.mjs` remains only as a manual fallback: `node scripts/auto-tag.mjs`.
 
 ### Phase 8: Launch & Monitor
 
@@ -354,11 +376,11 @@ When requirements change on an existing feature, follow the **Change Request (CR
    ```
    Creates: `specs/changes/CR-NNN.md` with status `proposed`
 
-2. **Impact-Assessed** — Tech Lead analyzes scope
+2. **Impact-Assessed** — the impact analysis is filled in (automatically by `/change-request`)
    - What code changes? What tests? Any breaking changes?
    - Update CR with assessment
 
-3. **Approved** — PO (business) + Tech Lead (technical) sign off
+3. **Approved** — the Product Owner signs off (single approval; no separate technical approval)
    - Update status to `approved`
    - No code changes allowed until approved
 
@@ -433,11 +455,11 @@ specs/
 # Generate technical spec from business spec
 /specify-tech feature=profile
 
-# Check spec compliance (do all ACs have @spec annotations?)
-npm run spec-check
+# Check spec compliance + coverage gaps (which ACs have code, which don't)
+node scripts/spec-sync.mjs
 
-# See which specs don't have code yet
-npm run spec-gaps
+# Auto-fix: tick implemented ACs in specs/technical/ + tasks.md
+node scripts/spec-sync.mjs --fix
 
 # List all tasks and current progress
 /tasks
@@ -455,7 +477,7 @@ npm run spec-gaps
 # Pre-merge checklist: tests green? specs complete? annotations correct?
 npm run test:unit
 npx playwright test
-npm run spec-check
+node scripts/spec-sync.mjs
 
 # Security review
 /security-review
@@ -503,17 +525,17 @@ npm run spec-check
 ## Example: Adding a New Feature
 
 ### You: Product Owner
-1. **Write business spec** for "Verified Badges"
-2. **Get approval** from stakeholders
-3. **Tell the Tech Lead**: "Feature 11 is approved, specs are ready"
+1. **Write business spec** for "Verified Badges" (or via `/intake`)
+2. **Approve it** yourself (single approval instance) — set status to `approved`
+3. **Derive the technical spec**: `/specify-tech 11` (Claude drafts it)
 
-### Tech Lead
+### Developer (with Claude)
 1. **Review business spec** for feasibility
 2. **Create technical spec** with AC-11-001, AC-11-002, etc.
 3. **Map BACs to ACs** (every BAC gets at least one AC)
 4. **Estimate effort** — is it 1 sprint or 3 sprints?
-5. **Approve technical spec**
-6. **Create tasks** in `/tasks` for developers
+5. **Ask the Product Owner to approve the technical spec** (set status `approved`)
+6. **Create tasks** in `/tasks`
 
 ### Developer
 1. **Read technical spec** end-to-end
@@ -524,7 +546,7 @@ npm run spec-check
 6. **Commit with clear message**: `feat: add verified badge system`
 7. **Open PR** with tech spec link
 8. **Pass review**: all annotations, tests green, no hardcoded values
-9. **Merge to main** → auto-tag → deploy
+9. **Merge to main** → CI deploys → Release-Please opens the release PR
 
 ### QA / Product
 1. **Verify in staging**: all BACs met?
@@ -544,7 +566,7 @@ The codebase includes an automated spec scanner that:
 
 **Run manually**:
 ```bash
-npm run spec-check
+node scripts/spec-sync.mjs
 ```
 
 **Output**:
@@ -576,30 +598,61 @@ The project uses **Conventional Commits** + **automatic semver bumping**:
 - `chore: ...` → patch bump
 - `BREAKING CHANGE: ...` in body → major bump (v1.0.0 → v2.0.0)
 
-### Auto-Tagging
+### Release-Please (the only automatic mechanism)
 
-When you `git push origin main`:
-1. PostToolUse hook detects the push
-2. Runs `node scripts/auto-tag.mjs`
-3. Script reads commits since last tag
-4. Calculates semver bump based on commit types
-5. Updates `package.json` version
-6. Creates annotated tag: `git tag -a vX.Y.Z -m "Release vX.Y.Z"`
-7. Pushes tag to GitHub
-8. CI runs tests on the tag → deploy
+Versioning runs entirely through the **Release-Please** GitHub Action
+(`.github/workflows/release-please.yml`, config `release-please-config.json` +
+`.release-please-manifest.json`) — governed by `specs/technical/99-pipeline.md` (AC-99-008):
 
-**Example**:
-```bash
-git log v4.2.2..HEAD --oneline
-# feat: add verified badges
-# fix: profile rank calculation
-# chore: update dependencies
+1. After every `git push origin main`, Release-Please opens or updates a **release PR**
+2. It calculates the semver bump from the Conventional Commits since the last release
+3. Merging the release PR creates the git tag + GitHub release
 
-# Auto-tag decides: feat = minor bump
-# v4.2.2 → v4.3.0
-# Creates: git tag -a v4.3.0 -m "Release v4.3.0"
-# Pushes: git push origin v4.3.0
-```
+> The earlier local post-push auto-tag hook was **removed** — it tagged immediately, independent of
+> PR review, and competed with Release-Please for the same version number. `scripts/auto-tag.mjs`
+> remains as a **manual** fallback only (`node scripts/auto-tag.mjs`), for when Release-Please is
+> unreachable. Version baseline is ≥ v7.0.0 — never roll back to 5.x/6.x.
+
+---
+
+## Automatic Documentation
+
+The human-facing docs in `docs/` (except this guide and the security audit) are **generated
+artifacts, not hand-maintained files**. This is governed by `specs/technical/98-automation.md`.
+
+### What generates what
+
+| Command | Script | Output |
+|---------|--------|--------|
+| `npm run docs` | `scripts/generate-docs.ts` | Regenerates all generated `docs/*.md` from source |
+| `npm run docs:watch` | `scripts/watch-docs.ts` | Same, re-run on every file change |
+
+The generator **extracts content from the code itself**, so the docs stay truthful:
+Prisma schema → `05-datenmodell.md`; API routes (+ their JSDoc) → `04-api-referenz.md`;
+`lib/points.ts` → gamification tables; pages/components → `03-architektur.md`;
+`package.json` → dependency + script tables; `.env.example` + migrations → `08-betrieb.md`.
+
+**Generated (do NOT hand-edit — every run overwrites them):**
+`README.md`, `00-rekonstruktions-prompt.md`, `01-konzept.md`, `02-nutzerdoku.md`,
+`03-architektur.md`, `04-api-referenz.md`, `05-datenmodell.md`, `06-entwickler.md`,
+`07-onboarding.md`, `08-betrieb.md`.
+
+**Hand-maintained (safe to edit):** `SPEC-DRIVEN-DEVELOPMENT.md` (this file), `SECURITY-AUDIT-*.md`.
+
+To change generated content, edit the **source** (code or `generate-docs.ts`) — not the `.md` output.
+
+### When it runs automatically — Git hooks
+
+Activated once per clone with `npm run setup:hooks` (`git config core.hooksPath .githooks`);
+`npm install` runs this via the `prepare` script, except in CI.
+
+| Hook | Runs on | Steps |
+|------|---------|-------|
+| `.githooks/pre-commit` | every `git commit` | 1. `npm run test:unit` (abort on failure) → 2. `npm run docs` + `git add docs/` → 3. `spec-sync.mjs --fix` + `git add specs/technical/ specs/tasks.md` |
+| `.githooks/pre-push` | every `git push` | `npm run test:e2e` (Playwright). Tag pushes skip tests. |
+
+So every commit ships with regenerated docs and up-to-date spec checkboxes automatically, and no
+push leaves without the E2E suite passing.
 
 ---
 
@@ -630,7 +683,7 @@ git log v4.2.2..HEAD --oneline
 **Solution**: 
 1. Update the technical spec to match the code
 2. Make sure all ACs in the spec have `@spec` annotations
-3. Run `npm run spec-check` — should show 100%
+3. Run `node scripts/spec-sync.mjs` — should show 100%
 
 ---
 
@@ -641,7 +694,7 @@ git log v4.2.2..HEAD --oneline
 3. **Every AC must have code** — `@spec` annotations prove implementation
 4. **Changes need approval** — use CRs for existing features, drafts → approved for new
 5. **Code is comment** — specs explain *why*, code shows *how*
-6. **Automate verification** — `npm run spec-check` runs on every push
+6. **Automate verification** — `node scripts/spec-sync.mjs` runs on every push
 
 ---
 
@@ -656,8 +709,8 @@ A: No. Use these categories:
 
 **Q: Can I start coding before specs are approved?**
 A: You can write draft specs and start prototyping, but don't merge to `main` until:
-1. Business spec is approved by PO
-2. Technical spec is approved by Tech Lead
+1. Business spec is approved by the Product Owner
+2. Technical spec is approved by the Product Owner
 3. All tests pass
 
 **Q: What if requirements change mid-sprint?**
@@ -667,7 +720,7 @@ A: File a CR (`/change-request`), go through approval, then implement. Don't jus
 A: Check `/tasks` — it lists all features and their status. Pick the next task.
 
 **Q: Who approves specs?**
-A: Business specs: Product Owner. Technical specs: Tech Lead. Both must agree before implementation.
+A: The Product Owner is the single approval instance — for business specs, technical specs, NFR/pipeline/automation specs and all CRs. There is no separate technical approval.
 
 ---
 

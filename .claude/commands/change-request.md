@@ -76,4 +76,4 @@ Zeige:
 - Betroffene Specs (tabellarisch)
 - Impact-Zusammenfassung (2-3 Sätze)
 - **Wer muss freigeben**: PO / Tech / Beide (gem. WORKFLOW.md-Tabelle)
-- Nächster Schritt: „CR-NNN an PO/Tech Lead zur Freigabe senden. Danach /approve-change CR-NNN aufrufen."
+- Nächster Schritt: „CR-NNN an den Product Owner zur Freigabe senden. Danach /approve-change CR-NNN approve aufrufen."

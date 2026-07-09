@@ -2,6 +2,8 @@
 
 > Diese Datei ist das Gesetz. Kein Code wird geschrieben, der gegen diese Prinzipien verstößt.
 > Claude liest diese Datei vor jedem `/specify`, `/plan`, `/tasks` und `/implement`.
+>
+> Gesamtbild der Lösung (Lebenszyklus, Artefakte, Governance, Automatik): [`specs/OVERVIEW.md`](OVERVIEW.md).
 
 ---
 
@@ -77,12 +79,27 @@ Level-Schwellen: 0–99 Lehrling · 100–299 Handwerker · 300–599 Schmied ·
 
 ---
 
-## 7. SDD-Workflow
+## 7. Nichtfunktionale Anforderungen
+
+- Der **NFR-Katalog** `specs/non-functional.md` ist verbindlich und **CR-geschützt**.
+- Er enthält messbare Qualitätsziele mit stabilen IDs (`NFR-<KATEGORIE>-NNN`).
+- Feature-Specs **referenzieren** NFRs (statt sie zu duplizieren); sicherheits-/
+  performancerelevanter Code trägt `// @nfr NFR-XXX-NNN`.
+- Die **Pipeline** ist in `specs/technical/99-pipeline.md` spezifiziert und ebenfalls CR-geschützt.
+
+---
+
+## 8. SDD-Workflow
 
 ```
-Neues Feature:  /specify <beschreibung>  →  /plan  →  /tasks  →  /implement
-Bugfix:         Erst relevante Spec lesen → Code ändern → AC prüfen
-Breaking Change: Erst constitution.md anpassen → dann Spec → dann Code
+Formloser Prompt: /intake <beschreibung>  →  Router erzeugt Entwurf → Freigabe → Implementierung
+Neues Feature:    /specify <beschreibung>  →  /plan  →  /tasks  →  /implement
+Änderung:         /change-request  →  /approve-change  →  /implement
+Bugfix:           Erst relevante Spec lesen → Code ändern → AC prüfen
+Breaking Change:  Erst constitution.md anpassen → dann Spec → dann Code
 ```
+
+**Einstieg im Zweifel immer über `/intake`** — er wählt die richtige Spur und erzwingt CRs bei
+Änderungen an `approved` Specs, NFRs oder der Pipeline.
 
 **Spec ist die Wahrheit. Code folgt der Spec — nie umgekehrt.**

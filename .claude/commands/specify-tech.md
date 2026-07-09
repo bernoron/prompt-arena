@@ -63,7 +63,7 @@ In `specs/business/NN-feature-name.md` das Feld „Technische Spec" aktualisiere
 
 Nach dem Schreiben: Status = `draft`
 
-Der Tech Lead / Senior Dev muss Status auf `approved` setzen bevor `/implement` Tasks erstellen darf.
+Der Product Owner (einzige Freigabe-Instanz) muss Status auf `approved` setzen bevor `/implement` Tasks erstellen darf.
 
 ## tasks.md aktualisieren
 

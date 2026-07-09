@@ -43,7 +43,7 @@ datasource db {
   provider = "sqlite"
 }
 
-// @spec AC-12-002
+// @spec AC-12-002, AC-01-010
 model User {
   id           Int      @id @default(autoincrement())
   name           String
@@ -54,6 +54,10 @@ model User {
   totalPoints    Int      @default(0)
   level        String   @default("Prompt-Lehrling")
   createdAt    DateTime @default(now())
+  // Set when the user self-deletes their account (CR-002). The row is kept as a
+  // tombstone so authored prompts/votes stay referentially valid but anonymised:
+  // name → "Gelöschter Nutzer #<id>", credential + PII columns nulled.
+  deletedAt      DateTime?
 
   prompts              Prompt[]
   votes                Vote[]
@@ -65,9 +69,31 @@ model User {
   lessonFeedbacks      LessonFeedback[]
   topicSuggestions     TopicSuggestion[]
   pointsLedger         PointsLedger[]
+  passwordResetTokens  PasswordResetToken[]
 
   @@unique([name])
   @@index([totalPoints])
+  @@index([deletedAt])
+}
+
+// @spec AC-01-014
+// One-time, time-limited password reset tokens (CR-003). Only the SHA-256 hash
+// of the token is stored — the raw token lives solely in the emailed link, so a
+// database read never exposes a usable reset credential. A token is valid once:
+// usedAt is stamped on redemption and every other unused token for the user is
+// invalidated at the same time.
+model PasswordResetToken {
+  id        Int       @id @default(autoincrement())
+  userId    Int
+  tokenHash String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
 }
 
 // Idempotency + audit trail for one-time point awards (vote, favorite,
@@ -319,8 +345,10 @@ Für einen neuen Vote: erst prüfen ob Vote existiert, Punkte nur beim ERSTEN Vo
 SEITEN (app/ mit App Router)
 ════════════════════════════════════════════════════════════
 - / → app/page.tsx (Redirect → /dashboard)
+- /forgot-password → app/(auth)/forgot-password/page.tsx
 - /login → app/(auth)/login/page.tsx
 - /register → app/(auth)/register/page.tsx
+- /reset-password → app/(auth)/reset-password/page.tsx
 - /dashboard → app/(user)/dashboard/page.tsx
 - /favorites → app/(user)/favorites/page.tsx
 - /leaderboard → app/(user)/leaderboard/page.tsx
@@ -428,6 +456,7 @@ useCurrentUser.ts:
 ════════════════════════════════════════════════════════════
 API-ROUTEN (app/api/)
 ════════════════════════════════════════════════════════════
+- DELETE /api/account
 - GET /api/admin/categories
 - POST /api/admin/categories
 - PATCH /api/admin/categories/[id]
@@ -451,6 +480,8 @@ API-ROUTEN (app/api/)
 - POST /api/auth/login
 - POST /api/auth/logout
 - GET /api/auth/me
+- POST /api/auth/password-reset/confirm
+- POST /api/auth/password-reset/request
 - POST /api/auth/register
 - GET /api/categories
 - GET /api/challenges
@@ -600,4 +631,4 @@ SETUP-REIHENFOLGE
 
 
 ---
-*Automatisch generiert am 07.07.2026, 06:38 · [Quellcode](https://github.com/your-org/prompt-arena)*
+*Automatisch generiert am 09.07.2026, 06:53 · [Quellcode](https://github.com/your-org/prompt-arena)*

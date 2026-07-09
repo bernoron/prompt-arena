@@ -30,6 +30,7 @@ WeeklyChallenge 1──n ChallengeSubmission
 | `totalPoints` | `Int` | Pflicht | @default(0) |
 | `level` | `String` | Pflicht | @default("Prompt-Lehrling") |
 | `createdAt` | `DateTime` | Pflicht | @default(now()) |
+| `deletedAt` | `DateTime` | Optional |  |
 | `prompts` | `Prompt[]` | Pflicht |  |
 | `votes` | `Vote[]` | Pflicht |  |
 | `challengeSubmissions` | `ChallengeSubmission[]` | Pflicht |  |
@@ -40,6 +41,21 @@ WeeklyChallenge 1──n ChallengeSubmission
 | `lessonFeedbacks` | `LessonFeedback[]` | Pflicht |  |
 | `topicSuggestions` | `TopicSuggestion[]` | Pflicht |  |
 | `pointsLedger` | `PointsLedger[]` | Pflicht |  |
+| `passwordResetTokens` | `PasswordResetToken[]` | Pflicht |  |
+
+---
+
+### PasswordResetToken
+
+| Feld | Typ | Pflicht | Hinweise |
+|---|---|---|---|
+| `id` | `Int` | Pflicht | @id @default(autoincrement()) |
+| `userId` | `Int` | Pflicht |  |
+| `tokenHash` | `String` | Pflicht | @unique |
+| `expiresAt` | `DateTime` | Pflicht |  |
+| `usedAt` | `DateTime` | Optional |  |
+| `createdAt` | `DateTime` | Pflicht | @default(now()) |
+| `user` | `User` | Pflicht | @relation(fields: [userId], references: [id], onDelete: Cascade) |
 
 ---
 
@@ -287,4 +303,4 @@ Für Produktivbetrieb empfiehlt sich PostgreSQL (nur `schema.prisma` anpassen).
 
 
 ---
-*Automatisch generiert am 07.07.2026, 06:38 · [Quellcode](https://github.com/your-org/prompt-arena)*
+*Automatisch generiert am 09.07.2026, 06:53 · [Quellcode](https://github.com/your-org/prompt-arena)*

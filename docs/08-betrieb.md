@@ -27,6 +27,7 @@ Alle Variablen in `.env` definieren. Vorlage: `.env.example` (liegt im Repositor
 | `ADMIN_SESSION_EPOCH` | `` | Optional: instantly revoke ALL admin sessions issued before this millisecond timestamp (without rotating ADMIN_SECRET) |
 | `USER_SECRET` | `` | User session signing (for cookie-based auth) REQUIRED in production |
 | `EMAIL_SECRET` | `` | Email encryption key (for AES-256-GCM email storage) REQUIRED in production |
+| `MAIL_TRANSPORT` | `` | Outbound e-mail (password reset — CR-003) Default transport is "log": reset e-mails are written to the server log instead of being delivered — no external service needed for dev/test |
 
 > **Wichtig:** `.env` ist in `.gitignore` – niemals committen.
 
@@ -167,6 +168,7 @@ Vorhandene Migrationen:
 - `20260628193000_add_usage_events`
 - `20260702200000_remove_department`
 - `20260703053000_add_points_ledger`
+- `20260708191608_add_account_deletion_and_password_reset`
 
 ### Backup (SQLite)
 
@@ -212,4 +214,4 @@ Empfohlene externe Uptime-Monitore (alle mit Gratis-Tier verfügbar): **UptimeRo
 
 
 ---
-*Automatisch generiert am 07.07.2026, 06:38 · [Quellcode](https://github.com/your-org/prompt-arena)*
+*Automatisch generiert am 09.07.2026, 06:53 · [Quellcode](https://github.com/your-org/prompt-arena)*

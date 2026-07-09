@@ -74,11 +74,8 @@
 
 ## Freigabe
 
-### PO-Freigabe (Business)
-- [ ] **Freigegeben**: ___________________________ Datum: ___________
-- [ ] **Abgelehnt** mit Begründung: ___________________________
+> Es gibt genau **eine** Freigabe-Instanz: den Product Owner / die Projektverantwortliche:n.
 
-### Tech-Freigabe
 - [ ] **Freigegeben**: ___________________________ Datum: ___________
 - [ ] **Abgelehnt** mit Begründung: ___________________________
 

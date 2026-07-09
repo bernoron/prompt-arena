@@ -167,6 +167,25 @@
 
 ---
 
+## Feature 01 – Erweiterungen (CR-002, CR-003 — implementiert)
+
+### CR-002 – Konto löschen ✅
+- [x] AC-01-010: `User.deletedAt` + Migration (Tombstone)
+- [x] AC-01-011: `DELETE /api/account` (Session + Passwort, Anonymisierung, Cookie-Reset, Rate-Limit)
+- [x] AC-01-012: Gelöschte Konten unsichtbar (users-Liste, users/[id] 404, me null, Login scheitert)
+- [x] AC-01-013: Profil-„Gefahrenzone" + Bestätigungsdialog
+
+### CR-003 – Passwort zurücksetzen per E-Mail ✅
+- [x] AC-01-014: `PasswordResetToken`-Modell + Migration (nur Token-Hash)
+- [x] AC-01-015: `lib/reset-token.ts` + `lib/mailer.ts` (Mock-/Log-Transport)
+- [x] AC-01-016: `POST /api/auth/password-reset/request` (neutrale Antwort, Rate-Limit)
+- [x] AC-01-017: `POST /api/auth/password-reset/confirm` (Token einmalig, Ablauf, Transaktion)
+- [x] AC-01-018: Login-Link „Passwort vergessen?" + `/forgot-password`
+- [x] AC-01-019: `/reset-password` + öffentlicher Pfad in `middleware.ts`
+- [ ] INFRA (später): echten E-Mail-Versanddienst wählen + Secrets setzen (aktuell Mock-/Log-Transport)
+
+---
+
 ## Open Improvements
 
 - [x] PERF-001: GET /api/prompts – votes groupBy instead of include (Performance)

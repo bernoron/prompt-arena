@@ -49,6 +49,32 @@
   - **Referenz**: BAC-01-002
   - **Testbar durch**: E2E
 
+### Konto löschen (CR-002)
+
+- [x] **AC-01-010**: Prisma: `User.deletedAt DateTime?` (+ Index) markiert gelöschte Konten (Tombstone); Modell wird per Migration `add_account_deletion_and_password_reset` eingeführt.
+  - **Referenz**: BAC-01-009, BAC-01-010 · **Code**: `prisma/schema.prisma`
+- [x] **AC-01-011**: `DELETE /api/account` — verlangt gültige Session (nur eigenes Konto) + Passwort-Bestätigung; anonymisiert (`name → "Gelöschter Nutzer #<id>"`, `passwordHash`/`emailHash`/`emailEncrypted → null`, `deletedAt = now`), löscht offene Reset-Tokens, entfernt den Session-Cookie. Falsches Passwort → 401; unauthentifiziert → 401; rate-limited (`authLimiter`).
+  - **Referenz**: BAC-01-007…011 · **Code**: `app/api/account/route.ts` · **Testbar durch**: E2E
+- [x] **AC-01-012**: Gelöschte Konten sind unsichtbar: `GET /api/users` filtert `deletedAt: null`, `GET /api/users/[id]` liefert 404, `GET /api/auth/me` liefert `null`. Ein Login mit den alten Daten scheitert (E-Mail freigegeben, Passwort entfernt).
+  - **Referenz**: BAC-01-003, BAC-01-008 · **Code**: `app/api/users/route.ts`, `app/api/users/[id]/route.ts`, `app/api/auth/me/route.ts`
+- [x] **AC-01-013**: Profilseite zeigt eine „Gefahrenzone" mit „Konto löschen"-Button; Klick öffnet einen Bestätigungsdialog (Passwort-Eingabe). Nach Erfolg Hard-Redirect auf `/login`.
+  - **Referenz**: BAC-01-006, BAC-01-007 · **Code**: `app/(user)/profile/page.tsx` · **Testbar durch**: Manual/Preview
+
+### Passwort zurücksetzen per E-Mail (CR-003)
+
+- [x] **AC-01-014**: Prisma: `PasswordResetToken { id, userId, tokenHash @unique, expiresAt, usedAt?, createdAt }` (nur Token-**Hash** gespeichert, Cascade-Delete am User).
+  - **Referenz**: BAC-01-015, BAC-01-018 · **Code**: `prisma/schema.prisma`
+- [x] **AC-01-015**: `lib/reset-token.ts` (Token erzeugen = 32 Byte hex, `hashResetToken` = SHA-256, `resetTokenExpiry` = +1h, `isTestOrDevEnv`) + `lib/mailer.ts` (pluggbarer Transport, Default = Log-/Mock-Transport; `sendPasswordResetEmail` deutschsprachig).
+  - **Referenz**: BAC-01-014, BAC-01-015 · **Code**: `lib/reset-token.ts`, `lib/mailer.ts` · **Testbar durch**: Unit
+- [x] **AC-01-016**: `POST /api/auth/password-reset/request` — **immer** neutrale Antwort (kein Enumeration-Leak); bei existierendem, nicht gelöschtem Konto: alte offene Tokens verwerfen, neues Token anlegen, Reset-Mail senden. Nur in Dev/CI/E2E zusätzlich `devResetUrl`. Rate-limited (`authLimiter`).
+  - **Referenz**: BAC-01-012, BAC-01-013, BAC-01-014, BAC-01-017 · **Code**: `app/api/auth/password-reset/request/route.ts` · **Testbar durch**: E2E
+- [x] **AC-01-017**: `POST /api/auth/password-reset/confirm` — validiert Token (existiert, nicht abgelaufen, nicht benutzt, Konto nicht gelöscht); setzt neues Passwort, markiert Token als benutzt und invalidiert alle weiteren offenen Tokens (Transaktion). Ungültig/abgelaufen/benutzt → 400. Rate-limited.
+  - **Referenz**: BAC-01-015, BAC-01-016 · **Code**: `app/api/auth/password-reset/confirm/route.ts` · **Testbar durch**: E2E
+- [x] **AC-01-018**: Anmeldeseite zeigt Link „Passwort vergessen?" → `/forgot-password` (E-Mail-Eingabe, neutrale Bestätigung, Dev-Link-Hinweis).
+  - **Referenz**: BAC-01-012 · **Code**: `app/(auth)/login/page.tsx`, `app/(auth)/forgot-password/page.tsx`
+- [x] **AC-01-019**: `/reset-password?token=…` — neues Passwort setzen (Bestätigungsfeld, gleiche Regeln); Erfolg → Weiter zur Anmeldung. Öffentlicher Pfad in `middleware.ts`.
+  - **Referenz**: BAC-01-016 · **Code**: `app/(auth)/reset-password/page.tsx`, `middleware.ts`
+
 ---
 
 ## API-Vertrag
@@ -234,3 +260,5 @@ export const AVATAR_COLORS = [
 | Version | Datum | CR | Änderung |
 |---------|-------|----|---------|
 | 1.0 | 2026-04-22 | — | Erstversion |
+| 1.1 | 2026-07-08 | CR-002 | Konto löschen: AC-01-010…013 |
+| 1.2 | 2026-07-08 | CR-003 | Passwort-Reset per E-Mail: AC-01-014…019 |

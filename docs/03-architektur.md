@@ -41,8 +41,10 @@ integrierten API-Layer. Frontend und Backend laufen als einziger Prozess.
 | Route | Datei |
 |---|---|
 | `/` | app/page.tsx (Redirect → /dashboard) |
+| `/forgot-password` | app/(auth)/forgot-password/page.tsx |
 | `/login` | app/(auth)/login/page.tsx |
 | `/register` | app/(auth)/register/page.tsx |
+| `/reset-password` | app/(auth)/reset-password/page.tsx |
 | `/dashboard` | app/(user)/dashboard/page.tsx |
 | `/favorites` | app/(user)/favorites/page.tsx |
 | `/leaderboard` | app/(user)/leaderboard/page.tsx |
@@ -179,4 +181,4 @@ den Cookie neu auswertet — ein manueller Sync-Mechanismus ist dafür nicht nö
 
 
 ---
-*Automatisch generiert am 07.07.2026, 06:38 · [Quellcode](https://github.com/your-org/prompt-arena)*
+*Automatisch generiert am 09.07.2026, 06:53 · [Quellcode](https://github.com/your-org/prompt-arena)*

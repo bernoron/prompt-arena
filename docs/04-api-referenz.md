@@ -9,6 +9,13 @@ Alle Endpunkte sind unter `/api` erreichbar. Jeder Endpunkt:
 
 ## Endpunkte
 
+### `DELETE /api/account`
+
+DELETE /api/account — self-service account deletion (CR-002). Body: { password: string } Flow: 1. Require a valid user session (you can only delete your OWN account). 2. Re-authenticate with the current password (deliberate confirmation). 3. Anonymise the account (tombstone): keep the row so authored prompts/votes stay referentially valid, but strip name → "Gelöschter Nutzer #<id>" and null all credential/PII columns; stamp deletedAt. 4. Clear the session cookie → the user is logged out and, with credentials and emailHash removed, can never log in again. @spec AC-01-010, AC-01-011
+
+
+---
+
 ### `GET /api/admin/categories`
 
 
@@ -122,6 +129,20 @@ Alle Endpunkte sind unter `/api` erreichbar. Jeder Endpunkt:
 ### `GET /api/auth/me`
 
 GET /api/auth/me Returns the currently authenticated user from the session cookie. Used by Server Components to bootstrap the user identity server-side.
+
+
+---
+
+### `POST /api/auth/password-reset/confirm`
+
+POST /api/auth/password-reset/confirm — set a new password via reset token (CR-003). Body: { token: string, password: string } Validates the token (exists, not expired, not already used), sets the new password, marks the token used and invalidates every other outstanding token for the account. The old password stops working because its hash is replaced. @spec AC-01-017
+
+
+---
+
+### `POST /api/auth/password-reset/request`
+
+POST /api/auth/password-reset/request — start a password reset (CR-003). Body: { email: string } ALWAYS returns the same neutral response, whether or not an account exists, so the endpoint can't be used to discover which addresses are registered (@spec AC-01-016, BAC-01-013). If a (non-deleted) account matches, a single-use, time-limited token is created and a reset e-mail is dispatched. In dev/CI/E2E only, the reset URL is echoed back as `devResetUrl` so automated tests can follow the link. In production this field is never set. @spec AC-01-014, AC-01-016
 
 
 ---
@@ -271,4 +292,4 @@ Alle Timestamps werden als **ISO 8601** Strings zurückgegeben, z.B. `"2024-03-1
 
 
 ---
-*Automatisch generiert am 07.07.2026, 06:38 · [Quellcode](https://github.com/your-org/prompt-arena)*
+*Automatisch generiert am 09.07.2026, 06:53 · [Quellcode](https://github.com/your-org/prompt-arena)*
