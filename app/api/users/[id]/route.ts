@@ -12,7 +12,7 @@ import { calcAvgRating } from '@/lib/db-helpers';
 import { PathId } from '@/lib/validation';
 import { readLimiter, getClientIp } from '@/lib/rate-limit';
 
-// @spec AC-01-003, AC-10-001
+// @spec AC-01-003, AC-01-012, AC-10-001
 export async function GET(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -38,6 +38,7 @@ export async function GET(
         totalPoints: true,
         level: true,
         createdAt: true,
+        deletedAt: true,
         prompts: {
           orderBy: { usageCount: 'desc' },
           select: {
@@ -57,7 +58,8 @@ export async function GET(
       },
     });
 
-    if (!user) return NextResponse.json({ error: 'Not found' }, { status: 404 });
+    // A deleted (anonymised) account has no public profile.
+    if (!user || user.deletedAt) return NextResponse.json({ error: 'Not found' }, { status: 404 });
 
     // Compute global rank (position in the leaderboard) via COUNT query
     const rank = await prisma.user.count({

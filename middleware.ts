@@ -45,6 +45,9 @@ function isPublicPath(pathname: string): boolean {
     pathname.startsWith('/login/') ||
     pathname === '/register' ||
     pathname.startsWith('/register/') ||
+    // Password reset (CR-003) — reachable without a session by definition.
+    pathname === '/forgot-password' ||
+    pathname === '/reset-password' ||
     pathname.startsWith('/admin') ||
     pathname.startsWith(`/${ADMIN_PREFIX}`) ||
     pathname.startsWith('/api/') ||

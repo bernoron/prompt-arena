@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import LevelBadge from '@/components/LevelBadge';
 import CategoryBadge from '@/components/CategoryBadge';
 import DifficultyBadge from '@/components/DifficultyBadge';
@@ -30,8 +31,37 @@ const BADGES = [
 // @spec AC-10-002, AC-10-003, AC-10-004, AC-10-005
 export default function ProfilePage() {
   const currentUserId = useCurrentUser();
+  const router = useRouter();
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
+
+  // Account deletion (CR-002) — @spec AC-01-013
+  const [showDelete, setShowDelete]     = useState(false);
+  const [deletePassword, setDeletePassword] = useState('');
+  const [deleteError, setDeleteError]   = useState('');
+  const [deleting, setDeleting]         = useState(false);
+
+  const handleDeleteAccount = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setDeleteError('');
+    setDeleting(true);
+
+    const res = await fetch('/api/account', {
+      method:  'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ password: deletePassword }),
+    });
+
+    if (res.ok) {
+      // Session cookie is cleared server-side; hard-navigate so the layout
+      // re-evaluates auth and the user lands on the public login page.
+      window.location.href = '/login';
+    } else {
+      const data = await res.json() as { error?: string };
+      setDeleteError(data.error ?? 'Löschen fehlgeschlagen.');
+      setDeleting(false);
+    }
+  };
 
   useEffect(() => {
     if (!currentUserId) {
@@ -211,6 +241,73 @@ export default function ProfilePage() {
           </div>
         </div>
       </div>
+
+      {/* Danger zone — account deletion (CR-002) — @spec AC-01-013 */}
+      <div className="mt-6 bg-white rounded-2xl border border-red-200 shadow-xs overflow-hidden">
+        <div className="px-6 py-4 border-b border-red-100 bg-red-50">
+          <h2 className="font-bold text-red-700">Gefahrenzone</h2>
+        </div>
+        <div className="p-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <p className="font-semibold text-slate-800 text-sm">Konto löschen</p>
+            <p className="text-sm text-slate-500 mt-0.5">
+              Entfernt deine persönlichen Daten endgültig. Deine Beiträge bleiben anonymisiert erhalten. Dies kann nicht rückgängig gemacht werden.
+            </p>
+          </div>
+          <button
+            onClick={() => { setShowDelete(true); setDeleteError(''); setDeletePassword(''); }}
+            className="shrink-0 px-4 py-2 rounded-xl text-sm font-bold text-red-700 bg-red-50 border border-red-200 hover:bg-red-100 transition-colors"
+          >
+            Konto löschen
+          </button>
+        </div>
+      </div>
+
+      {/* Confirmation dialog */}
+      {showDelete && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50" onClick={() => !deleting && setShowDelete(false)}>
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6" onClick={(e) => e.stopPropagation()}>
+            <h3 className="font-extrabold text-slate-900 text-lg">Konto wirklich löschen?</h3>
+            <p className="text-sm text-slate-500 mt-1.5">
+              Gib zur Bestätigung dein Passwort ein. Dieser Schritt ist endgültig.
+            </p>
+            <form onSubmit={handleDeleteAccount} className="mt-4 space-y-3">
+              <input
+                type="password"
+                value={deletePassword}
+                onChange={(e) => setDeletePassword(e.target.value)}
+                placeholder="Dein Passwort"
+                autoFocus
+                autoComplete="current-password"
+                required
+                className="w-full px-3 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-sm focus:outline-hidden focus:ring-2 focus:ring-red-400 focus:border-transparent focus:bg-white transition-all"
+              />
+              {deleteError && (
+                <div className="flex items-center gap-2 text-red-600 text-sm bg-red-50 border border-red-200 rounded-xl px-3 py-2">
+                  <span>⚠️</span><span>{deleteError}</span>
+                </div>
+              )}
+              <div className="flex gap-2 pt-1">
+                <button
+                  type="button"
+                  onClick={() => setShowDelete(false)}
+                  disabled={deleting}
+                  className="flex-1 py-2.5 rounded-xl text-sm font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 transition-colors disabled:opacity-40"
+                >
+                  Abbrechen
+                </button>
+                <button
+                  type="submit"
+                  disabled={deleting || !deletePassword}
+                  className="flex-1 py-2.5 rounded-xl text-sm font-bold text-white bg-red-600 hover:bg-red-700 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                >
+                  {deleting ? 'Löschen…' : 'Endgültig löschen'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

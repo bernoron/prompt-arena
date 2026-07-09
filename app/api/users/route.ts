@@ -7,7 +7,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { readLimiter, writeLimiter, getClientIp } from '@/lib/rate-limit';
 
-// @spec AC-01-002
+// @spec AC-01-002, AC-01-012
 export async function GET(req: NextRequest) {
   if (!readLimiter.check(getClientIp(req))) {
     return NextResponse.json({ error: 'Too many requests' }, { status: 429 });
@@ -15,6 +15,8 @@ export async function GET(req: NextRequest) {
 
   try {
     const users = await prisma.user.findMany({
+      // Deleted (anonymised) accounts never appear in the user list / leaderboard.
+      where:   { deletedAt: null },
       orderBy: { totalPoints: 'desc' },
       // Never expose credential or PII columns on a public endpoint.
       select: {

@@ -52,6 +52,24 @@ export const RegisterSchema = z.object({
   password: z.string().min(8).max(100),
 });
 
+/** DELETE /api/account — self-service account deletion (CR-002, AC-01-011). */
+export const DeleteAccountSchema = z.object({
+  // Re-authentication: the current password must be supplied to confirm deletion.
+  password: z.string().min(1).max(100),
+});
+
+/** POST /api/auth/password-reset/request (CR-003, AC-01-016). */
+export const PasswordResetRequestSchema = z.object({
+  email: z.string().trim().email().max(254),
+});
+
+/** POST /api/auth/password-reset/confirm (CR-003, AC-01-017). */
+export const PasswordResetConfirmSchema = z.object({
+  token:    z.string().trim().min(1).max(200),
+  // Same rule as registration so a reset can't set a weaker password.
+  password: z.string().min(8).max(100),
+});
+
 // ─── Prompts ──────────────────────────────────────────────────────────────────
 
 /**
