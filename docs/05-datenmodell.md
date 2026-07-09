@@ -31,6 +31,7 @@ WeeklyChallenge 1──n ChallengeSubmission
 | `level` | `String` | Pflicht | @default("Prompt-Lehrling") |
 | `createdAt` | `DateTime` | Pflicht | @default(now()) |
 | `deletedAt` | `DateTime` | Optional |  |
+| `onboardingCompletedAt` | `DateTime` | Optional | @spec AC-14-001 – NULL = Einführung noch nicht gesehen |
 | `prompts` | `Prompt[]` | Pflicht |  |
 | `votes` | `Vote[]` | Pflicht |  |
 | `challengeSubmissions` | `ChallengeSubmission[]` | Pflicht |  |
@@ -303,4 +304,4 @@ Für Produktivbetrieb empfiehlt sich PostgreSQL (nur `schema.prisma` anpassen).
 
 
 ---
-*Automatisch generiert am 09.07.2026, 07:04 · [Quellcode](https://github.com/your-org/prompt-arena)*
+*Automatisch generiert am 09.07.2026, 21:29 · [Quellcode](https://github.com/your-org/prompt-arena)*

@@ -21,6 +21,7 @@ model User {
   // tombstone so authored prompts/votes stay referentially valid but anonymised:
   // name → "Gelöschter Nutzer #<id>", credential + PII columns nulled.
   deletedAt      DateTime?
+  onboardingCompletedAt DateTime? // @spec AC-14-001 – NULL = Einführung noch nicht gesehen
 
   prompts              Prompt[]
   votes                Vote[]

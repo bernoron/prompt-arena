@@ -4,8 +4,8 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
 import { readLimiter, writeLimiter, getClientIp } from '@/lib/rate-limit';
+import { listUsers } from '@/lib/services/user-service';
 
 // @spec AC-01-002, AC-01-012
 export async function GET(req: NextRequest) {
@@ -14,21 +14,8 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    const users = await prisma.user.findMany({
-      // Deleted (anonymised) accounts never appear in the user list / leaderboard.
-      where:   { deletedAt: null },
-      orderBy: { totalPoints: 'desc' },
-      // Never expose credential or PII columns on a public endpoint.
-      select: {
-        id: true,
-        name: true,
-        avatarColor: true,
-        totalPoints: true,
-        level: true,
-        createdAt: true,
-      },
-    });
-
+    // Deleted accounts are filtered inside listUsers() (deletedAt: null).
+    const users = await listUsers();
     return NextResponse.json(users, {
       headers: { 'Cache-Control': 'public, s-maxage=20, stale-while-revalidate=60' },
     });

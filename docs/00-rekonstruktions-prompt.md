@@ -58,6 +58,7 @@ model User {
   // tombstone so authored prompts/votes stay referentially valid but anonymised:
   // name → "Gelöschter Nutzer #<id>", credential + PII columns nulled.
   deletedAt      DateTime?
+  onboardingCompletedAt DateTime? // @spec AC-14-001 – NULL = Einführung noch nicht gesehen
 
   prompts              Prompt[]
   votes                Vote[]
@@ -412,6 +413,7 @@ KOMPONENTEN (components/)
 - LevelBadge.tsx
 - LevelUpModal.tsx
 - Navigation.tsx
+- OnboardingFunnel.tsx
 - PromptCard.tsx
 - PromptDetailActions.tsx
 - PromptModal.tsx
@@ -496,6 +498,7 @@ API-ROUTEN (app/api/)
 - GET /api/learn
 - POST /api/learn/[moduleSlug]/[lessonSlug]/complete
 - GET /api/learn/[moduleSlug]/[lessonSlug]
+- POST /api/onboarding
 - GET /api/prompts
 - POST /api/prompts
 - GET /api/prompts/trending
@@ -631,4 +634,4 @@ SETUP-REIHENFOLGE
 
 
 ---
-*Automatisch generiert am 09.07.2026, 07:04 · [Quellcode](https://github.com/your-org/prompt-arena)*
+*Automatisch generiert am 09.07.2026, 21:29 · [Quellcode](https://github.com/your-org/prompt-arena)*

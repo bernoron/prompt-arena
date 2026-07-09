@@ -1,5 +1,6 @@
 import Navigation from '@/components/Navigation';
 import FeedbackButton from '@/components/FeedbackButton';
+import OnboardingFunnel from '@/components/OnboardingFunnel';
 import { SessionProvider } from '@/components/SessionProvider';
 import { getSessionUser } from '@/lib/session';
 
@@ -14,6 +15,7 @@ export default async function UserLayout({ children }: { children: React.ReactNo
         {children}
       </main>
       <FeedbackButton />
+      <OnboardingFunnel />
     </SessionProvider>
   );
 }

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { getRarity } from '../../../lib/constants';
+import { getRarity, ONBOARDING_STEPS } from '../../../lib/constants';
 
 describe('getRarity()', () => {
   it('returns common for 0 uses', () => expect(getRarity(0)).toBe('common'));
@@ -10,4 +10,19 @@ describe('getRarity()', () => {
   it('returns epic for 59 uses', () => expect(getRarity(59)).toBe('epic'));
   it('returns legendary for 60 uses', () => expect(getRarity(60)).toBe('legendary'));
   it('returns legendary for 1000 uses', () => expect(getRarity(1000)).toBe('legendary'));
+});
+
+// @spec AC-14-004
+describe('ONBOARDING_STEPS', () => {
+  it('has at least 5 steps', () => {
+    expect(ONBOARDING_STEPS.length).toBeGreaterThanOrEqual(5);
+  });
+
+  it('every step has a non-empty icon, title, and body', () => {
+    for (const step of ONBOARDING_STEPS) {
+      expect(step.icon.length).toBeGreaterThan(0);
+      expect(step.title.length).toBeGreaterThan(0);
+      expect(step.body.length).toBeGreaterThan(0);
+    }
+  });
 });

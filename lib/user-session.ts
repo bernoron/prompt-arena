@@ -17,8 +17,19 @@ export const USER_COOKIE = 'user_session';
  */
 export const USER_SESSION_MAX_AGE_MS = 60 * 60 * 24 * 30 * 1000; // 30 days
 
+// Mirrors lib/email-crypto.ts's DEV_FALLBACK: crypto.subtle.importKey() rejects a
+// zero-length HMAC key, so an unset USER_SECRET must never reach it as ''. The route
+// handlers (register/login) are responsible for refusing to run in production without
+// a real USER_SECRET — this fallback only keeps local dev usable out of the box.
+const DEV_FALLBACK_SECRET = 'dev-user-secret-NOT-FOR-PRODUCTION!';
+
+/** Returns true when USER_SECRET is configured (required in production). */
+export function isUserSecretConfigured(): boolean {
+  return Boolean(process.env.USER_SECRET);
+}
+
 async function hmac(message: string): Promise<string> {
-  const secret = process.env.USER_SECRET ?? '';
+  const secret = process.env.USER_SECRET || DEV_FALLBACK_SECRET;
   const keyData = new TextEncoder().encode(secret);
   const msgData = new TextEncoder().encode(message);
   const key = await crypto.subtle.importKey(
@@ -42,7 +53,7 @@ export async function signUserId(userId: number): Promise<string> {
 }
 
 export async function verifyUserCookie(cookieValue: string | undefined): Promise<number | null> {
-  if (!process.env.USER_SECRET || !cookieValue) return null;
+  if (!cookieValue) return null;
 
   const parts = cookieValue.split('.');
   if (parts.length !== 3) return null;

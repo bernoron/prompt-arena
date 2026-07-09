@@ -154,8 +154,6 @@ POST /api/auth/password-reset/request — start a password reset (CR-003). Body:
 
 ### `GET /api/categories`
 
-GET /api/categories Returns all active prompt categories ordered by display order. Used by the Library filter, Submit form, and Admin panel.
-
 
 ---
 
@@ -215,6 +213,11 @@ GET /api/categories Returns all active prompt categories ordered by display orde
 ---
 
 ### `GET /api/learn/[moduleSlug]/[lessonSlug]`
+
+
+---
+
+### `POST /api/onboarding`
 
 
 ---
@@ -292,4 +295,4 @@ Alle Timestamps werden als **ISO 8601** Strings zurückgegeben, z.B. `"2024-03-1
 
 
 ---
-*Automatisch generiert am 09.07.2026, 07:04 · [Quellcode](https://github.com/your-org/prompt-arena)*
+*Automatisch generiert am 09.07.2026, 21:29 · [Quellcode](https://github.com/your-org/prompt-arena)*

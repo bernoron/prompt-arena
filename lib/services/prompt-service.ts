@@ -10,7 +10,11 @@ import { Prisma } from '@prisma/client';
 import { prisma } from '@/lib/prisma';
 import { awardPoints } from '@/lib/db-helpers';
 import { POINTS } from '@/lib/points';
+import { cached, invalidate } from '@/lib/cache';
 import { getRatingsMap, getRating } from './rating-service';
+
+/** Cache key for the (non-personalised) trending widget payload. */
+const TRENDING_CACHE_KEY = 'prompts:trending';
 
 const AUTHOR_SELECT = { id: true, name: true, avatarColor: true } as const;
 
@@ -215,6 +219,10 @@ export async function createPrompt(params: CreatePromptParams): Promise<CreatePr
     await awardPoints(authorId, POINTS.CHALLENGE_SUBMIT);
   }
 
+  // A new prompt joins the "newest" trending list — drop the memoised copy so
+  // the change is visible immediately instead of after the TTL.
+  invalidate(TRENDING_CACHE_KEY);
+
   return { ok: true, prompt };
 }
 
@@ -229,23 +237,28 @@ async function fetchTop(orderBy: Prisma.PromptOrderByWithRelationInput[]) {
 }
 
 export async function getTrendingPrompts() {
-  const [hot, newest] = await Promise.all([
-    fetchTop([{ usageCount: 'desc' }, { id: 'desc' }]),
-    fetchTop([{ createdAt: 'desc' }, { id: 'desc' }]),
-  ]);
+  // Not user-specific → memoise for a short TTL so the dashboard widget and
+  // GET /api/prompts/trending collapse repeated identical aggregations into
+  // one DB round-trip. TTL matches the endpoint's s-maxage=20.
+  return cached(TRENDING_CACHE_KEY, 20_000, async () => {
+    const [hot, newest] = await Promise.all([
+      fetchTop([{ usageCount: 'desc' }, { id: 'desc' }]),
+      fetchTop([{ createdAt: 'desc' }, { id: 'desc' }]),
+    ]);
 
-  const ratings = await getRatingsMap(Array.from(new Set([...hot, ...newest].map((p) => p.id))));
-  const enrich = (list: typeof hot) => list.map((p) => ({
-    ...p,
-    createdAt: p.createdAt.toISOString(),
-    ...getRating(ratings, p.id),
-  }));
+    const ratings = await getRatingsMap(Array.from(new Set([...hot, ...newest].map((p) => p.id))));
+    const enrich = (list: typeof hot) => list.map((p) => ({
+      ...p,
+      createdAt: p.createdAt.toISOString(),
+      ...getRating(ratings, p.id),
+    }));
 
-  // Merge both lists, deduplicating by id, hot first
-  const seen = new Set<number>();
-  return [...enrich(hot), ...enrich(newest)].filter((p) => {
-    if (seen.has(p.id)) return false;
-    seen.add(p.id);
-    return true;
+    // Merge both lists, deduplicating by id, hot first
+    const seen = new Set<number>();
+    return [...enrich(hot), ...enrich(newest)].filter((p) => {
+      if (seen.has(p.id)) return false;
+      seen.add(p.id);
+      return true;
+    });
   });
 }

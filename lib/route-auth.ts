@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { ADMIN_COOKIE, isAdminAuthorised } from '@/lib/admin-auth';
-import { USER_COOKIE, verifyUserCookie } from '@/lib/user-session';
+import { USER_COOKIE, verifyUserCookie, isUserSecretConfigured } from '@/lib/user-session';
 
 type UserAuthResult =
   | { userId: number }
@@ -38,67 +38,69 @@ export async function requireUser(
   req: NextRequest,
   requestedUserId?: number | null,
 ): Promise<UserAuthResult> {
-  const userSecretConfigured = Boolean(process.env.USER_SECRET);
+  const userSecretConfigured = isUserSecretConfigured();
 
-  if (!userSecretConfigured) {
-    if (process.env.NODE_ENV === 'production') {
-      return {
-        response: NextResponse.json(
-          { error: 'User authentication is not configured on this server' },
-          { status: 503 },
-        ),
-      };
-    }
-
-    if (requestedUserId && requestedUserId > 0) {
-      return { userId: requestedUserId };
-    }
-
-    return { response: NextResponse.json({ error: 'Not authenticated' }, { status: 401 }) };
-  }
-
-  const sessionUserId = await verifyUserCookie(req.cookies.get(USER_COOKIE)?.value);
-  if (!sessionUserId) {
-    return { response: NextResponse.json({ error: 'Not authenticated' }, { status: 401 }) };
-  }
-
-  if (requestedUserId && sessionUserId !== requestedUserId) {
+  if (!userSecretConfigured && process.env.NODE_ENV === 'production') {
     return {
       response: NextResponse.json(
-        { error: 'Forbidden - userId does not match your session' },
-        { status: 403 },
+        { error: 'User authentication is not configured on this server' },
+        { status: 503 },
       ),
     };
   }
 
-  return { userId: sessionUserId };
+  // verifyUserCookie() signs/verifies with a dev-only fallback secret when
+  // USER_SECRET is unset (never in production, guarded above), so a real
+  // session cookie from register/login already works here without it.
+  const sessionUserId = await verifyUserCookie(req.cookies.get(USER_COOKIE)?.value);
+  if (sessionUserId) {
+    if (requestedUserId && sessionUserId !== requestedUserId) {
+      return {
+        response: NextResponse.json(
+          { error: 'Forbidden - userId does not match your session' },
+          { status: 403 },
+        ),
+      };
+    }
+    return { userId: sessionUserId };
+  }
+
+  // Dev-only convenience for callers with no session cookie at all (e.g. quick
+  // manual testing against a fresh checkout): trust an explicit body userId.
+  if (!userSecretConfigured && requestedUserId && requestedUserId > 0) {
+    return { userId: requestedUserId };
+  }
+
+  return { response: NextResponse.json({ error: 'Not authenticated' }, { status: 401 }) };
 }
 
 export async function optionalUser(
   req: NextRequest,
   requestedUserId?: number | null,
 ): Promise<OptionalUserAuthResult> {
-  if (!process.env.USER_SECRET) {
-    if (process.env.NODE_ENV === 'production' && requestedUserId) {
-      return {
-        response: NextResponse.json(
-          { error: 'User authentication is not configured on this server' },
-          { status: 503 },
-        ),
-      };
-    }
+  const userSecretConfigured = isUserSecretConfigured();
 
-    return { userId: requestedUserId ?? null };
+  if (!userSecretConfigured && process.env.NODE_ENV === 'production' && requestedUserId) {
+    return {
+      response: NextResponse.json(
+        { error: 'User authentication is not configured on this server' },
+        { status: 503 },
+      ),
+    };
   }
 
+  // verifyUserCookie() falls back to a dev-only secret when USER_SECRET is
+  // unset (never in production, guarded above), so prefer it over trusting
+  // a client-supplied userId whenever a real session cookie is present.
   const sessionUserId = await verifyUserCookie(req.cookies.get(USER_COOKIE)?.value);
+  const effectiveUserId = sessionUserId ?? (userSecretConfigured ? null : (requestedUserId ?? null));
 
   if (requestedUserId) {
-    if (!sessionUserId) {
+    if (!effectiveUserId) {
       return { response: NextResponse.json({ error: 'Not authenticated' }, { status: 401 }) };
     }
 
-    if (sessionUserId !== requestedUserId) {
+    if (effectiveUserId !== requestedUserId) {
       return {
         response: NextResponse.json(
           { error: 'Forbidden - userId does not match your session' },
@@ -108,5 +110,5 @@ export async function optionalUser(
     }
   }
 
-  return { userId: sessionUserId ?? null };
+  return { userId: effectiveUserId };
 }

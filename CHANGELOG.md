@@ -1,5 +1,33 @@
 # Changelog
 
+## [8.3.0](https://github.com/bernoron/prompt-arena/compare/v8.2.2...v8.3.0) (2026-07-07)
+
+
+### Features
+
+* **onboarding:** add User.onboardingCompletedAt column ([815d03a](https://github.com/bernoron/prompt-arena/commit/815d03a27b39472b550685dc53c2a87809ef45b8))
+* **onboarding:** implement first-login onboarding funnel ([58001d5](https://github.com/bernoron/prompt-arena/commit/58001d50357e0e2bc0cace118f279eb40775bb0f))
+
+
+### Bug Fixes
+
+* **auth:** handle empty ADMIN_PATH/USER_SECRET as unconfigured, not as a value ([c713adc](https://github.com/bernoron/prompt-arena/commit/c713adc55ab758368a882893d7472f16b669ab1e))
+* **ci:** copy .next/static into the standalone build before E2E tests ([2496ef2](https://github.com/bernoron/prompt-arena/commit/2496ef28ae9929f95ddcf7b3f6f602a5ff5aeab3))
+
+## [8.2.2](https://github.com/bernoron/prompt-arena/compare/v8.2.1...v8.2.2) (2026-07-07)
+
+
+### Bug Fixes
+
+* **docker:** install prisma CLI standalone instead of hand-copying its deps ([#47](https://github.com/bernoron/prompt-arena/issues/47)) ([22d94b0](https://github.com/bernoron/prompt-arena/commit/22d94b095366e85d91ce08d0073065449d46a0cf))
+
+## [8.2.1](https://github.com/bernoron/prompt-arena/compare/v8.2.0...v8.2.1) (2026-07-07)
+
+
+### Performance Improvements
+
+* server-render page data + tune SQLite/deploy to kill the client waterfall ([70f5990](https://github.com/bernoron/prompt-arena/commit/70f599063b42da40e291e4fd79a36dca3609ef10))
+
 ## [8.2.0](https://github.com/bernoron/prompt-arena/compare/v8.1.3...v8.2.0) (2026-07-07)
 
 

@@ -16,6 +16,7 @@ import { VoteSchema, validationError } from '@/lib/validation';
 import { writeLimiter, getClientIp } from '@/lib/rate-limit';
 import { requireUser } from '@/lib/route-auth';
 import { logger, serializeError } from '@/lib/logger';
+import { getRatingsMap, getRating } from '@/lib/services/rating-service';
 
 // @spec AC-03-001
 export async function POST(req: NextRequest) {
@@ -75,7 +76,12 @@ export async function POST(req: NextRequest) {
       logger.debug('vote updated', { promptId, userId, value, reqId });
     }
 
-    return NextResponse.json(vote);
+    // Return the freshly recomputed aggregate so the client can update just
+    // this one prompt (avgRating/voteCount) instead of re-fetching the whole
+    // list after every vote.
+    const ratings = await getRatingsMap([promptId]);
+    const { avgRating, voteCount } = getRating(ratings, promptId);
+    return NextResponse.json({ ...vote, avgRating, voteCount });
   } catch (err) {
     logger.error('vote failed', { promptId, userId, reqId, ...serializeError(err) });
     return NextResponse.json({ error: 'Failed to submit vote' }, { status: 500 });
