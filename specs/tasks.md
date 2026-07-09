@@ -182,7 +182,8 @@
 - [x] AC-01-017: `POST /api/auth/password-reset/confirm` (Token einmalig, Ablauf, Transaktion)
 - [x] AC-01-018: Login-Link „Passwort vergessen?" + `/forgot-password`
 - [x] AC-01-019: `/reset-password` + öffentlicher Pfad in `middleware.ts`
-- [ ] INFRA (später): echten E-Mail-Versanddienst wählen + Secrets setzen (aktuell Mock-/Log-Transport)
+- [x] INFRA: E-Mail-Versand über Resend implementiert (`lib/mailer.ts`, Log-Fallback ohne Key)
+- [ ] INFRA (später): `RESEND_API_KEY` + verifizierte Absender-Domain als Fly-Secret eintragen
 
 ---
 

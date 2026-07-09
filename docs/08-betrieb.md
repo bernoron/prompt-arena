@@ -27,7 +27,8 @@ Alle Variablen in `.env` definieren. Vorlage: `.env.example` (liegt im Repositor
 | `ADMIN_SESSION_EPOCH` | `` | Optional: instantly revoke ALL admin sessions issued before this millisecond timestamp (without rotating ADMIN_SECRET) |
 | `USER_SECRET` | `` | User session signing (for cookie-based auth) REQUIRED in production |
 | `EMAIL_SECRET` | `` | Email encryption key (for AES-256-GCM email storage) REQUIRED in production |
-| `MAIL_TRANSPORT` | `` | Outbound e-mail (password reset — CR-003) Default transport is "log": reset e-mails are written to the server log instead of being delivered — no external service needed for dev/test |
+| `RESEND_API_KEY` | `` | Outbound e-mail (password reset — CR-003) — provider: Resend Without RESEND_API_KEY the app uses a "log" transport: reset e-mails are written to the server log instead of being delivered (fine for dev/test) |
+| `MAIL_FROM` | `PromptArena <onboarding@resend.dev>` | Outbound e-mail (password reset — CR-003) — provider: Resend Without RESEND_API_KEY the app uses a "log" transport: reset e-mails are written to the server log instead of being delivered (fine for dev/test) |
 
 > **Wichtig:** `.env` ist in `.gitignore` – niemals committen.
 
@@ -214,4 +215,4 @@ Empfohlene externe Uptime-Monitore (alle mit Gratis-Tier verfügbar): **UptimeRo
 
 
 ---
-*Automatisch generiert am 09.07.2026, 06:54 · [Quellcode](https://github.com/your-org/prompt-arena)*
+*Automatisch generiert am 09.07.2026, 07:04 · [Quellcode](https://github.com/your-org/prompt-arena)*

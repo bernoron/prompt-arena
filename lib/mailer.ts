@@ -7,16 +7,21 @@
  * a real provider (SMTP / Resend / Postmark / SES) can be wired in later purely
  * via configuration — no call-site changes.
  *
- * Transport selection:
- *   - Default: "log" transport — writes the message to the structured logger
- *     instead of a real inbox. Nothing external to provision.
- *   - Future: read process.env.MAIL_TRANSPORT and dispatch to a real provider.
+ * Transport selection (resolved per send from env):
+ *   - RESEND_API_KEY set  → Resend HTTP API transport (real delivery).
+ *   - otherwise           → "log" transport: writes the message to the
+ *     structured logger instead of a real inbox. Used in dev/test, and as a
+ *     safe fallback in production before the secret is configured.
  *
  * Callers depend only on `sendMail` / `sendPasswordResetEmail`, so swapping the
  * transport never touches the routes.
  */
 
 import { logger } from './logger';
+
+/** Default sender. Resend's shared onboarding domain works for first tests;
+ *  override with MAIL_FROM once you've verified your own domain. */
+const DEFAULT_FROM = 'PromptArena <onboarding@resend.dev>';
 
 export interface MailMessage {
   to: string;
@@ -42,12 +47,51 @@ const logTransport: MailTransport = {
 };
 
 /**
- * Resolve the active transport. Today always the log transport; the switch is
- * kept here so a real provider is a one-line addition guarded by env.
+ * Resend HTTP API transport (https://resend.com/docs/api-reference/emails/send-email).
+ * No SDK dependency — a single fetch keeps the surface small and edge-friendly.
+ */
+export function createResendTransport(apiKey: string): MailTransport {
+  return {
+    name: 'resend',
+    async send(msg: MailMessage): Promise<void> {
+      const from = process.env.MAIL_FROM || DEFAULT_FROM;
+      const res = await fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${apiKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          from,
+          to: [msg.to],
+          subject: msg.subject,
+          text: msg.text,
+          ...(msg.html ? { html: msg.html } : {}),
+        }),
+      });
+
+      if (!res.ok) {
+        // Surface a bounded error; the caller logs it and degrades gracefully.
+        const detail = await res.text().catch(() => '');
+        throw new Error(`Resend API error ${res.status}: ${detail.slice(0, 200)}`);
+      }
+    },
+  };
+}
+
+/**
+ * Resolve the active transport from env, per send. Real delivery when
+ * RESEND_API_KEY is set; otherwise the log transport (dev/test, or production
+ * before the secret is configured — password reset then no-ops loudly rather
+ * than crashing).
  */
 export function getMailTransport(): MailTransport {
-  // Example future wiring:
-  //   if (process.env.MAIL_TRANSPORT === 'smtp') return createSmtpTransport();
+  const apiKey = process.env.RESEND_API_KEY;
+  if (apiKey) return createResendTransport(apiKey);
+
+  if (process.env.NODE_ENV === 'production') {
+    logger.warn('e-mail provider not configured (RESEND_API_KEY missing) — using log transport');
+  }
   return logTransport;
 }
 

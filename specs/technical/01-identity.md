@@ -64,7 +64,7 @@
 
 - [x] **AC-01-014**: Prisma: `PasswordResetToken { id, userId, tokenHash @unique, expiresAt, usedAt?, createdAt }` (nur Token-**Hash** gespeichert, Cascade-Delete am User).
   - **Referenz**: BAC-01-015, BAC-01-018 · **Code**: `prisma/schema.prisma`
-- [x] **AC-01-015**: `lib/reset-token.ts` (Token erzeugen = 32 Byte hex, `hashResetToken` = SHA-256, `resetTokenExpiry` = +1h, `isTestOrDevEnv`) + `lib/mailer.ts` (pluggbarer Transport, Default = Log-/Mock-Transport; `sendPasswordResetEmail` deutschsprachig).
+- [x] **AC-01-015**: `lib/reset-token.ts` (Token erzeugen = 32 Byte hex, `hashResetToken` = SHA-256, `resetTokenExpiry` = +1h, `isTestOrDevEnv`) + `lib/mailer.ts` (pluggbarer Transport: **Resend**-HTTP-API wenn `RESEND_API_KEY` gesetzt, sonst Log-Transport als Fallback; `sendPasswordResetEmail` deutschsprachig).
   - **Referenz**: BAC-01-014, BAC-01-015 · **Code**: `lib/reset-token.ts`, `lib/mailer.ts` · **Testbar durch**: Unit
 - [x] **AC-01-016**: `POST /api/auth/password-reset/request` — **immer** neutrale Antwort (kein Enumeration-Leak); bei existierendem, nicht gelöschtem Konto: alte offene Tokens verwerfen, neues Token anlegen, Reset-Mail senden. Nur in Dev/CI/E2E zusätzlich `devResetUrl`. Rate-limited (`authLimiter`).
   - **Referenz**: BAC-01-012, BAC-01-013, BAC-01-014, BAC-01-017 · **Code**: `app/api/auth/password-reset/request/route.ts` · **Testbar durch**: E2E

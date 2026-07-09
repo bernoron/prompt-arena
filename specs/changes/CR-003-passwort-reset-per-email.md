@@ -97,3 +97,4 @@ Auf der Anmeldeseite gibt es einen Link „Passwort vergessen?". Der Nutzer gibt
 | 2026-07-08 | Claude (/intake) | CR erstellt inkl. Impact-Analyse; E-Mail-Versand als neue Infrastruktur identifiziert |
 | 2026-07-08 | bernoron (PO) | Freigegeben; E-Mail-Transport: Mock-/Log-Transport zuerst |
 | 2026-07-09 | Claude (/implement) | Umgesetzt (AC-01-014…019) mit Mock-Mailer, Unit + E2E grün, Status → implemented |
+| 2026-07-09 | Claude (/implement) | Echter Versand: Resend-HTTP-Transport in `lib/mailer.ts` (Log-Fallback ohne `RESEND_API_KEY`); Unit-Tests ergänzt. Produktions-Key noch einzutragen |
