@@ -3,6 +3,16 @@
 const nextConfig = {
   output: 'standalone',
 
+  // Playwright's default baseURL (playwright.config.ts) is http://127.0.0.1:3000,
+  // but `npm run dev` only recognizes http://localhost:3000 as same-origin by
+  // default. Since Next.js 16, requests from an unrecognized dev origin get
+  // silently dropped instead of served (HMR sockets, and apparently plain
+  // fetch() calls to API routes too) — e2e runs against `npm run dev` (i.e.
+  // every local `git push`, see .githooks/pre-push) would otherwise hang on
+  // any fetch() from the page, even though the exact same app works fine in
+  // production (this allowlist is dev-only; Next ignores it in prod builds).
+  allowedDevOrigins: ['127.0.0.1'],
+
   // The app does not use next/image. Disabling the optimizer removes the
   // /_next/image endpoint as an attack surface (several known DoS advisories
   // target the Image Optimization API in self-hosted deployments).

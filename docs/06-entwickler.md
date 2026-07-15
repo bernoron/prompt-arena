@@ -93,6 +93,7 @@ Client-Komponenten weiter. `useCurrentUser()` (nur die ID) und `useSession()`
 | `npm run db:generate` | `prisma generate` |
 | `npm run db:migrate` | `prisma migrate dev --name init` |
 | `npm run db:seed` | `tsx prisma/seed.ts` |
+| `npm run db:update-learning-content` | `tsx scripts/update-learning-content.ts` |
 | `npm run db:reset` | `node -e "if(process.env.NODE_ENV==='production'){console.error('ERROR: db:reset is disabled in production!');process.exit(1)}" && npm run db:reset:dev` |
 | `npm run db:reset:dev` | `prisma migrate reset --force && tsx prisma/seed.ts` |
 | `npm run docs` | `tsx scripts/generate-docs.ts` |
@@ -125,4 +126,4 @@ Client-Komponenten weiter. `useCurrentUser()` (nur die ID) und `useSession()`
 
 
 ---
-*Automatisch generiert am 09.07.2026, 21:29 · [Quellcode](https://github.com/your-org/prompt-arena)*
+*Automatisch generiert am 15.07.2026, 21:22 · [Quellcode](https://github.com/your-org/prompt-arena)*

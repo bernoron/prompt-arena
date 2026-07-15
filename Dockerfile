@@ -78,6 +78,14 @@ COPY --from=builder /prisma-cli/node_modules    ./node_modules
 # for the one-off `fly ssh console -C "npx tsx prisma/seed.ts"` seeding step.
 COPY --from=builder /app/lib                    ./lib
 
+# scripts/update-learning-content.ts is the non-destructive way to refresh
+# learning-path content on a live deployment (see DEPLOYMENT.md §4) via
+# `fly ssh console -C "npx tsx scripts/update-learning-content.ts"`. It only
+# imports prisma/learning-content.ts (already copied above), so this one file
+# is enough — the rest of scripts/ is dev-only tooling and stays out of the
+# runtime image.
+COPY --from=builder /app/scripts/update-learning-content.ts ./scripts/update-learning-content.ts
+
 COPY docker-entrypoint.sh ./docker-entrypoint.sh
 
 # /data is the mount point for the persistent SQLite volume (DATABASE_URL=file:/data/prod.db).
