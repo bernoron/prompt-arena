@@ -192,6 +192,28 @@ Für eine Produktionsumgebung empfiehlt sich, das Skript so anzupassen, dass es
 nur die Lerninhalte (Module/Lektionen) anlegt und keine Demo-User/-Prompts –
 oder die Demo-Daten nach dem ersten Seed manuell zu entfernen.
 
+### Lerninhalte später aktualisieren (nicht-destruktiv)
+
+Sobald echte Nutzer im System sind, darf `prisma/seed.ts` **nie wieder** gegen
+die Produktions-DB laufen (siehe oben). Für inhaltliche Updates am Lernpfad
+(z.B. veraltete Modell-Vergleiche auffrischen) gibt es stattdessen:
+
+```bash
+npm run db:update-learning-content
+# bzw. auf Fly.io:
+fly ssh console -C "node node_modules/.bin/tsx scripts/update-learning-content.ts"
+```
+
+`scripts/update-learning-content.ts` liest denselben Inhalt wie `prisma/seed.ts`
+aus `prisma/learning-content.ts`, aktualisiert Module/Lektionen aber per
+`upsert` anhand ihres `slug` — bestehende Zeilen werden verändert, nichts wird
+gelöscht. `User`, `Prompt`, `LessonProgress`, `LessonFeedback` und alle anderen
+Tabellen bleiben unangetastet, d.h. eingeloggte Nutzer behalten Account und
+Lernfortschritt. Neue Module/Lektionen im Content-File werden automatisch
+angelegt; Module/Lektionen, die aus dem Content-File entfernt wurden, bleiben
+in der DB stehen (das Skript loggt sie als Warnung) — sie werden nie
+automatisch gelöscht.
+
 ---
 
 ## 5. Backups (nur SQLite-Optionen A/B)

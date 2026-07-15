@@ -258,7 +258,11 @@ app/api/learn/
             └── route.ts                 // POST (AC-08-003, AC-08-008)
 
 prisma/
-└── seed.ts                              // 5 Module, 20 Lektionen als ContentBlock-JSON (AC-08-012)
+├── learning-content.ts                  // Modul-/Lektionsinhalte als Daten (ContentBlock-JSON) — geteilt von seed.ts und dem Update-Script
+└── seed.ts                              // Voll-Seed (destruktiv, nur einmalig auf leerer DB) — 5 Module, 20 Lektionen (AC-08-012)
+
+scripts/
+└── update-learning-content.ts           // Nicht-destruktiver Content-Refresh für Produktivsysteme: upsertet Module/Lektionen aus learning-content.ts per slug, ohne User/Prompt/Progress zu berühren (siehe DEPLOYMENT.md §4)
 
 lib/
 ├── points.ts                            // POINTS.COMPLETE_LESSON = 15
@@ -329,3 +333,4 @@ const CompleteLessonSchema = z.object({
 | Version | Datum | CR | Änderung |
 |---------|-------|----|---------|
 | 1.0 | 2026-04-22 | — | Erstversion |
+| 1.0 | 2026-07-15 | — | Lerninhalte aus `seed.ts` nach `prisma/learning-content.ts` extrahiert; `scripts/update-learning-content.ts` ergänzt als nicht-destruktiver Weg, Lerninhalte in Produktion zu aktualisieren (Upsert per slug, keine Löschungen). Kein Schema-/API-/AC-Change. |

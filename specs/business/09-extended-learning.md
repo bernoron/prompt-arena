@@ -109,6 +109,7 @@ Nachdem die ersten 5 Lernmodule die Grundlagen des Promptings abdecken, brauchen
 | Version | Datum | Änderung | Genehmigt von |
 |---------|-------|----------|---------------|
 | 1.0 | 2026-04-22 | Erstversion | PromptArena Team |
+| 1.0 | 2026-07-15 | Modul "Das richtige Modell wählen" inhaltlich aufgefrischt (aktuelle Modell-Generationen, Reasoning-/Denkmodi, agentische Coding-Tools) gemäss R1-Risikomitigation — keine Struktur-/AC-Änderung, daher kein CR. | PromptArena Team |
 
 ---
 
