@@ -1,5 +1,12 @@
 # Changelog
 
+## [8.5.1](https://github.com/bernoron/prompt-arena/compare/v8.5.0...v8.5.1) (2026-07-16)
+
+
+### Bug Fixes
+
+* **landing:** replace CHANGELOG.md-sourced feed with curated German copy (CR-006) ([43ed24e](https://github.com/bernoron/prompt-arena/commit/43ed24e3604f97eb905773ff999779caf3404234))
+
 ## [8.5.0](https://github.com/bernoron/prompt-arena/compare/v8.4.0...v8.5.0) (2026-07-16)
 
 
