@@ -199,6 +199,16 @@
 
 ---
 
+## Feature 13 – Erweiterungen (CR-005 — implementiert)
+
+### CR-005 – Startseite zeigt die 10 zuletzt gebauten Features ✅
+- [x] AC-13-008: `lib/services/changelog-service.ts` — `getRecentFeatures()` + `parseChangelogFeatures()` (liest `CHANGELOG.md`, keine Migration)
+- [x] AC-13-008: Unit-Tests (`parseChangelogFeatures`: Scope/kein Scope, Limit, leere Features-Sektion)
+- [x] AC-13-009: "Neuigkeiten"-Abschnitt in `app/page.tsx` inkl. Leer-Zustand
+- [x] AC-13-009: E2E-Test (Neuigkeiten-Abschnitt sichtbar für anonyme Besucher:innen)
+
+---
+
 ## Feature 14 – Einstiegs-Funnel (14-onboarding-funnel.md)
 
 - [x] AC-14-001: User.onboardingCompletedAt (nullable) + Migration mit Backfill für Bestandsnutzer

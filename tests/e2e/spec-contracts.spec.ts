@@ -303,4 +303,13 @@ test.describe('PromptArena spec contracts', () => {
     expect(loggedInRes.status()).toBe(307);
     expect(loggedInRes.headers()['location']).toBe('/dashboard');
   });
+
+  test('BAC-13-006/007 landing page: shows recently shipped features from CHANGELOG.md to anonymous visitors', async ({ request }) => {
+    const res = await request.get('/', { maxRedirects: 0 });
+    expect(res.status()).toBe(200);
+    const html = await res.text();
+    // CHANGELOG.md is generated from Conventional Commits and always has at least one
+    // "### Features" entry in this repo's history, so the section renders (not the empty state).
+    expect(html).toContain('Neuigkeiten');
+  });
 });

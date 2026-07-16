@@ -54,6 +54,13 @@ sofort ihr Dashboard statt der Werbeseite.
 **BAC-13-005** Gibt es noch keine genutzten Prompts in der Bibliothek, zeigt die Startseite
 trotzdem eine funktionierende, sinnvolle Seite (ohne leere oder kaputte Kachel-Reihe).
 
+**BAC-13-006** *(CR-005)* Am unteren Ende der Startseite sehen auch anonyme Besucher:innen einen
+"Neuigkeiten"-Bereich mit den 10 zuletzt gebauten Features, damit sichtbar wird, dass das Produkt
+laufend weiterentwickelt wird.
+
+**BAC-13-007** *(CR-005)* Gibt es (noch) keine Einträge, wird der Neuigkeiten-Bereich
+ausgeblendet statt leer angezeigt — analog zu BAC-13-005.
+
 ---
 
 ## Was ist NICHT in diesem Release?
@@ -69,7 +76,16 @@ trotzdem eine funktionierende, sinnvolle Seite (ohne leere oder kaputte Kachel-R
 ## Status
 
 - **Status**: `approved`
-- **Version**: 1.0
-- **Datum**: 2026-07-06
+- **Version**: 1.1
+- **Datum**: 2026-07-16
 - **PO**: bernoron
 - **Technische Spec**: `specs/technical/13-landing-page.md`
+
+---
+
+## Änderungshistorie
+
+| Version | Datum | Änderung | Genehmigt von |
+|---------|-------|----------|---------------|
+| 1.0 | 2026-07-06 | Erstversion | bernoron |
+| 1.1 | 2026-07-16 | CR-005: BAC-13-006/007 (Neuigkeiten-Bereich mit den 10 zuletzt gebauten Features) | bernoron |

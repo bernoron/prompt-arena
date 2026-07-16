@@ -3,7 +3,10 @@ import { redirect } from 'next/navigation';
 import { getSessionUser } from '@/lib/session';
 import { getTopPrompts } from '@/lib/services/prompt-service';
 import { listCategories } from '@/lib/services/category-service';
+import { getRecentFeatures } from '@/lib/services/changelog-service';
 import { CATEGORY_COLOR_CLASSES, CATEGORY_FALLBACK_COLOR_CLASSES } from '@/lib/constants';
+
+const RECENT_FEATURES_LIMIT = 10;
 
 const FEATURES = [
   { icon: '📚', title: 'Prompt-Bibliothek', text: 'Durchsuche geprüfte Prompts deiner Kolleg:innen – nach Kategorie, Schwierigkeit oder Beliebtheit.' },
@@ -21,12 +24,16 @@ function StarRating({ rating }: { rating: number }) {
   );
 }
 
-// @spec AC-13-002, AC-13-003, AC-13-004, AC-13-006, AC-13-007
+// @spec AC-13-002, AC-13-003, AC-13-004, AC-13-006, AC-13-007, AC-13-009
 export default async function LandingPage() {
   const user = await getSessionUser();
   if (user) redirect('/dashboard');
 
-  const [topPrompts, categories] = await Promise.all([getTopPrompts(3), listCategories()]);
+  const [topPrompts, categories, recentFeatures] = await Promise.all([
+    getTopPrompts(3),
+    listCategories(),
+    getRecentFeatures(RECENT_FEATURES_LIMIT),
+  ]);
 
   return (
     <div
@@ -109,6 +116,32 @@ export default async function LandingPage() {
               );
             })}
           </div>
+        </div>
+      )}
+
+      {/* Recent features, sourced from CHANGELOG.md (CR-005) */}
+      {recentFeatures.length > 0 && (
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 pb-16">
+          <h2 className="text-white text-xl sm:text-2xl font-extrabold text-center mb-1">
+            🚀 Neuigkeiten
+          </h2>
+          <p className="text-slate-400 text-sm text-center mb-8">
+            Das haben wir zuletzt gebaut.
+          </p>
+          <ul className="space-y-3">
+            {recentFeatures.map((f, i) => (
+              <li
+                key={`${f.version}-${i}`}
+                className="flex items-start gap-3 bg-white/5 border border-white/10 rounded-xl px-4 py-3"
+              >
+                <span className="text-slate-500 text-xs font-mono whitespace-nowrap pt-0.5">{f.date}</span>
+                {f.scope && (
+                  <span className="text-emerald-400 text-xs font-mono whitespace-nowrap pt-0.5">{f.scope}</span>
+                )}
+                <span className="text-slate-200 text-sm leading-snug">{f.description}</span>
+              </li>
+            ))}
+          </ul>
         </div>
       )}
 
