@@ -187,6 +187,18 @@
 
 ---
 
+## Feature 02 – Erweiterungen (CR-004 — implementiert)
+
+### CR-004 – Nutzer können beim Einreichen neue Kategorien erstellen ✅
+- [x] AC-02-013: `POST /api/categories` (Nutzer-Endpoint, kein Admin) + `CreateCategorySchema` in `lib/validation.ts`
+- [x] AC-02-013: `createCategory()` in `lib/services/category-service.ts` + Cache-Invalidierung von `categories:all`
+- [x] AC-02-013: Unit-Tests (`CreateCategorySchema`, `slugify()`)
+- [x] AC-02-014: Submit-Formular — Kategorie-Combobox (Freitext + Live-Filter bestehender Kategorien)
+- [x] AC-02-014: `CategoryBadge`/`PromptCard` auf `PromptCategoryInfo.icon`/`.color` umstellen (statt `CATEGORY_CONFIG`)
+- [x] AC-02-014: E2E-Test (Happy Path: neue Kategorie anlegen → sichtbar in Bibliothek; Edge-Case: doppelter Name)
+
+---
+
 ## Feature 14 – Einstiegs-Funnel (14-onboarding-funnel.md)
 
 - [x] AC-14-001: User.onboardingCompletedAt (nullable) + Migration mit Backfill für Bestandsnutzer

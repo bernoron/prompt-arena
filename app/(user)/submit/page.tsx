@@ -2,27 +2,35 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import CategoryBadge from '@/components/CategoryBadge';
 import DifficultyBadge from '@/components/DifficultyBadge';
-import type { Category, Difficulty, PromptCategoryInfo, WeeklyChallengeData } from '@/lib/types';
+import type { Difficulty, PromptCategoryInfo, WeeklyChallengeData } from '@/lib/types';
 import { POINTS } from '@/lib/points';
+import { CATEGORY_COLOR_CLASSES, CATEGORY_FALLBACK_COLOR_CLASSES, CATEGORY_DEFAULT_ICON } from '@/lib/constants';
 import { useSession } from '@/components/SessionProvider';
 
 const DIFFICULTIES: Difficulty[] = ['Einstieg', 'Fortgeschritten'];
 
-function LivePreviewCard({ title, titleEn, content, category, difficulty, authorName, authorColor }: {
+// @spec AC-02-014
+function LivePreviewCard({ title, titleEn, content, categoryLabel, categories, difficulty, authorName, authorColor }: {
   title: string; titleEn: string; content: string;
-  category: Category | ''; difficulty: Difficulty;
+  categoryLabel: string; categories: PromptCategoryInfo[]; difficulty: Difficulty;
   authorName: string; authorColor: string;
 }) {
   const initials = authorName.split(' ').filter(Boolean).map((n) => n[0]).join('') || '?';
-  const ACCENT: Record<string, string> = { Writing: 'border-t-teal-400', Email: 'border-t-indigo-400', Analysis: 'border-t-orange-400', Excel: 'border-t-green-400' };
-  const accent = (category && ACCENT[category]) ?? 'border-t-slate-200';
+  const trimmedCategory = categoryLabel.trim();
+  const matchedCategory = trimmedCategory
+    ? categories.find((c) => c.label.toLowerCase() === trimmedCategory.toLowerCase())
+    : undefined;
+  const colors = (matchedCategory && CATEGORY_COLOR_CLASSES[matchedCategory.color]) ?? CATEGORY_FALLBACK_COLOR_CLASSES;
   return (
-    <div className={`bg-white rounded-2xl border border-slate-200 border-t-4 ${accent} shadow-xs p-5`}>
+    <div className={`bg-white rounded-2xl border border-slate-200 border-t-4 ${trimmedCategory ? colors.accentBorder : 'border-t-slate-200'} shadow-xs p-5`}>
       <div className="flex items-start justify-between gap-2 mb-3">
         <div className="flex flex-wrap gap-1.5">
-          {category && <CategoryBadge category={category} size="sm" />}
+          {trimmedCategory && (
+            <span className={`inline-flex items-center gap-1 rounded-full font-semibold border text-xs px-2 py-0.5 ${colors.bg} ${colors.text} ${colors.border}`}>
+              <span>{matchedCategory?.icon ?? CATEGORY_DEFAULT_ICON}</span> {matchedCategory?.label ?? trimmedCategory}
+            </span>
+          )}
           <DifficultyBadge difficulty={difficulty} />
         </div>
         <span className="text-xs text-slate-400">0× genutzt</span>
@@ -53,9 +61,10 @@ export default function SubmitPage() {
   const [categories, setCategories] = useState<PromptCategoryInfo[]>([]);
   const [submitting, setSubmitting] = useState(false);
   const [linkChallenge, setLinkChallenge] = useState(false);
+  const [showCategorySuggestions, setShowCategorySuggestions] = useState(false);
   const [form, setForm] = useState({
     title: '', titleEn: '', content: '', contentEn: '',
-    category: '' as Category | '',
+    categoryLabel: '',
     difficulty: 'Einstieg' as Difficulty,
   });
 
@@ -68,19 +77,64 @@ export default function SubmitPage() {
   }, []);
 
   const setField = (key: string, value: string) => setForm((f) => ({ ...f, [key]: value }));
-  const valid = !!(form.title && form.content && form.category);
+  const valid = !!(form.title && form.content && form.categoryLabel.trim());
+
+  const trimmedCategoryLabel = form.categoryLabel.trim();
+  const filteredCategories = trimmedCategoryLabel
+    ? categories.filter((c) => c.label.toLowerCase().includes(trimmedCategoryLabel.toLowerCase()))
+    : categories;
+  const categoryIsNew = !!trimmedCategoryLabel
+    && !categories.some((c) => c.label.toLowerCase() === trimmedCategoryLabel.toLowerCase());
+
+  /**
+   * Resolves the typed category label to a slug — reusing an existing
+   * category (case-insensitive label match) or creating a new one on the
+   * fly via POST /api/categories (CR-004, AC-02-014).
+   */
+  async function resolveCategorySlug(): Promise<string | null> {
+    const existing = categories.find((c) => c.label.toLowerCase() === trimmedCategoryLabel.toLowerCase());
+    if (existing) return existing.slug;
+
+    const res = await fetch('/api/categories', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ label: trimmedCategoryLabel }),
+    });
+    if (res.ok) {
+      const created: PromptCategoryInfo = await res.json();
+      setCategories((cs) => [...cs, created]);
+      return created.slug;
+    }
+    if (res.status === 409) {
+      // Someone else created the same category between our list fetch and now.
+      const refreshed: PromptCategoryInfo[] = await fetch('/api/categories').then((r) => r.json());
+      setCategories(refreshed);
+      return refreshed.find((c) => c.label.toLowerCase() === trimmedCategoryLabel.toLowerCase())?.slug ?? null;
+    }
+    return null;
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!valid || !currentUser) return;
     setSubmitting(true);
+
+    const category = await resolveCategorySlug();
+    if (!category) {
+      setSubmitting(false);
+      return;
+    }
+
     const res = await fetch('/api/prompts', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        ...form,
+        title: form.title,
         titleEn: form.titleEn.trim() || form.title,
+        content: form.content,
         contentEn: form.contentEn.trim() || form.content,
+        category,
+        difficulty: form.difficulty,
         challengeId: linkChallenge && challenge ? challenge.id : undefined,
       }),
     });
@@ -133,18 +187,35 @@ export default function SubmitPage() {
             <label className={labelCls}>
               Kategorie <span className="text-red-400 font-normal">*</span>
             </label>
-            <div className="flex flex-wrap gap-2">
-              {categories.map(({ slug, label, icon }) => (
-                <button key={slug} type="button" onClick={() => setField('category', slug)}
-                  className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-semibold border-2 transition-all ${
-                    form.category === slug
-                      ? 'border-emerald-500 text-white shadow-xs'
-                      : 'border-slate-200 text-slate-600 bg-slate-50 hover:border-slate-300 hover:bg-white'
-                  }`}
-                  style={form.category === slug ? { background: 'linear-gradient(135deg, #059669, #0891b2)' } : {}}>
-                  <span>{icon}</span> {label}
-                </button>
-              ))}
+            <div className="relative">
+              <input
+                value={form.categoryLabel}
+                onChange={(e) => { setField('categoryLabel', e.target.value); setShowCategorySuggestions(true); }}
+                onFocus={() => setShowCategorySuggestions(true)}
+                onBlur={() => setTimeout(() => setShowCategorySuggestions(false), 150)}
+                placeholder="Kategorie tippen oder aus den Vorschlägen wählen…"
+                autoComplete="off"
+                className={inputCls}
+              />
+              {showCategorySuggestions && filteredCategories.length > 0 && (
+                <ul className="absolute z-10 mt-1 w-full bg-white border border-slate-200 rounded-xl shadow-lg max-h-48 overflow-y-auto">
+                  {filteredCategories.map(({ slug, label, icon }) => (
+                    <li key={slug}>
+                      <button type="button"
+                        onMouseDown={(e) => e.preventDefault()}
+                        onClick={() => { setField('categoryLabel', label); setShowCategorySuggestions(false); }}
+                        className="w-full flex items-center gap-2 px-3 py-2 text-sm text-slate-700 hover:bg-slate-50 text-left">
+                        <span>{icon}</span> {label}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+              {categoryIsNew && (
+                <p className="mt-1.5 text-xs text-emerald-600 font-medium">
+                  ✨ Neue Kategorie „{trimmedCategoryLabel}&rdquo; wird beim Einreichen erstellt.
+                </p>
+              )}
             </div>
 
             <div className="mt-4 pt-4 border-t border-slate-100">
@@ -208,7 +279,7 @@ export default function SubmitPage() {
           {/* Missing fields */}
           {currentUser && !valid && (
             <div className="flex flex-wrap gap-2">
-              {!form.category && (
+              {!form.categoryLabel.trim() && (
                 <span className="px-3 py-1 rounded-full bg-red-50 text-red-500 border border-red-100 text-xs font-semibold">
                   ✗ Kategorie fehlt
                 </span>
@@ -238,7 +309,7 @@ export default function SubmitPage() {
           <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Live-Vorschau</p>
           <LivePreviewCard
             title={form.title} titleEn={form.titleEn} content={form.content}
-            category={form.category} difficulty={form.difficulty}
+            categoryLabel={form.categoryLabel} categories={categories} difficulty={form.difficulty}
             authorName={currentUser?.name ?? ''} authorColor={currentUser?.avatarColor ?? '#059669'}
           />
           {valid && (

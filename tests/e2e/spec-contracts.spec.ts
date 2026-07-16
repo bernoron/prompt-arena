@@ -100,6 +100,60 @@ test.describe('PromptArena spec contracts', () => {
     expect(mismatchRes.status()).toBe(403);
   });
 
+  test('BAC-02-008 / AC-02-013: users can create a category on the fly, duplicates are rejected (CR-004)', async ({ request }) => {
+    // Creating a category requires a signed-in session — unlike the admin
+    // endpoint it does NOT require an admin session, but it does require *a*
+    // user. Checked first, before this context's cookie jar picks up a
+    // session from createAndLoginUser() below.
+    const anonRes = await request.post('/api/categories', { data: { label: `Anon ${Date.now()}` } });
+    expect(anonRes.status()).toBe(401);
+
+    const user = await createAndLoginUser(request);
+    const cookie = user.cookie;
+
+    const label = `Custom Category ${Date.now()}`;
+    const createRes = await request.post('/api/categories', {
+      headers: { Cookie: cookie },
+      data: { label },
+    });
+    expect(createRes.status()).toBe(201);
+    const category = await createRes.json() as { slug: string; label: string; icon: string; color: string };
+    expect(category.label).toBe(label);
+    expect(category.slug).toMatch(/^[a-z0-9-]+$/);
+
+    // Visible immediately (cache invalidated) in the list every filter/submit UI reads from.
+    const listRes = await request.get('/api/categories');
+    const categories = await listRes.json() as Array<{ slug: string }>;
+    expect(categories.some((c) => c.slug === category.slug)).toBe(true);
+
+    // Edge case: the same label (case-insensitive) is rejected as a duplicate slug.
+    const dupRes = await request.post('/api/categories', {
+      headers: { Cookie: cookie },
+      data: { label: label.toUpperCase() },
+    });
+    expect(dupRes.status()).toBe(409);
+
+    // A prompt submitted with the new category is filterable by it, exactly
+    // like an admin-defined category.
+    const title = `Category Prompt ${Date.now()}`;
+    const promptRes = await request.post('/api/prompts', {
+      headers: { Cookie: cookie },
+      data: {
+        title, titleEn: title,
+        content: 'Prompt content to verify the new category end-to-end.',
+        contentEn: 'Prompt content to verify the new category end-to-end.',
+        category: category.slug,
+        difficulty: 'Einstieg',
+      },
+    });
+    expect(promptRes.status()).toBe(201);
+
+    const filteredRes = await request.get(`/api/prompts?category=${category.slug}`);
+    expect(filteredRes.status()).toBe(200);
+    const filtered = await filteredRes.json() as { items: Array<{ title: string }> };
+    expect(filtered.items.some((p) => p.title === title)).toBe(true);
+  });
+
   test('BAC-02/03/05/06: authenticated users can submit, vote, favorite, and record usage', async ({ request }) => {
     const user = await createAndLoginUser(request);
     const cookie = user.cookie;

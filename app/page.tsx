@@ -2,8 +2,8 @@ import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { getSessionUser } from '@/lib/session';
 import { getTopPrompts } from '@/lib/services/prompt-service';
-import { CATEGORY_CONFIG } from '@/lib/constants';
-import type { Category } from '@/lib/types';
+import { listCategories } from '@/lib/services/category-service';
+import { CATEGORY_COLOR_CLASSES, CATEGORY_FALLBACK_COLOR_CLASSES } from '@/lib/constants';
 
 const FEATURES = [
   { icon: '📚', title: 'Prompt-Bibliothek', text: 'Durchsuche geprüfte Prompts deiner Kolleg:innen – nach Kategorie, Schwierigkeit oder Beliebtheit.' },
@@ -26,7 +26,7 @@ export default async function LandingPage() {
   const user = await getSessionUser();
   if (user) redirect('/dashboard');
 
-  const topPrompts = await getTopPrompts(3);
+  const [topPrompts, categories] = await Promise.all([getTopPrompts(3), listCategories()]);
 
   return (
     <div
@@ -90,12 +90,13 @@ export default async function LandingPage() {
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
             {topPrompts.map((p) => {
-              const cfg = CATEGORY_CONFIG[p.category as Category];
+              const info = categories.find((c) => c.slug === p.category);
+              const colors = (info && CATEGORY_COLOR_CLASSES[info.color]) ?? CATEGORY_FALLBACK_COLOR_CLASSES;
               return (
                 <div key={p.id} className="bg-white rounded-2xl shadow-xl p-5 text-left">
                   <div className="flex items-center justify-between mb-3">
-                    <span className={`inline-flex items-center gap-1 rounded-full font-semibold border text-xs px-2.5 py-1 ${cfg?.bg ?? 'bg-gray-50'} ${cfg?.text ?? 'text-gray-700'} ${cfg?.border ?? 'border-gray-200'}`}>
-                      {cfg?.icon} {p.category}
+                    <span className={`inline-flex items-center gap-1 rounded-full font-semibold border text-xs px-2.5 py-1 ${colors.bg} ${colors.text} ${colors.border}`}>
+                      {info?.icon ?? '•'} {info?.label ?? p.category}
                     </span>
                     <span className="text-xs font-bold text-amber-500">{p.usageCount}× genutzt</span>
                   </div>

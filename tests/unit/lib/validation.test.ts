@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { CreateUserSchema, CreatePromptSchema, VoteSchema, UsageSchema } from '../../../lib/validation';
+import { CreateUserSchema, CreatePromptSchema, VoteSchema, UsageSchema, CreateCategorySchema } from '../../../lib/validation';
 
 describe('CreateUserSchema', () => {
   it('accepts valid input', () => {
@@ -50,4 +50,19 @@ describe('VoteSchema', () => {
 describe('UsageSchema', () => {
   it('accepts valid promptId', () => expect(UsageSchema.safeParse({ promptId: 1 }).success).toBe(true));
   it('rejects missing promptId', () => expect(UsageSchema.safeParse({}).success).toBe(false));
+});
+
+describe('CreateCategorySchema', () => {
+  it('accepts a valid label', () => {
+    expect(CreateCategorySchema.safeParse({ label: 'Coding' }).success).toBe(true);
+  });
+  it('rejects an empty label', () => {
+    expect(CreateCategorySchema.safeParse({ label: '' }).success).toBe(false);
+  });
+  it('rejects a label longer than 60 characters', () => {
+    expect(CreateCategorySchema.safeParse({ label: 'a'.repeat(61) }).success).toBe(false);
+  });
+  it('rejects a missing label', () => {
+    expect(CreateCategorySchema.safeParse({}).success).toBe(false);
+  });
 });

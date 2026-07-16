@@ -46,6 +46,7 @@
 - [x] **AC-07-009**: `GET /api/admin/categories` listet alle Kategorien; `POST /api/admin/categories` erstellt eine neue Kategorie mit `slug`, `label`, `icon`, `color`, `order`; beide Routen durch Admin-Middleware geschützt.
   - **Referenz**: BAC-07-004
   - **Testbar durch**: E2E
+  - **Hinweis (CR-004)**: Seit CR-004 können Kategorien zusätzlich von normalen Nutzern über den separaten, nicht-admin-geschützten Endpoint `POST /api/categories` entstehen (siehe `specs/technical/02-prompt-library.md` AC-02-013). Diese Admin-Route bleibt unverändert bestehen und ist weiterhin der Weg für Admins, Kategorien direkt anzulegen sowie nutzer-erstellte Kategorien zu pflegen.
 
 - [x] **AC-07-010**: `PATCH /api/admin/categories/[id]` aktualisiert eine Kategorie; `DELETE /api/admin/categories/[id]` löscht sie nur wenn keine Prompts darauf referenzieren (sonst 409); beide durch Admin-Middleware geschützt.
   - **Referenz**: BAC-07-004

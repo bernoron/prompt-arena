@@ -2,10 +2,10 @@
 
 ## Metadaten
 - **Status**: `approved`
-- **Version**: 1.0
+- **Version**: 1.1
 - **Feature-Nr**: 02
 - **Product Owner**: PromptArena Team
-- **Letzte Änderung**: 2026-04-22
+- **Letzte Änderung**: 2026-07-16
 - **Technische Spec**: `specs/technical/02-prompt-library.md`
 
 ---
@@ -67,6 +67,10 @@ Das Kernstück von PromptArena ist die Prompt-Bibliothek: Nutzer teilen hier ihr
   - **Messgrösse**: Nach dem Markieren steigt der Nutzungszähler des Prompts; der Autor erhält sichtbar +5 Punkte.
   - **Geschäftsregel**: Der „Benutzt"-Button kann mehrfach geklickt werden — jeder Klick gilt als neue Nutzung und vergibt erneut Punkte an den Autor. Ein Nutzer kann denselben Prompt mehrfach als benutzt markieren.
 
+- [~] **BAC-02-008**: Ein Nutzer kann beim Einreichen eines Prompts eine neue Kategorie erstellen, falls keine bestehende passt (CR-004).
+  - **Messgrösse**: Die neue Kategorie ist unmittelbar nach der Einreichung in Filter, Suche und beim erneuten Einreichen als Vorschlag verfügbar.
+  - **Geschäftsregel**: Das Kategoriefeld ist ein freies Eingabefeld mit Live-Vorschlägen bestehender Kategorien; passt kein Vorschlag, wird beim Absenden automatisch eine neue Kategorie angelegt und sofort veröffentlicht (keine Admin-Vorabprüfung). Der Admin kann nutzer-erstellte Kategorien wie gewohnt umbenennen oder löschen (BAC-07-004).
+
 ---
 
 ## Nicht im Scope
@@ -74,7 +78,7 @@ Das Kernstück von PromptArena ist die Prompt-Bibliothek: Nutzer teilen hier ihr
 - Direkte Ausführung von Prompts in einem KI-Modell innerhalb der App
 - Versionierung von Prompts (Bearbeitungshistorie)
 - Kommentarfunktion zu Prompts
-- Kategorien oder Schwierigkeitsgrade frei definieren (keine offenen Freitextfelder)
+- Schwierigkeitsgrade frei definieren (bleiben fest vorgegeben, keine offenen Freitextfelder) — Kategorien sind seit CR-004 davon ausgenommen (siehe BAC-02-008)
 - Automatische Übersetzung der Prompts (englische Version wird manuell eingegeben)
 - Prompt-Duplikat-Erkennung
 
@@ -114,6 +118,7 @@ Das Kernstück von PromptArena ist die Prompt-Bibliothek: Nutzer teilen hier ihr
 | Version | Datum | Änderung | Genehmigt von |
 |---------|-------|----------|---------------|
 | 1.0 | 2026-04-22 | Erstversion | PromptArena Team |
+| 1.1 | 2026-07-16 | CR-004: BAC-02-008 (Nutzer erstellen Kategorien), „Nicht im Scope" präzisiert | bernoron |
 
 ---
 

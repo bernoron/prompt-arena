@@ -87,6 +87,18 @@ export const CreatePromptSchema = z.object({
   challengeId: PositiveInt.optional(),
 });
 
+// ─── Categories ───────────────────────────────────────────────────────────────
+
+/**
+ * POST /api/categories – a signed-in user proposes a new category (CR-004,
+ * AC-02-013). Only the display label is user-supplied; slug/icon/colour are
+ * derived server-side in lib/services/category-service.ts.
+ */
+// @spec AC-02-013
+export const CreateCategorySchema = z.object({
+  label: z.string().trim().min(1).max(60),
+});
+
 // ─── Votes ────────────────────────────────────────────────────────────────────
 
 /**

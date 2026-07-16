@@ -486,6 +486,7 @@ API-ROUTEN (app/api/)
 - POST /api/auth/password-reset/request
 - POST /api/auth/register
 - GET /api/categories
+- POST /api/categories
 - GET /api/challenges
 - GET /api/favorites
 - POST /api/favorites
@@ -634,4 +635,4 @@ SETUP-REIHENFOLGE
 
 
 ---
-*Automatisch generiert am 15.07.2026, 21:22 · [Quellcode](https://github.com/your-org/prompt-arena)*
+*Automatisch generiert am 16.07.2026, 22:26 · [Quellcode](https://github.com/your-org/prompt-arena)*

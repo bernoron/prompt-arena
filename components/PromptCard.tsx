@@ -2,7 +2,8 @@
 
 import Link from 'next/link';
 import type { PromptWithDetails, Category } from '@/lib/types';
-import { CATEGORY_CONFIG, getRarity, RARITY_CONFIG } from '@/lib/constants';
+import { CATEGORY_COLOR_CLASSES, CATEGORY_FALLBACK_COLOR_CLASSES, getRarity, RARITY_CONFIG } from '@/lib/constants';
+import { useCategories } from '@/hooks/useCategories';
 import CategoryBadge from './CategoryBadge';
 import DifficultyBadge from './DifficultyBadge';
 
@@ -24,7 +25,9 @@ function StarRating({ rating, count }: { rating: number; count: number }) {
 
 // @spec AC-02-008, AC-05-005
 export default function PromptCard({ prompt, onClick }: Props) {
-  const accent = (CATEGORY_CONFIG[prompt.category as Category] as { accentBorder?: string })?.accentBorder ?? 'border-t-slate-300';
+  const categories = useCategories();
+  const categoryInfo = categories.find((c) => c.slug === prompt.category);
+  const accent = (categoryInfo && CATEGORY_COLOR_CLASSES[categoryInfo.color])?.accentBorder ?? CATEGORY_FALLBACK_COLOR_CLASSES.accentBorder;
   const rarity = getRarity(prompt.usageCount);
   const rarityConf = RARITY_CONFIG[rarity];
 

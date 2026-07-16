@@ -2,10 +2,10 @@
 
 ## Metadaten
 - **Status**: `approved`
-- **Version**: 1.0
+- **Version**: 1.1
 - **Feature-Nr**: 02
-- **Abgeleitet von**: `specs/business/02-prompt-library.md` v1.0
-- **Letzte Änderung**: 2026-04-22
+- **Abgeleitet von**: `specs/business/02-prompt-library.md` v1.1
+- **Letzte Änderung**: 2026-07-16
 
 ---
 
@@ -58,6 +58,14 @@
 - [x] **AC-02-012**: Die `/library`-Seite rendert alle Prompts mit Filter nach Kategorie, Schwierigkeitsgrad, Volltextsuche und Sortierung; unterstützt Cursor-basierte Pagination; öffnet `PromptModal` bei Klick auf Card.
   - **Referenz**: BAC-02-002, BAC-02-003, BAC-02-004, BAC-02-005
   - **Testbar durch**: E2E, Manual
+
+- [x] **AC-02-014**: Das Submit-Formular (`/submit`) zeigt das Kategoriefeld als Combobox: Freitexteingabe mit Live-Vorschlägen der bestehenden Kategorien (clientseitig gefiltert aus `GET /api/categories`, case-insensitiv). Wählt der Nutzer einen Vorschlag, wird dessen `slug` übernommen; passt kein Vorschlag, wird der eingetippte Text beim Absenden als neue Kategorie behandelt. `CategoryBadge`/`PromptCard` lesen Icon/Farbe aus `PromptCategoryInfo.icon`/`.color` statt aus dem statischen `CATEGORY_CONFIG` (Voraussetzung, damit nutzer-erstellte Kategorien korrekt dargestellt werden). *(CR-004)*
+  - **Referenz**: BAC-02-008
+  - **Testbar durch**: E2E, Manual
+
+- [x] **AC-02-013**: `POST /api/categories` erstellt eine neue Kategorie für **authentifizierte Nutzer** (Session-Check, kein Admin nötig) mit `label` als einzigem Pflichtfeld; `slug` wird serverseitig aus `label` abgeleitet (Slugify) und gegen bestehende Slugs case-insensitiv dedupliziert (409 bei Kollision); `icon`/`color` erhalten einen Default bzw. werden Round-Robin vergeben; `order` = aktuelles Maximum + 1; rate-limited via `writeLimiter`; invalidiert den `categories:all`-Cache; gibt Status 201 mit dem `PromptCategoryInfo`-Objekt zurück. *(CR-004)*
+  - **Referenz**: BAC-02-008
+  - **Testbar durch**: E2E, Unit
 
 ---
 
@@ -123,6 +131,31 @@
 |------|-------|
 | 400 | Zod-Validierungsfehler |
 | 404 | `authorId` existiert nicht |
+
+---
+
+### POST /api/categories *(CR-004)*
+**Auth:** angemeldeter Nutzer (Session-Cookie), kein Admin erforderlich
+
+**Body:**
+| Feld | Typ | Pflicht | Beschreibung |
+|------|-----|---------|-------------|
+| `label` | string | ja | Min 1, max 60 Zeichen — Anzeigename der Kategorie |
+
+**Response `201`:**
+```json
+{ "id": 5, "slug": "coding", "label": "Coding", "icon": "🏷️", "color": "slate", "order": 4 }
+```
+
+**Seiteneffekt:** Cache-Invalidierung von `categories:all`
+
+**Fehler:**
+| Code | Grund |
+|------|-------|
+| 400 | Zod-Validierungsfehler |
+| 401 | Nicht angemeldet |
+| 409 | Slug bereits vergeben (case-insensitive Dedupe) |
+| 429 | Rate-Limit überschritten |
 
 ---
 
@@ -226,6 +259,11 @@ const UsageSchema = z.object({
   promptId: z.number().int().positive(),
   userId: z.number().int().positive(),
 });
+
+// CR-004
+const CreateCategorySchema = z.object({
+  label: z.string().trim().min(1).max(60),
+});
 ```
 
 ---
@@ -276,3 +314,4 @@ const UsageSchema = z.object({
 | Version | Datum | CR | Änderung |
 |---------|-------|----|---------|
 | 1.0 | 2026-04-22 | — | Erstversion |
+| 1.1 | 2026-07-16 | CR-004 | AC-02-013 (POST /api/categories, Nutzer-Endpoint), AC-02-014 (Kategorie-Combobox im Submit-Formular) |

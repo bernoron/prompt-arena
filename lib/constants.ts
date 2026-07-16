@@ -20,29 +20,51 @@ export const AVATAR_COLORS = [
 // ─── Prompts ─────────────────────────────────────────────────────────────────
 
 /**
- * Visual configuration for each prompt category.
+ * Tailwind class set for one category colour. Icon and label come from the
+ * `PromptCategory` DB row (lib/services/category-service.ts) — this map only
+ * covers the styling, keyed by `PromptCategory.color`.
  *
- * Each entry contains:
- * - `icon`         – emoji shown in badges and filter buttons
- * - `bg`           – Tailwind background class for the badge
- * - `text`         – Tailwind text-colour class
- * - `border`       – Tailwind border class
- * - `accentBorder` – top-border colour used on PromptCards
+ * CR-004: categories are no longer a hardcoded 4-entry list, so this replaced
+ * the old `CATEGORY_CONFIG` (which was keyed by category name and couldn't
+ * cover categories created at runtime).
  */
-export interface CategoryVisualConfig {
-  icon: string;
+export interface CategoryColorClasses {
   bg: string;
   text: string;
   border: string;
   accentBorder: string;
 }
 
-export const CATEGORY_CONFIG: Record<string, CategoryVisualConfig> = {
-  Writing:  { icon: '✍️', bg: 'bg-teal-50',   text: 'text-teal-700',   border: 'border-teal-200',   accentBorder: 'border-t-teal-400'   },
-  Email:    { icon: '📧', bg: 'bg-indigo-50', text: 'text-indigo-700', border: 'border-indigo-200', accentBorder: 'border-t-indigo-400' },
-  Analysis: { icon: '📊', bg: 'bg-orange-50', text: 'text-orange-700', border: 'border-orange-200', accentBorder: 'border-t-orange-400' },
-  Excel:    { icon: '📈', bg: 'bg-green-50',  text: 'text-green-700',  border: 'border-green-200',  accentBorder: 'border-t-green-400'  },
+// @spec AC-02-014
+export const CATEGORY_COLOR_CLASSES: Record<string, CategoryColorClasses> = {
+  teal:   { bg: 'bg-teal-50',   text: 'text-teal-700',   border: 'border-teal-200',   accentBorder: 'border-t-teal-400'   },
+  indigo: { bg: 'bg-indigo-50', text: 'text-indigo-700', border: 'border-indigo-200', accentBorder: 'border-t-indigo-400' },
+  orange: { bg: 'bg-orange-50', text: 'text-orange-700', border: 'border-orange-200', accentBorder: 'border-t-orange-400' },
+  green:  { bg: 'bg-green-50',  text: 'text-green-700',  border: 'border-green-200',  accentBorder: 'border-t-green-400'  },
+  purple: { bg: 'bg-purple-50', text: 'text-purple-700', border: 'border-purple-200', accentBorder: 'border-t-purple-400' },
+  pink:   { bg: 'bg-pink-50',   text: 'text-pink-700',   border: 'border-pink-200',   accentBorder: 'border-t-pink-400'   },
+  amber:  { bg: 'bg-amber-50',  text: 'text-amber-700',  border: 'border-amber-200',  accentBorder: 'border-t-amber-400'  },
+  cyan:   { bg: 'bg-cyan-50',   text: 'text-cyan-700',   border: 'border-cyan-200',   accentBorder: 'border-t-cyan-400'   },
 };
+
+/** Used when a category's colour isn't in {@link CATEGORY_COLOR_CLASSES} (defensive fallback only). */
+// @spec AC-02-014
+export const CATEGORY_FALLBACK_COLOR_CLASSES: CategoryColorClasses = {
+  bg: 'bg-gray-50', text: 'text-gray-700', border: 'border-gray-200', accentBorder: 'border-t-slate-300',
+};
+
+/**
+ * Defaults applied when a user creates a category on the fly (CR-004,
+ * AC-02-013) — regular users only supply a label, not icon/colour.
+ */
+// @spec AC-02-013
+export const CATEGORY_DEFAULT_ICON = '🏷️';
+
+/** Tailwind colour names cycled round-robin by display order for user-created categories. */
+// @spec AC-02-013
+export const CATEGORY_COLOR_PALETTE = [
+  'teal', 'indigo', 'orange', 'green', 'purple', 'pink', 'amber', 'cyan',
+] as const;
 
 // ─── Rarity ──────────────────────────────────────────────────────────────────
 
