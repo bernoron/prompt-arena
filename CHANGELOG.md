@@ -1,5 +1,21 @@
 # Changelog
 
+## [8.4.0](https://github.com/bernoron/prompt-arena/compare/v8.3.0...v8.4.0) (2026-07-16)
+
+
+### Features
+
+* **account:** self-service account deletion & email password reset (CR-002, CR-003) ([9fc99f5](https://github.com/bernoron/prompt-arena/commit/9fc99f526688a35803e2ba0ad5f0cf4f4c078ae0))
+* **auth:** deliver password-reset e-mails via Resend (log fallback) ([afbb835](https://github.com/bernoron/prompt-arena/commit/afbb835bce5b9385389e68a60da691b47fcd090e))
+* **learn:** modernize model-choice module & add non-destructive content update path ([ae7f1a7](https://github.com/bernoron/prompt-arena/commit/ae7f1a7de6a5827aab53fc8ee96986a8f62ce714))
+* **library:** let users create prompt categories on the fly (CR-004) ([fd3ab83](https://github.com/bernoron/prompt-arena/commit/fd3ab83d2c390c7fcf72b21c1ce95b0e8c4a7ea3))
+
+
+### Bug Fixes
+
+* **dev:** allow 127.0.0.1 as a dev origin so local e2e/push don't hang ([57fc11f](https://github.com/bernoron/prompt-arena/commit/57fc11f93b6b8e85826895eac9c57905ce621d6e))
+* **docker:** copy scripts/update-learning-content.ts into the runtime image ([aa964c2](https://github.com/bernoron/prompt-arena/commit/aa964c249a89ddc69a0b0e86a37ea58db2e56889))
+
 ## [8.3.0](https://github.com/bernoron/prompt-arena/compare/v8.2.2...v8.3.0) (2026-07-07)
 
 
