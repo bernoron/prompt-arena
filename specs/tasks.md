@@ -199,13 +199,20 @@
 
 ---
 
-## Feature 13 – Erweiterungen (CR-005 — implementiert)
+## Feature 13 – Erweiterungen (CR-005, CR-006 — implementiert)
 
 ### CR-005 – Startseite zeigt die 10 zuletzt gebauten Features ✅
 - [x] AC-13-008: `lib/services/changelog-service.ts` — `getRecentFeatures()` + `parseChangelogFeatures()` (liest `CHANGELOG.md`, keine Migration)
 - [x] AC-13-008: Unit-Tests (`parseChangelogFeatures`: Scope/kein Scope, Limit, leere Features-Sektion)
 - [x] AC-13-009: "Neuigkeiten"-Abschnitt in `app/page.tsx` inkl. Leer-Zustand
 - [x] AC-13-009: E2E-Test (Neuigkeiten-Abschnitt sichtbar für anonyme Besucher:innen)
+
+### CR-006 – Neuigkeiten kuratiert statt aus CHANGELOG.md ✅
+- [x] AC-13-008: `lib/services/changelog-service.ts` + Unit-Test entfernt (kein CHANGELOG.md-Parsing mehr)
+- [x] AC-13-008: `RECENT_FEATURES`-Konstante in `lib/constants.ts` (kuratiert, Deutsch, ≤ 10 Einträge)
+- [x] AC-13-008: Unit-Test für `RECENT_FEATURES`-Invarianten (`tests/unit/lib/constants.test.ts`)
+- [x] AC-13-009: `app/page.tsx` liest `RECENT_FEATURES` statt `getRecentFeatures()`, kein Scope-Badge mehr
+- [x] AC-13-009: E2E-Test angepasst (prüft kuratierten Titel statt CHANGELOG-Inhalt)
 
 ---
 

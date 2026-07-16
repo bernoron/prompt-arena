@@ -54,9 +54,11 @@ sofort ihr Dashboard statt der Werbeseite.
 **BAC-13-005** Gibt es noch keine genutzten Prompts in der Bibliothek, zeigt die Startseite
 trotzdem eine funktionierende, sinnvolle Seite (ohne leere oder kaputte Kachel-Reihe).
 
-**BAC-13-006** *(CR-005)* Am unteren Ende der Startseite sehen auch anonyme Besucher:innen einen
-"Neuigkeiten"-Bereich mit den 10 zuletzt gebauten Features, damit sichtbar wird, dass das Produkt
-laufend weiterentwickelt wird.
+**BAC-13-006** *(CR-005, präzisiert durch CR-006)* Am unteren Ende der Startseite sehen auch
+anonyme Besucher:innen einen "Neuigkeiten"-Bereich mit bis zu 10 kuratierten, auf Deutsch
+geschriebenen Ankündigungen echter, für Nutzer:innen sichtbarer Features — keine internen
+technischen Änderungen (Refactorings, Migrationen, Security-Fixes) und keine automatisch aus
+Commit-Messages generierten Texte.
 
 **BAC-13-007** *(CR-005)* Gibt es (noch) keine Einträge, wird der Neuigkeiten-Bereich
 ausgeblendet statt leer angezeigt — analog zu BAC-13-005.
@@ -76,7 +78,7 @@ ausgeblendet statt leer angezeigt — analog zu BAC-13-005.
 ## Status
 
 - **Status**: `approved`
-- **Version**: 1.1
+- **Version**: 1.2
 - **Datum**: 2026-07-16
 - **PO**: bernoron
 - **Technische Spec**: `specs/technical/13-landing-page.md`
@@ -89,3 +91,4 @@ ausgeblendet statt leer angezeigt — analog zu BAC-13-005.
 |---------|-------|----------|---------------|
 | 1.0 | 2026-07-06 | Erstversion | bernoron |
 | 1.1 | 2026-07-16 | CR-005: BAC-13-006/007 (Neuigkeiten-Bereich mit den 10 zuletzt gebauten Features) | bernoron |
+| 1.2 | 2026-07-16 | CR-006: BAC-13-006 präzisiert — kuratierte, deutsche Texte statt automatisch aus CHANGELOG.md | bernoron |
