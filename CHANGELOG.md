@@ -1,5 +1,12 @@
 # Changelog
 
+## [8.5.0](https://github.com/bernoron/prompt-arena/compare/v8.4.0...v8.5.0) (2026-07-16)
+
+
+### Features
+
+* **landing:** show the 10 most recently shipped features (CR-005) ([a846421](https://github.com/bernoron/prompt-arena/commit/a84642126265b5baac6ada21c7b5a4b7aaf64b82))
+
 ## [8.4.0](https://github.com/bernoron/prompt-arena/compare/v8.3.0...v8.4.0) (2026-07-16)
 
 
