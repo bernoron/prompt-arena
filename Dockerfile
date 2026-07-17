@@ -78,6 +78,13 @@ COPY --from=builder /prisma-cli/node_modules    ./node_modules
 # for the one-off `fly ssh console -C "npx tsx prisma/seed.ts"` seeding step.
 COPY --from=builder /app/lib                    ./lib
 
+# lib/services/feature-announcements-service.ts reads these at request time
+# (landing page "Neuigkeiten" section, CR-007) via a dynamic readdir() — that
+# can't be picked up by Next's standalone-output file tracing (which only
+# resolves statically-analysable imports/literal fs paths), so the directory
+# has to be copied explicitly.
+COPY --from=builder /app/specs                  ./specs
+
 # scripts/update-learning-content.ts is the non-destructive way to refresh
 # learning-path content on a live deployment (see DEPLOYMENT.md §4) via
 # `fly ssh console -C "npx tsx scripts/update-learning-content.ts"`. It only

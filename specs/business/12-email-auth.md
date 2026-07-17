@@ -56,3 +56,4 @@ Bestehende Nutzerkonten sind von dieser Änderung nicht betroffen. Das nun ungen
 - **Datum**: 2026-06-28
 - **PO**: bernoron
 - **Technische Spec**: `specs/technical/12-email-auth.md`
+- **Nutzer-Ankündigung**: 2026-06-28 | Anmeldung per E-Mail | Login läuft jetzt über deine E-Mail-Adresse statt über einen Benutzernamen.

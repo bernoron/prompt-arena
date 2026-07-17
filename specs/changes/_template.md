@@ -9,6 +9,7 @@
 - **Erstellt von**: [Name / Rolle]
 - **Erstellt am**: YYYY-MM-DD
 - **Fällig bis**: YYYY-MM-DD | keine Frist
+- **Nutzer-Ankündigung** (optional, nur bei echten User-Features — sonst Zeile weglassen): YYYY-MM-DD | Kurzer Titel | Ein erklärender Satz für Besucher:innen (erscheint auf der Startseite, `lib/services/feature-announcements-service.ts`, CR-007)
 
 ---
 

@@ -111,6 +111,8 @@ Nachdem die ersten 5 Lernmodule die Grundlagen des Promptings abdecken, brauchen
 | 1.0 | 2026-04-22 | Erstversion | PromptArena Team |
 | 1.0 | 2026-07-15 | Modul "Das richtige Modell wählen" inhaltlich aufgefrischt (aktuelle Modell-Generationen, Reasoning-/Denkmodi, agentische Coding-Tools) gemäss R1-Risikomitigation — keine Struktur-/AC-Änderung, daher kein CR. | PromptArena Team |
 
+**Nutzer-Ankündigung**: 2026-07-15 | Neues Lernmodul: Das passende KI-Modell wählen | Eine neue Lektion im Lernpfad hilft dir, für jede Aufgabe das richtige Modell auszuwählen.
+
 ---
 
 ## Freigabe

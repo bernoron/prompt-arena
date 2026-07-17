@@ -3,7 +3,8 @@ import { redirect } from 'next/navigation';
 import { getSessionUser } from '@/lib/session';
 import { getTopPrompts } from '@/lib/services/prompt-service';
 import { listCategories } from '@/lib/services/category-service';
-import { CATEGORY_COLOR_CLASSES, CATEGORY_FALLBACK_COLOR_CLASSES, RECENT_FEATURES } from '@/lib/constants';
+import { getRecentFeatureAnnouncements } from '@/lib/services/feature-announcements-service';
+import { CATEGORY_COLOR_CLASSES, CATEGORY_FALLBACK_COLOR_CLASSES } from '@/lib/constants';
 
 const FEATURES = [
   { icon: '📚', title: 'Prompt-Bibliothek', text: 'Durchsuche geprüfte Prompts deiner Kolleg:innen – nach Kategorie, Schwierigkeit oder Beliebtheit.' },
@@ -26,8 +27,11 @@ export default async function LandingPage() {
   const user = await getSessionUser();
   if (user) redirect('/dashboard');
 
-  const [topPrompts, categories] = await Promise.all([getTopPrompts(3), listCategories()]);
-  const recentFeatures = RECENT_FEATURES.slice(0, 10);
+  const [topPrompts, categories, recentFeatures] = await Promise.all([
+    getTopPrompts(3),
+    listCategories(),
+    getRecentFeatureAnnouncements(10),
+  ]);
 
   return (
     <div
@@ -113,7 +117,7 @@ export default async function LandingPage() {
         </div>
       )}
 
-      {/* Curated recent features (CR-006) */}
+      {/* Recent features, sourced from the specs themselves (CR-007) */}
       {recentFeatures.length > 0 && (
         <div className="max-w-3xl mx-auto px-4 sm:px-6 pb-16">
           <h2 className="text-white text-xl sm:text-2xl font-extrabold text-center mb-1">
@@ -126,16 +130,13 @@ export default async function LandingPage() {
             {recentFeatures.map((f) => (
               <li
                 key={f.title}
-                className="flex items-start gap-3 bg-white/5 border border-white/10 rounded-xl px-4 py-3"
+                className="bg-white/5 border border-white/10 rounded-xl px-4 py-3"
               >
-                <span className="text-xl leading-none pt-0.5">{f.icon}</span>
-                <div>
-                  <div className="flex items-baseline gap-2">
-                    <h3 className="text-white font-bold text-sm">{f.title}</h3>
-                    <span className="text-slate-500 text-xs font-mono whitespace-nowrap">{f.date}</span>
-                  </div>
-                  <p className="text-slate-400 text-sm leading-snug mt-0.5">{f.description}</p>
+                <div className="flex items-baseline gap-2">
+                  <h3 className="text-white font-bold text-sm">{f.title}</h3>
+                  <span className="text-slate-500 text-xs font-mono whitespace-nowrap">{f.date}</span>
                 </div>
+                <p className="text-slate-400 text-sm leading-snug mt-0.5">{f.description}</p>
               </li>
             ))}
           </ul>

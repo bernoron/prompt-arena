@@ -199,7 +199,7 @@
 
 ---
 
-## Feature 13 – Erweiterungen (CR-005, CR-006 — implementiert)
+## Feature 13 – Erweiterungen (CR-005, CR-006, CR-007 — implementiert)
 
 ### CR-005 – Startseite zeigt die 10 zuletzt gebauten Features ✅
 - [x] AC-13-008: `lib/services/changelog-service.ts` — `getRecentFeatures()` + `parseChangelogFeatures()` (liest `CHANGELOG.md`, keine Migration)
@@ -213,6 +213,15 @@
 - [x] AC-13-008: Unit-Test für `RECENT_FEATURES`-Invarianten (`tests/unit/lib/constants.test.ts`)
 - [x] AC-13-009: `app/page.tsx` liest `RECENT_FEATURES` statt `getRecentFeatures()`, kein Scope-Badge mehr
 - [x] AC-13-009: E2E-Test angepasst (prüft kuratierten Titel statt CHANGELOG-Inhalt)
+
+### CR-007 – Neuigkeiten aus den Specs statt aus einer Code-Konstante ✅
+- [x] AC-13-008: `lib/services/feature-announcements-service.ts` — `getRecentFeatureAnnouncements()` + `parseAnnouncement()` (liest `specs/business/*.md` + `specs/changes/CR-*.md`, gecacht)
+- [x] AC-13-008: `Dockerfile` — `COPY specs/` ins Runtime-Image, lokal mit `docker build` verifiziert
+- [x] AC-13-008: `**Nutzer-Ankündigung**`-Feld in 9 bestehenden Specs/CRs nachgetragen + in beiden Templates dokumentiert
+- [x] AC-13-008: `RECENT_FEATURES` aus `lib/constants.ts` entfernt
+- [x] AC-13-008: Unit-Test für `parseAnnouncement()` (`tests/unit/lib/feature-announcements-service.test.ts`)
+- [x] AC-13-009: `app/page.tsx` auf den neuen async Service umgestellt
+- [x] AC-13-009: E2E-Test verifiziert weiterhin einen konkreten Eintrag (jetzt aus CR-004s Spec-Feld)
 
 ---
 

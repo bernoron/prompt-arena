@@ -93,6 +93,12 @@ Im Admin-Panel gibt es zwei neue Bereiche:
 
 ---
 
+## Status
+
+**Nutzer-Ankündigung**: 2026-06-28 | Feedback direkt in der App | Über den Feedback-Button kannst du jederzeit Bugs melden, Ideen einreichen oder Lob loswerden.
+
+---
+
 ## What's NOT in This Release?
 
 - Keine E-Mail-Benachrichtigung bei neuem Feedback

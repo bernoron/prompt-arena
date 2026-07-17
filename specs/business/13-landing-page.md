@@ -54,11 +54,13 @@ sofort ihr Dashboard statt der Werbeseite.
 **BAC-13-005** Gibt es noch keine genutzten Prompts in der Bibliothek, zeigt die Startseite
 trotzdem eine funktionierende, sinnvolle Seite (ohne leere oder kaputte Kachel-Reihe).
 
-**BAC-13-006** *(CR-005, präzisiert durch CR-006)* Am unteren Ende der Startseite sehen auch
-anonyme Besucher:innen einen "Neuigkeiten"-Bereich mit bis zu 10 kuratierten, auf Deutsch
-geschriebenen Ankündigungen echter, für Nutzer:innen sichtbarer Features — keine internen
-technischen Änderungen (Refactorings, Migrationen, Security-Fixes) und keine automatisch aus
-Commit-Messages generierten Texte.
+**BAC-13-006** *(CR-005, präzisiert durch CR-006 und CR-007)* Am unteren Ende der Startseite
+sehen auch anonyme Besucher:innen einen "Neuigkeiten"-Bereich mit bis zu 10 deutschen
+Ankündigungen echter, für Nutzer:innen sichtbarer Features — keine internen technischen
+Änderungen (Refactorings, Migrationen, Security-Fixes) und keine automatisch aus
+Commit-Messages generierten Texte. Jede Ankündigung stammt direkt aus der jeweiligen
+Feature-Spec bzw. dem Change Request (ein optionales „Nutzer-Ankündigung"-Feld) — keine separat
+gepflegte Liste.
 
 **BAC-13-007** *(CR-005)* Gibt es (noch) keine Einträge, wird der Neuigkeiten-Bereich
 ausgeblendet statt leer angezeigt — analog zu BAC-13-005.
@@ -78,10 +80,11 @@ ausgeblendet statt leer angezeigt — analog zu BAC-13-005.
 ## Status
 
 - **Status**: `approved`
-- **Version**: 1.2
-- **Datum**: 2026-07-16
+- **Version**: 1.3
+- **Datum**: 2026-07-17
 - **PO**: bernoron
 - **Technische Spec**: `specs/technical/13-landing-page.md`
+- **Nutzer-Ankündigung**: 2026-07-06 | Neue öffentliche Startseite | Auch ohne Login siehst du jetzt, was PromptArena kann – inklusive einer anonymisierten Auswahl beliebter Prompts.
 
 ---
 
@@ -92,3 +95,4 @@ ausgeblendet statt leer angezeigt — analog zu BAC-13-005.
 | 1.0 | 2026-07-06 | Erstversion | bernoron |
 | 1.1 | 2026-07-16 | CR-005: BAC-13-006/007 (Neuigkeiten-Bereich mit den 10 zuletzt gebauten Features) | bernoron |
 | 1.2 | 2026-07-16 | CR-006: BAC-13-006 präzisiert — kuratierte, deutsche Texte statt automatisch aus CHANGELOG.md | bernoron |
+| 1.3 | 2026-07-17 | CR-007: BAC-13-006 präzisiert — Ankündigungstexte kommen aus den Feature-Specs/CRs selbst statt aus einer separaten Code-Konstante | bernoron |

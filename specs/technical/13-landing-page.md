@@ -2,10 +2,10 @@
 
 ## Metadaten
 - **Status**: `approved`
-- **Version**: 1.2
+- **Version**: 1.3
 - **Feature-Nr**: 13
-- **Abgeleitet von**: `specs/business/13-landing-page.md` v1.2
-- **Letzte Änderung**: 2026-07-16
+- **Abgeleitet von**: `specs/business/13-landing-page.md` v1.3
+- **Letzte Änderung**: 2026-07-17
 
 ---
 
@@ -43,15 +43,15 @@
   - **Referenz**: BAC-13-005
   - **Testbar durch**: Manual
 
-- [x] **AC-13-008**: `lib/constants.ts` exportiert `RECENT_FEATURES` — eine kuratierte, von Hand gepflegte Liste (`{ date, icon, title, description }`, Deutsch, max. 10 Einträge, absteigend nach `date` sortiert). Kein Dateisystem-/DB-Zugriff mehr nötig. Entwickler ergänzen einen Eintrag im Code, wenn ein echtes, für Nutzer:innen sichtbares Feature geshippt wird — interne Refactorings/Migrationen/Security-Fixes gehören **nicht** in diese Liste. *(CR-006, ersetzt die CHANGELOG.md-Auswertung aus CR-005)*
+- [x] **AC-13-008**: `lib/services/feature-announcements-service.ts` exportiert `getRecentFeatureAnnouncements(limit)`. Datenquelle ist ein optionales `**Nutzer-Ankündigung**: <Datum> | <Titel> | <Text>`-Feld in `specs/business/*.md` und `specs/changes/CR-*.md` — die reine Funktion `parseAnnouncement(markdown)` extrahiert dieses Feld pro Datei (CRLF-sicher). Nur Specs/CRs, die das Feld explizit setzen, erscheinen — der Normalfall (interne Specs/CRs) hat kein Feld und bleibt unsichtbar. Ergebnis wird über `lib/cache.ts` (10 Min. TTL) gecacht. *(CR-007, ersetzt die Code-Konstante aus CR-006)*
   - **Referenz**: BAC-13-006
   - **Testbar durch**: Unit
 
-- [x] **AC-13-009**: `app/page.tsx` rendert unterhalb des Prompt-Showcase einen "Neuigkeiten"-Abschnitt mit den ersten 10 Einträgen aus `RECENT_FEATURES` (Icon, Titel, Datum, Beschreibung). Ist die Liste leer, wird der gesamte Abschnitt nicht gerendert (analog AC-13-007). *(CR-005, Rendering-Logik in CR-006 auf die neue Datenquelle umgestellt, kein Scope-Badge mehr)*
+- [x] **AC-13-009**: `app/page.tsx` rendert unterhalb des Prompt-Showcase einen "Neuigkeiten"-Abschnitt mit den ersten 10 Einträgen aus `getRecentFeatureAnnouncements(10)` (Titel, Datum, Beschreibung). Ist die Liste leer, wird der gesamte Abschnitt nicht gerendert (analog AC-13-007). *(CR-005, Datenquelle in CR-006 auf eine Code-Konstante, in CR-007 auf die Specs selbst umgestellt)*
   - **Referenz**: BAC-13-006, BAC-13-007
   - **Testbar durch**: E2E
 
-**CR-006-Historie:** CR-005 hatte diese Daten automatisch aus `CHANGELOG.md` (Release-Please-Commit-Messages) gezogen. Auf Produktion sichtbar wurde das als zu technisch/englisch bewertet (rohe Commit-Messages wie „add PointsLedger to close a vote-award race condition" neben echten Nutzer-Features) — CR-006 ersetzt die Datenquelle durch eine kuratierte, deutsche Konstante und macht damit die in CR-005 dokumentierte NFR-I18N-001-Ausnahme hinfällig: Alle Texte sind jetzt regulär deutsch, keine Ausnahme mehr nötig.
+**Historie:** CR-005 zog diese Daten automatisch aus `CHANGELOG.md` (Release-Please-Commit-Messages) — auf Produktion sichtbar wurde das als zu technisch/englisch bewertet. CR-006 ersetzte das durch eine kuratierte, deutsche Code-Konstante (`RECENT_FEATURES` in `lib/constants.ts`) — funktionierte, bedeutete aber doppelte Pflege (Feature-Beschreibung einmal in der Spec, einmal für die Startseite). CR-007 löst das auf: Die Spec selbst trägt jetzt optional die Ankündigungszeile, kein zweiter Ort mehr nötig. Die in CR-005 dokumentierte NFR-I18N-001-Ausnahme bleibt hinfällig — alle Texte sind regulär deutsch.
 
 ---
 
@@ -66,10 +66,22 @@ bestehenden Prompt-Detailseite.
 ## Datenmodell
 
 Keine Schema-Änderung. Nutzt das bestehende `Prompt`-Modell (`prisma/schema.prisma`)
-read-only. *(CR-006: Neuigkeiten-Bereich liest `RECENT_FEATURES` aus `lib/constants.ts` — eine
-Code-Konstante, kein DB-/Dateisystem-Zugriff.)*
+read-only. *(CR-007: Neuigkeiten-Bereich liest `specs/business/*.md` + `specs/changes/CR-*.md`
+als Dateien zur Laufzeit — kein DB-Zugriff, aber ein neuer Dateisystem-Zugriff, siehe
+„Docker-Image" unten.)*
 
 **Migrationen nötig:** nein
+
+### Docker-Image
+
+`Dockerfile` (Runtime-Stage) kopiert `specs/` explizit ins Image
+(`COPY --from=builder /app/specs ./specs`) — Next.js' Standalone-Output-Tracing erkennt nur
+statisch analysierbare Importe/literale Dateipfade, nicht das dynamische `readdir()` dieses
+Service. Ein lokaler `docker build` als Verifikation war in der Entwicklungs-Sandbox nicht
+möglich (Docker-Desktop-WSL2-Backend startete nicht); stattdessen statisch geprüft
+(`.dockerignore` schliesst `specs/` nicht aus, `WORKDIR`/`CMD` unverändert) und über eine
+sofortige `curl`-Kontrolle gegen die echte Produktions-URL direkt nach dem Deploy abgesichert
+(Fehlerfall ist ungefährlich: `[]` statt Crash, siehe `getRecentFeatureAnnouncements()`).
 
 ---
 
@@ -82,9 +94,8 @@ app/
 middleware.ts                   // isPublicPath('/')  (AC-13-001)
 
 lib/services/
-└── prompt-service.ts            // getTopPrompts()  (AC-13-005)
-
-lib/constants.ts                 // RECENT_FEATURES  (AC-13-008, CR-006)
+├── prompt-service.ts                    // getTopPrompts()  (AC-13-005)
+└── feature-announcements-service.ts     // getRecentFeatureAnnouncements(), parseAnnouncement()  (AC-13-008, CR-007)
 ```
 
 Kein neuer Client-Code — die Seite ist vollständig serverseitig gerendert, keine
@@ -104,7 +115,7 @@ Kein Nutzereingabe-Formular auf dieser Seite — keine neuen Zod-Schemas nötig.
 |--------|----------|
 | Zusätzliche DB-Queries pro Aufruf | 2 (`prisma.prompt.findMany` + `vote.groupBy` via `getRatingsMap`) |
 | Bundle Size Increase | ~0 KB (kein neuer Client-Code) |
-| *(CR-006)* Zusätzliche DB-/Dateisystem-Reads für Neuigkeiten-Abschnitt | 0 — `RECENT_FEATURES` ist eine Code-Konstante |
+| *(CR-007)* Zusätzliche Dateisystem-Reads pro Aufruf | 0 im Regelfall — `getRecentFeatureAnnouncements()` ist über `lib/cache.ts` für 10 Minuten gecacht, da sich Specs nur bei einem Deploy ändern |
 
 ---
 
@@ -123,15 +134,15 @@ Kein Nutzereingabe-Formular auf dieser Seite — keine neuen Zod-Schemas nötig.
   DB-gestützten Funktionen in `prompt-service.ts` (`listPrompts`, `getPromptById`, die
   ebenfalls keine Unit-Tests haben) wird sie ausschliesslich per E2E gegen die echte
   Test-DB abgedeckt.
-- [x] *(CR-006)* `tests/unit/lib/constants.test.ts` — `RECENT_FEATURES`: max. 10 Einträge,
-  absteigend nach `date` sortiert, jeder Eintrag hat nicht-leeres Icon/Titel/Beschreibung + gültiges
-  ISO-Datum, keine Commit-Message-Artefakte (Markdown-Links, `scope:`-Präfixe) in den Texten.
+- [x] *(CR-007)* `tests/unit/lib/feature-announcements-service.test.ts` — `parseAnnouncement()`:
+  extrahiert Datum/Titel/Text aus einer wohlgeformten Zeile, liefert `null` ohne Ankündigungszeile
+  (Normalfall), CRLF-sicher, trimmt Leerzeichen, nimmt die erste Zeile falls mehrere vorhanden sind.
 
 ### E2E-Tests (`tests/e2e/`)
 - [x] `tests/e2e/spec-contracts.spec.ts` Szenario „BAC-13 landing page": anonymer Aufruf von `/` liefert 200 (kein Redirect zu `/login`) und zeigt den CTA-Link zur Registrierung; ein eingeloggter Nutzer, der `/` aufruft, wird zu `/dashboard` weitergeleitet.
-- [x] *(CR-006)* Szenario „BAC-13-006/007 landing page": anonymer Aufruf von `/` zeigt den
-  "Neuigkeiten"-Abschnitt und einen konkreten kuratierten Titel aus `RECENT_FEATURES`
-  (Beleg, dass die Liste die deutsche, kuratierte Fassung ist, nicht CHANGELOG.md).
+- [x] *(CR-007)* Szenario „BAC-13-006/007 landing page": anonymer Aufruf von `/` zeigt den
+  "Neuigkeiten"-Abschnitt und einen konkreten Titel aus `specs/changes/CR-004-user-kategorien-erstellen.md`s
+  `Nutzer-Ankündigung`-Feld (Beleg, dass die Liste aus den Specs gelesen wird).
 
 ---
 
@@ -151,3 +162,4 @@ Kein Nutzereingabe-Formular auf dieser Seite — keine neuen Zod-Schemas nötig.
 | 1.0 | 2026-07-06 | — | Erstversion |
 | 1.1 | 2026-07-16 | CR-005 | AC-13-008/009: Neuigkeiten-Abschnitt aus `CHANGELOG.md` (dokumentierte NFR-I18N-001-Ausnahme) |
 | 1.2 | 2026-07-16 | CR-006 | AC-13-008/009: Datenquelle auf kuratierte `RECENT_FEATURES`-Konstante umgestellt, NFR-I18N-001-Ausnahme entfällt |
+| 1.3 | 2026-07-17 | CR-007 | AC-13-008/009: Datenquelle auf `Nutzer-Ankündigung`-Feld in Business-Specs/CRs umgestellt (Laufzeit-Parser), `RECENT_FEATURES`-Konstante entfernt, Dockerfile kopiert `specs/` neu ins Runtime-Image |

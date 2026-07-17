@@ -111,6 +111,8 @@ Viele Nutzer wissen nicht, wie sie KI-Werkzeuge effektiv einsetzen können — u
 | 1.0 | 2026-04-22 | Erstversion | PromptArena Team |
 | 1.0 | 2026-07-15 | Lerninhalte aktualisiert (aktuelle KI-Modell-Landschaft, agentische Workflows/Coding-Agenten, Werkzeugnutzung) gemäss R1-Risikomitigation — keine Struktur-/AC-Änderung, daher kein CR. Nicht-destruktiver Update-Pfad für Produktivsysteme ergänzt (siehe `specs/technical/08-learning-path.md`). | PromptArena Team |
 
+**Nutzer-Ankündigung**: 2026-04-18 | Lernpfad: KI-Prompting von Grund auf lernen | Kurze, praxisnahe Lektionen bringen dir Schritt für Schritt bei, wie du KI-Prompts wirkungsvoll einsetzt.
+
 ---
 
 ## Freigabe

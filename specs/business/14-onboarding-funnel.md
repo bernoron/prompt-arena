@@ -92,3 +92,4 @@ freiwillig erneut aufrufen.
 - **Datum**: 2026-07-07
 - **PO**: bernoron
 - **Technische Spec**: `specs/technical/14-onboarding-funnel.md`
+- **Nutzer-Ankündigung**: 2026-07-07 | Einführungs-Tour für neue Mitglieder | Neue Mitglieder werden beim ersten Login kurz durch die wichtigsten Funktionen geführt.

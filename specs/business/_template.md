@@ -57,6 +57,17 @@ Example:
 
 ---
 
+## Nutzer-Ankündigung (optional)
+
+[Only add this line if this is a genuinely user-visible feature that should show up in the
+public landing page's "Neuigkeiten" section (`lib/services/feature-announcements-service.ts`,
+CR-007). Leave this section out entirely for internal/technical specs — omitting it is the
+normal case, not an oversight.]
+
+**Nutzer-Ankündigung**: YYYY-MM-DD | Kurzer Titel | Ein erklärender Satz für Besucher:innen, geschrieben wie ein Produkt-Announcement, nicht wie eine Commit-Message.
+
+---
+
 ## Review Checklist ✓
 
 Before you share this with Dev:

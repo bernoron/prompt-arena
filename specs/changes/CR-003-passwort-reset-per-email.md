@@ -9,6 +9,7 @@
 - **Erstellt von**: Claude (via /intake)
 - **Erstellt am**: 2026-07-08
 - **Fällig bis**: keine Frist
+- **Nutzer-Ankündigung**: 2026-07-09 | Passwort per E-Mail zurücksetzen | Passwort vergessen? Über „Passwort vergessen" bekommst du jetzt einen Reset-Link per E-Mail.
 
 ---
 

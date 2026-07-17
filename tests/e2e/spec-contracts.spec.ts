@@ -304,13 +304,14 @@ test.describe('PromptArena spec contracts', () => {
     expect(loggedInRes.headers()['location']).toBe('/dashboard');
   });
 
-  test('BAC-13-006/007 landing page: shows the curated recent-features list to anonymous visitors', async ({ request }) => {
+  test('BAC-13-006/007 landing page: shows the recent-features list read from the specs, to anonymous visitors', async ({ request }) => {
     const res = await request.get('/', { maxRedirects: 0 });
     expect(res.status()).toBe(200);
     const html = await res.text();
     expect(html).toContain('Neuigkeiten');
-    // Spot-check one curated entry (RECENT_FEATURES in lib/constants.ts) to prove this is the
-    // hand-written German list, not raw CHANGELOG.md/commit-message text (CR-006).
+    // Spot-check one announcement sourced from specs/changes/CR-004-user-kategorien-erstellen.md's
+    // "Nutzer-Ankündigung" line, to prove this is read from the specs, not a hand-maintained
+    // list (CR-006) or raw CHANGELOG.md/commit-message text (CR-005).
     expect(html).toContain('Eigene Kategorien erstellen');
   });
 });

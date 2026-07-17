@@ -9,6 +9,7 @@
 - **Erstellt von**: Claude (via /intake)
 - **Erstellt am**: 2026-07-08
 - **Fällig bis**: keine Frist
+- **Nutzer-Ankündigung**: 2026-07-09 | Konto selbst löschen | Du kannst dein Konto jetzt jederzeit selbst löschen, direkt im Profil.
 
 ---
 

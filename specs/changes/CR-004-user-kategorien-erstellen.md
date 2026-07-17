@@ -9,6 +9,7 @@
 - **Erstellt von**: Claude (Intake-Router) im Auftrag von bernoron
 - **Erstellt am**: 2026-07-16
 - **Fällig bis**: keine Frist
+- **Nutzer-Ankündigung**: 2026-07-16 | Eigene Kategorien erstellen | Beim Einreichen eines Prompts kannst du jetzt direkt eine neue Kategorie anlegen, statt dich auf die bestehende Liste zu beschränken.
 
 ---
 
