@@ -1,5 +1,12 @@
 # Changelog
 
+## [8.6.0](https://github.com/bernoron/prompt-arena/compare/v8.5.1...v8.6.0) (2026-07-17)
+
+
+### Features
+
+* **landing:** read Neuigkeiten announcements from specs, not a code constant (CR-007) ([d60c13f](https://github.com/bernoron/prompt-arena/commit/d60c13f6ec1117df72bb4798ac8ef29cb4690457))
+
 ## [8.5.1](https://github.com/bernoron/prompt-arena/compare/v8.5.0...v8.5.1) (2026-07-16)
 
 
